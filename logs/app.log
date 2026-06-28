@@ -1,0 +1,29 @@
+2026-06-28 14:21:16.027 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:233 - 加载配置文件
+2026-06-28 14:21:16.131 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:238 - 保存表信息到meta数据库
+2026-06-28 14:21:57.864 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:242 - 为字段信息建立向量索引
+2026-06-28 14:21:58.108 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:246 - 为字段取值建立全文索引
+2026-06-28 14:21:58.123 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:252 - 保存指标信息到meta数据库
+2026-06-28 14:22:02.064 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:256 - 为指标信息建立向量索引
+2026-06-28 14:22:02.064 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:258 - 元数据知识库构建完成
+2026-06-28 16:22:33.511 | INFO     | request_id - 0f2cf557-b669-4915-97e5-85fa8394448b | app.agent.nodes.extract_keywords:extract_keywords:36 - 抽取关键字: ['地区', '统计', '统计各地区的销售总额', '销售总额']
+2026-06-28 16:22:34.127 | ERROR    | request_id - 0f2cf557-b669-4915-97e5-85fa8394448b | app.agent.nodes.recall_metric:recall_metric:52 - 召回指标信息失败: Error code: 401 - {'error': {'code': 'invalid_credentials', 'message': 'invalid credentials'}}
+2026-06-28 16:23:41.883 | INFO     | request_id - 7bc7d25a-727a-4593-8c32-90c33964034d | app.agent.nodes.extract_keywords:extract_keywords:36 - 抽取关键字: ['地区', '统计', '统计各地区的销售总额', '销售总额']
+2026-06-28 16:23:42.574 | ERROR    | request_id - 7bc7d25a-727a-4593-8c32-90c33964034d | app.agent.nodes.recall_column:recall_column:57 - 召回字段信息失败: Error code: 401 - {'error': {'code': 'invalid_credentials', 'message': 'invalid credentials'}}
+2026-06-28 16:26:03.183 | INFO     | request_id - af04bf81-105a-458c-9ffb-42788e51cf91 | app.agent.nodes.extract_keywords:extract_keywords:36 - 抽取关键字: ['地区', '统计', '统计各地区的销售总额', '销售总额']
+2026-06-28 16:26:03.567 | ERROR    | request_id - af04bf81-105a-458c-9ffb-42788e51cf91 | app.agent.nodes.recall_column:recall_column:57 - 召回字段信息失败: Error code: 401 - {'error': {'code': 'invalid_credentials', 'message': 'invalid credentials'}}
+2026-06-28 16:27:15.585 | INFO     | request_id - 92158190-dd09-463a-a4d3-aa5977fef7e5 | app.agent.nodes.extract_keywords:extract_keywords:36 - 抽取关键字: ['地区', '统计', '统计各地区的销售总额', '销售总额']
+2026-06-28 16:27:15.977 | ERROR    | request_id - 92158190-dd09-463a-a4d3-aa5977fef7e5 | app.agent.nodes.recall_metric:recall_metric:52 - 召回指标信息失败: Error code: 401 - {'error': {'code': 'invalid_credentials', 'message': 'invalid credentials'}}
+2026-06-28 16:32:41.735 | INFO     | request_id - 16497181-7486-4106-b356-6a706380f035 | app.agent.nodes.extract_keywords:extract_keywords:36 - 抽取关键字: ['统计', '地区', '销售总额', '统计各地区的销售总额']
+2026-06-28 16:32:43.762 | INFO     | request_id - 16497181-7486-4106-b356-6a706380f035 | app.agent.nodes.recall_metric:recall_metric:36 - 召回指标信息扩展关键词：['销售额', 'GMV', '地区', '总销售额', '销售总额', '统计各地区的销售总额', '成交额', '统计']
+2026-06-28 16:32:45.163 | INFO     | request_id - 16497181-7486-4106-b356-6a706380f035 | app.agent.nodes.recall_column:recall_column:39 - 召回字段信息扩展关键词：['地区', '销售总额', '统计各地区的销售总额', '统计', '销售金额']
+2026-06-28 16:32:48.389 | INFO     | request_id - 16497181-7486-4106-b356-6a706380f035 | app.agent.nodes.recall_column:recall_column:53 - 召回字段信息：['dim_region.region_name', 'dim_region.province', 'dim_region.country', 'fact_order.order_amount', 'fact_order.order_quantity']
+2026-06-28 16:32:48.663 | INFO     | request_id - 16497181-7486-4106-b356-6a706380f035 | app.agent.nodes.recall_metric:recall_metric:48 - 召回指标信息：['GMV', 'AOV']
+2026-06-28 16:32:50.695 | INFO     | request_id - 16497181-7486-4106-b356-6a706380f035 | app.agent.nodes.recall_value:recall_value:36 - 召回字段取值扩展关键词：['统计', '地区', '销售总额', '统计各地区的销售总额']
+2026-06-28 16:32:50.808 | INFO     | request_id - 16497181-7486-4106-b356-6a706380f035 | app.agent.nodes.recall_value:recall_value:47 - 召回字段取值：[]
+2026-06-28 16:32:50.850 | INFO     | request_id - 16497181-7486-4106-b356-6a706380f035 | app.agent.nodes.merge_retrieved_info:merge_retrieved_info:88 - 合并召回信息: 表信息-['dim_region', 'fact_order'],指标信息-['GMV', 'AOV']
+2026-06-28 16:32:52.531 | INFO     | request_id - 16497181-7486-4106-b356-6a706380f035 | app.agent.nodes.filter_metric:filter_metric:35 - 过滤后的指标: ['GMV']
+2026-06-28 16:32:53.249 | INFO     | request_id - 16497181-7486-4106-b356-6a706380f035 | app.agent.nodes.filter_table:filter_table:45 - 过滤后的表信息: ['dim_region', 'fact_order']
+2026-06-28 16:32:53.273 | INFO     | request_id - 16497181-7486-4106-b356-6a706380f035 | app.agent.nodes.add_extra_context:add_extra_context:32 - 额外上下文信息：数据库信息-{'version': '8.0.46', 'dialect': 'mysql'} 日期信息-{'date': '2026-06-28', 'weekday': 'Sunday', 'quarter': 'Q2'}
+2026-06-28 16:32:56.825 | INFO     | request_id - 16497181-7486-4106-b356-6a706380f035 | app.agent.nodes.generate_sql:generate_sql:39 - 生成的SQL: SELECT r.region_name, SUM(f.order_amount) AS total_sales FROM dim_region r JOIN fact_order f ON r.region_id = f.region_id GROUP BY r.region_name;
+2026-06-28 16:32:56.843 | INFO     | request_id - 16497181-7486-4106-b356-6a706380f035 | app.agent.nodes.validate_sql:validate_sql:19 - SQL验证成功: SELECT r.region_name, SUM(f.order_amount) AS total_sales FROM dim_region r JOIN fact_order f ON r.region_id = f.region_id GROUP BY r.region_name;
+2026-06-28 16:32:56.848 | INFO     | request_id - 16497181-7486-4106-b356-6a706380f035 | app.agent.nodes.execute_sql:execute_sql:21 - 执行SQL结果: [{'region_name': '华南', 'total_sales': 70202.0}, {'region_name': '华东', 'total_sales': 107373.0}, {'region_name': '华北', 'total_sales': 41099.5}, {'region_name': '西南', 'total_sales': 31528.0}, {'region_name': '华中', 'total_sales': 28957.0}]
