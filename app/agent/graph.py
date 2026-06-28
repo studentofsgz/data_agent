@@ -15,6 +15,7 @@ from app.agent.nodes.merge_retrieved_info import merge_retrieved_info
 from app.agent.nodes.recall_column import recall_column
 from app.agent.nodes.recall_metric import recall_metric
 from app.agent.nodes.recall_value import recall_value
+from app.agent.nodes.audit_sql import audit_sql
 from app.agent.nodes.validate_sql import validate_sql
 from app.agent.state import DataAgentState
 from app.clients.embedding_client_manager import embedding_client_manager
@@ -40,6 +41,7 @@ graph_builder.add_node("filter_table", filter_table)
 graph_builder.add_node("add_extra_context", add_extra_context)
 graph_builder.add_node("generate_sql", generate_sql)
 graph_builder.add_node("validate_sql", validate_sql)
+graph_builder.add_node("audit_sql", audit_sql)
 graph_builder.add_node("correct_sql", correct_sql)
 graph_builder.add_node("execute_sql", execute_sql)
 
@@ -56,7 +58,8 @@ graph_builder.add_edge("merge_retrieved_info", "filter_metric")
 graph_builder.add_edge("filter_table", "add_extra_context")
 graph_builder.add_edge("filter_metric", "add_extra_context")
 graph_builder.add_edge("add_extra_context", "generate_sql")
-graph_builder.add_edge("generate_sql", "validate_sql")
+graph_builder.add_edge("generate_sql", "audit_sql")
+graph_builder.add_edge("audit_sql", "validate_sql")
 
 graph_builder.add_conditional_edges("validate_sql",
                                     lambda state: "execute_sql" if state["error"] is None else "correct_sql",

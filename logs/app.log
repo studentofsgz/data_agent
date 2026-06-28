@@ -27,3 +27,66 @@
 2026-06-28 16:32:56.825 | INFO     | request_id - 16497181-7486-4106-b356-6a706380f035 | app.agent.nodes.generate_sql:generate_sql:39 - 生成的SQL: SELECT r.region_name, SUM(f.order_amount) AS total_sales FROM dim_region r JOIN fact_order f ON r.region_id = f.region_id GROUP BY r.region_name;
 2026-06-28 16:32:56.843 | INFO     | request_id - 16497181-7486-4106-b356-6a706380f035 | app.agent.nodes.validate_sql:validate_sql:19 - SQL验证成功: SELECT r.region_name, SUM(f.order_amount) AS total_sales FROM dim_region r JOIN fact_order f ON r.region_id = f.region_id GROUP BY r.region_name;
 2026-06-28 16:32:56.848 | INFO     | request_id - 16497181-7486-4106-b356-6a706380f035 | app.agent.nodes.execute_sql:execute_sql:21 - 执行SQL结果: [{'region_name': '华南', 'total_sales': 70202.0}, {'region_name': '华东', 'total_sales': 107373.0}, {'region_name': '华北', 'total_sales': 41099.5}, {'region_name': '西南', 'total_sales': 31528.0}, {'region_name': '华中', 'total_sales': 28957.0}]
+2026-06-28 21:08:53.256 | INFO     | request_id - 0ee3142b-b9e1-4079-ae9b-e45d8538e37f | app.agent.nodes.extract_keywords:extract_keywords:36 - 抽取关键字: ['今年的销售总额', '销售总额']
+2026-06-28 21:08:55.395 | INFO     | request_id - 0ee3142b-b9e1-4079-ae9b-e45d8538e37f | app.agent.nodes.recall_metric:recall_metric:36 - 召回指标信息扩展关键词：['销售收入', 'GMV', '今年的销售总额', '销售收入总额', '销售额', '销售总额']
+2026-06-28 21:08:55.404 | ERROR    | request_id - 0ee3142b-b9e1-4079-ae9b-e45d8538e37f | app.agent.nodes.recall_metric:recall_metric:52 - 召回指标信息失败: Cannot connect to host localhost:8081 ssl:default [Multiple exceptions: [Errno 61] Connect call failed ('::1', 8081, 0, 0), [Errno 61] Connect call failed ('127.0.0.1', 8081)]
+2026-06-28 21:09:13.876 | INFO     | request_id - 9965f298-aca7-4c03-a8a1-25459489c602 | app.agent.nodes.extract_keywords:extract_keywords:36 - 抽取关键字: ['今年的销售总额', '销售总额']
+2026-06-28 21:09:15.537 | INFO     | request_id - 9965f298-aca7-4c03-a8a1-25459489c602 | app.agent.nodes.recall_metric:recall_metric:36 - 召回指标信息扩展关键词：['营业收入', 'GMV', '今年的销售总额', '总销售额', '销售额', '销售总额', '销售营收']
+2026-06-28 21:09:15.547 | ERROR    | request_id - 9965f298-aca7-4c03-a8a1-25459489c602 | app.agent.nodes.recall_metric:recall_metric:52 - 召回指标信息失败: Cannot connect to host localhost:8081 ssl:default [Multiple exceptions: [Errno 61] Connect call failed ('::1', 8081, 0, 0), [Errno 61] Connect call failed ('127.0.0.1', 8081)]
+2026-06-28 21:10:36.365 | INFO     | request_id - 3b5d7c13-dbc5-4458-8109-aa4d0c5b0f58 | app.agent.nodes.extract_keywords:extract_keywords:36 - 抽取关键字: ['今年的销售总额', '销售总额']
+2026-06-28 21:10:38.626 | INFO     | request_id - 3b5d7c13-dbc5-4458-8109-aa4d0c5b0f58 | app.agent.nodes.recall_metric:recall_metric:36 - 召回指标信息扩展关键词：['交易总额', 'GMV', '今年的销售总额', '总收入', '成交总额', '销售额', '销售总额', '营收']
+2026-06-28 21:10:38.636 | ERROR    | request_id - 3b5d7c13-dbc5-4458-8109-aa4d0c5b0f58 | app.agent.nodes.recall_metric:recall_metric:52 - 召回指标信息失败: Server disconnected
+2026-06-28 21:16:39.256 | INFO     | request_id - 49076df9-75c1-4f84-9eb5-6518a131edab | app.agent.nodes.extract_keywords:extract_keywords:36 - 抽取关键字: ['今年的销售总额', '销售总额']
+2026-06-28 21:16:42.242 | INFO     | request_id - 49076df9-75c1-4f84-9eb5-6518a131edab | app.agent.nodes.recall_value:recall_value:36 - 召回字段取值扩展关键词：['今年', '今年的销售总额', '销售总额']
+2026-06-28 21:16:42.338 | INFO     | request_id - 49076df9-75c1-4f84-9eb5-6518a131edab | app.agent.nodes.recall_value:recall_value:47 - 召回字段取值：[]
+2026-06-28 21:16:43.172 | INFO     | request_id - 49076df9-75c1-4f84-9eb5-6518a131edab | app.agent.nodes.recall_column:recall_column:39 - 召回字段信息扩展关键词：['销售金额', '今年的销售总额', '销售总额', '销售日期']
+2026-06-28 21:16:44.261 | INFO     | request_id - 49076df9-75c1-4f84-9eb5-6518a131edab | app.agent.nodes.recall_metric:recall_metric:36 - 召回指标信息扩展关键词：['销售收入', '今年的销售总额', '总销售额', '销售额', '销售总额']
+2026-06-28 21:16:46.654 | INFO     | request_id - 49076df9-75c1-4f84-9eb5-6518a131edab | app.agent.nodes.recall_column:recall_column:53 - 召回字段信息：['fact_order.order_amount', 'fact_order.order_quantity', 'fact_order.date_id', 'dim_date.date_id']
+2026-06-28 21:16:47.169 | INFO     | request_id - 49076df9-75c1-4f84-9eb5-6518a131edab | app.agent.nodes.recall_metric:recall_metric:48 - 召回指标信息：['GMV', 'AOV']
+2026-06-28 21:16:47.484 | INFO     | request_id - 49076df9-75c1-4f84-9eb5-6518a131edab | app.agent.nodes.merge_retrieved_info:merge_retrieved_info:88 - 合并召回信息: 表信息-['fact_order', 'dim_date'],指标信息-['GMV', 'AOV']
+2026-06-28 21:16:49.928 | INFO     | request_id - 49076df9-75c1-4f84-9eb5-6518a131edab | app.agent.nodes.filter_metric:filter_metric:35 - 过滤后的指标: ['GMV']
+2026-06-28 21:16:55.769 | INFO     | request_id - 49076df9-75c1-4f84-9eb5-6518a131edab | app.agent.nodes.filter_table:filter_table:45 - 过滤后的表信息: ['fact_order']
+2026-06-28 21:16:55.799 | INFO     | request_id - 49076df9-75c1-4f84-9eb5-6518a131edab | app.agent.nodes.add_extra_context:add_extra_context:32 - 额外上下文信息：数据库信息-{'version': '8.0.46', 'dialect': 'mysql'} 日期信息-{'date': '2026-06-28', 'weekday': 'Sunday', 'quarter': 'Q2'}
+2026-06-28 21:16:58.428 | INFO     | request_id - 49076df9-75c1-4f84-9eb5-6518a131edab | app.agent.nodes.generate_sql:generate_sql:39 - 生成的SQL: SELECT SUM(order_amount) AS total_sales FROM fact_order WHERE date_id BETWEEN 20260101 AND 20261231
+2026-06-28 21:16:58.436 | INFO     | request_id - 49076df9-75c1-4f84-9eb5-6518a131edab | app.agent.nodes.audit_sql:audit_sql:36 - SQL安全审计通过: SELECT SUM(order_amount) AS total_sales FROM fact_order WHERE date_id BETWEEN 20260101 AND 20261231 LIMIT 10000
+2026-06-28 21:16:58.466 | INFO     | request_id - 49076df9-75c1-4f84-9eb5-6518a131edab | app.agent.nodes.validate_sql:validate_sql:19 - SQL验证成功: SELECT SUM(order_amount) AS total_sales FROM fact_order WHERE date_id BETWEEN 20260101 AND 20261231 LIMIT 10000
+2026-06-28 21:16:58.478 | INFO     | request_id - 49076df9-75c1-4f84-9eb5-6518a131edab | app.agent.nodes.execute_sql:execute_sql:21 - 执行SQL结果: [{'total_sales': None}]
+2026-06-28 21:19:18.188 | INFO     | request_id - 52d4d4d8-0362-4dde-ba97-8b89d2f00bff | app.agent.nodes.extract_keywords:extract_keywords:36 - 抽取关键字: ['2024年的销售总额', '销售总额']
+2026-06-28 21:19:20.364 | INFO     | request_id - 52d4d4d8-0362-4dde-ba97-8b89d2f00bff | app.agent.nodes.recall_column:recall_column:39 - 召回字段信息扩展关键词：['销售金额', '2024年的销售总额', '销售总额', '销售日期']
+2026-06-28 21:19:20.428 | INFO     | request_id - 52d4d4d8-0362-4dde-ba97-8b89d2f00bff | app.agent.nodes.recall_metric:recall_metric:36 - 召回指标信息扩展关键词：['销售收入', 'GMV', '2024年的销售总额', '成交总额', '营业额', '销售额', '销售总额', '销售总金额']
+2026-06-28 21:19:23.170 | INFO     | request_id - 52d4d4d8-0362-4dde-ba97-8b89d2f00bff | app.agent.nodes.recall_column:recall_column:53 - 召回字段信息：['fact_order.order_amount', 'fact_order.order_quantity', 'fact_order.date_id', 'dim_date.date_id']
+2026-06-28 21:19:24.245 | INFO     | request_id - 52d4d4d8-0362-4dde-ba97-8b89d2f00bff | app.agent.nodes.recall_value:recall_value:36 - 召回字段取值扩展关键词：['2024年的销售总额', '2024年', '销售总额']
+2026-06-28 21:19:24.325 | INFO     | request_id - 52d4d4d8-0362-4dde-ba97-8b89d2f00bff | app.agent.nodes.recall_value:recall_value:47 - 召回字段取值：[]
+2026-06-28 21:19:24.753 | INFO     | request_id - 52d4d4d8-0362-4dde-ba97-8b89d2f00bff | app.agent.nodes.recall_metric:recall_metric:48 - 召回指标信息：['GMV', 'AOV']
+2026-06-28 21:19:24.801 | INFO     | request_id - 52d4d4d8-0362-4dde-ba97-8b89d2f00bff | app.agent.nodes.merge_retrieved_info:merge_retrieved_info:88 - 合并召回信息: 表信息-['fact_order', 'dim_date'],指标信息-['GMV', 'AOV']
+2026-06-28 21:19:26.706 | INFO     | request_id - 52d4d4d8-0362-4dde-ba97-8b89d2f00bff | app.agent.nodes.filter_metric:filter_metric:35 - 过滤后的指标: ['GMV']
+2026-06-28 21:19:29.470 | INFO     | request_id - 52d4d4d8-0362-4dde-ba97-8b89d2f00bff | app.agent.nodes.filter_table:filter_table:45 - 过滤后的表信息: ['fact_order']
+2026-06-28 21:19:29.482 | INFO     | request_id - 52d4d4d8-0362-4dde-ba97-8b89d2f00bff | app.agent.nodes.add_extra_context:add_extra_context:32 - 额外上下文信息：数据库信息-{'version': '8.0.46', 'dialect': 'mysql'} 日期信息-{'date': '2026-06-28', 'weekday': 'Sunday', 'quarter': 'Q2'}
+2026-06-28 21:19:33.357 | INFO     | request_id - 52d4d4d8-0362-4dde-ba97-8b89d2f00bff | app.agent.nodes.generate_sql:generate_sql:39 - 生成的SQL: SELECT SUM(order_amount) AS total_gmv FROM fact_order WHERE date_id BETWEEN 20240101 AND 20241231
+2026-06-28 21:19:33.364 | INFO     | request_id - 52d4d4d8-0362-4dde-ba97-8b89d2f00bff | app.agent.nodes.audit_sql:audit_sql:36 - SQL安全审计通过: SELECT SUM(order_amount) AS total_gmv FROM fact_order WHERE date_id BETWEEN 20240101 AND 20241231 LIMIT 10000
+2026-06-28 21:19:33.380 | INFO     | request_id - 52d4d4d8-0362-4dde-ba97-8b89d2f00bff | app.agent.nodes.validate_sql:validate_sql:19 - SQL验证成功: SELECT SUM(order_amount) AS total_gmv FROM fact_order WHERE date_id BETWEEN 20240101 AND 20241231 LIMIT 10000
+2026-06-28 21:19:33.398 | INFO     | request_id - 52d4d4d8-0362-4dde-ba97-8b89d2f00bff | app.agent.nodes.execute_sql:execute_sql:21 - 执行SQL结果: [{'total_gmv': None}]
+2026-06-28 21:20:30.377 | INFO     | request_id - 726c777a-7a41-4781-b6b7-36c6e803083a | app.agent.nodes.extract_keywords:extract_keywords:36 - 抽取关键字: ['地区', '销售总额', '统计', '统计各地区的销售总额']
+2026-06-28 21:20:31.659 | INFO     | request_id - 726c777a-7a41-4781-b6b7-36c6e803083a | app.agent.nodes.recall_value:recall_value:36 - 召回字段取值扩展关键词：['地区', '销售总额', '统计', '统计各地区的销售总额']
+2026-06-28 21:20:31.686 | INFO     | request_id - 726c777a-7a41-4781-b6b7-36c6e803083a | app.agent.nodes.recall_value:recall_value:47 - 召回字段取值：[]
+2026-06-28 21:20:32.702 | INFO     | request_id - 726c777a-7a41-4781-b6b7-36c6e803083a | app.agent.nodes.recall_metric:recall_metric:36 - 召回指标信息扩展关键词：['交易总额', '销售收入', 'GMV', '统计各地区的销售总额', '统计', '地区', '营收总额', '销售额', '销售总额']
+2026-06-28 21:20:33.057 | INFO     | request_id - 726c777a-7a41-4781-b6b7-36c6e803083a | app.agent.nodes.recall_column:recall_column:39 - 召回字段信息扩展关键词：['统计各地区的销售总额', '统计', '地区', '销售金额', '销售总额']
+2026-06-28 21:20:37.334 | INFO     | request_id - 726c777a-7a41-4781-b6b7-36c6e803083a | app.agent.nodes.recall_column:recall_column:53 - 召回字段信息：['fact_order.order_amount', 'fact_order.order_quantity', 'dim_region.region_name', 'dim_region.province', 'dim_region.country']
+2026-06-28 21:20:38.500 | INFO     | request_id - 726c777a-7a41-4781-b6b7-36c6e803083a | app.agent.nodes.recall_metric:recall_metric:48 - 召回指标信息：['GMV', 'AOV']
+2026-06-28 21:20:38.553 | INFO     | request_id - 726c777a-7a41-4781-b6b7-36c6e803083a | app.agent.nodes.merge_retrieved_info:merge_retrieved_info:88 - 合并召回信息: 表信息-['fact_order', 'dim_region'],指标信息-['GMV', 'AOV']
+2026-06-28 21:20:40.429 | INFO     | request_id - 726c777a-7a41-4781-b6b7-36c6e803083a | app.agent.nodes.filter_metric:filter_metric:35 - 过滤后的指标: ['GMV']
+2026-06-28 21:20:41.663 | INFO     | request_id - 726c777a-7a41-4781-b6b7-36c6e803083a | app.agent.nodes.filter_table:filter_table:45 - 过滤后的表信息: ['fact_order', 'dim_region']
+2026-06-28 21:20:41.675 | INFO     | request_id - 726c777a-7a41-4781-b6b7-36c6e803083a | app.agent.nodes.add_extra_context:add_extra_context:32 - 额外上下文信息：数据库信息-{'version': '8.0.46', 'dialect': 'mysql'} 日期信息-{'date': '2026-06-28', 'weekday': 'Sunday', 'quarter': 'Q2'}
+2026-06-28 21:20:45.295 | INFO     | request_id - 726c777a-7a41-4781-b6b7-36c6e803083a | app.agent.nodes.generate_sql:generate_sql:39 - 生成的SQL: SELECT dim_region.region_name, SUM(fact_order.order_amount) AS 销售总额
+FROM fact_order
+JOIN dim_region ON fact_order.region_id = dim_region.region_id
+GROUP BY dim_region.region_name;
+2026-06-28 21:20:45.302 | INFO     | request_id - 726c777a-7a41-4781-b6b7-36c6e803083a | app.agent.nodes.audit_sql:audit_sql:36 - SQL安全审计通过: SELECT dim_region.region_name, SUM(fact_order.order_amount) AS 销售总额
+FROM fact_order
+JOIN dim_region ON fact_order.region_id = dim_region.region_id
+GROUP BY dim_region.region_name LIMIT 10000
+2026-06-28 21:20:45.329 | INFO     | request_id - 726c777a-7a41-4781-b6b7-36c6e803083a | app.agent.nodes.validate_sql:validate_sql:19 - SQL验证成功: SELECT dim_region.region_name, SUM(fact_order.order_amount) AS 销售总额
+FROM fact_order
+JOIN dim_region ON fact_order.region_id = dim_region.region_id
+GROUP BY dim_region.region_name LIMIT 10000
+2026-06-28 21:20:45.343 | INFO     | request_id - 726c777a-7a41-4781-b6b7-36c6e803083a | app.agent.nodes.execute_sql:execute_sql:21 - 执行SQL结果: [{'region_name': '华南', '销售总额': 70202.0}, {'region_name': '华东', '销售总额': 107373.0}, {'region_name': '华北', '销售总额': 41099.5}, {'region_name': '西南', '销售总额': 31528.0}, {'region_name': '华中', '销售总额': 28957.0}]

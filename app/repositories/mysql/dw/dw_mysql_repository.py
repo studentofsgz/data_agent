@@ -1,5 +1,6 @@
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
+import asyncio
 
 
 class DWMySQLRepository:
@@ -27,6 +28,9 @@ class DWMySQLRepository:
     async def validate_sql(self, sql):
         await self.session.execute(text(f"explain {sql}"))
 
-    async def execute_sql(self, sql):
-        result = await self.session.execute(text(sql))
+    async def execute_sql(self, sql, timeout_seconds=30):
+        result = await asyncio.wait_for(
+            self.session.execute(text(sql)),
+            timeout=timeout_seconds
+        )
         return [dict(row) for row in result.mappings().fetchall()]
