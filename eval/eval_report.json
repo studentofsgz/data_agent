@@ -1,0 +1,50 @@
+{
+  "summary": {
+    "total": 5,
+    "executable": 5,
+    "rate": 100.0,
+    "avg_seconds": 12.5
+  },
+  "details": [
+    {
+      "id": "q001",
+      "question": "统计各地区的销售总额",
+      "executable": true,
+      "result_count": 5,
+      "elapsed": 11.99,
+      "error": ""
+    },
+    {
+      "id": "q002",
+      "question": "北京地区的订单量是多少",
+      "executable": true,
+      "result_count": 1,
+      "elapsed": 13.63,
+      "error": ""
+    },
+    {
+      "id": "q003",
+      "question": "GMV最高的5个商品",
+      "executable": true,
+      "result_count": 5,
+      "elapsed": 12.51,
+      "error": ""
+    },
+    {
+      "id": "q004",
+      "question": "客单价是多少",
+      "executable": true,
+      "result_count": 1,
+      "elapsed": 11.16,
+      "error": ""
+    },
+    {
+      "id": "q005",
+      "question": "查询每个月的总销量",
+      "executable": true,
+      "result_count": 3,
+      "elapsed": 13.23,
+      "error": ""
+    }
+  ]
+}

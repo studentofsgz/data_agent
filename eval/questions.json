@@ -1,0 +1,32 @@
+[
+  {
+    "id": "q001",
+    "question": "统计各地区的销售总额",
+    "expect_tables": ["fact_order", "dim_region"],
+    "expect_not_empty": true
+  },
+  {
+    "id": "q002",
+    "question": "北京地区的订单量是多少",
+    "expect_tables": ["fact_order", "dim_region"],
+    "expect_not_empty": true
+  },
+  {
+    "id": "q003",
+    "question": "GMV最高的5个商品",
+    "expect_tables": ["fact_order", "dim_product"],
+    "expect_not_empty": true
+  },
+  {
+    "id": "q004",
+    "question": "客单价是多少",
+    "expect_tables": ["fact_order"],
+    "expect_not_empty": true
+  },
+  {
+    "id": "q005",
+    "question": "查询每个月的总销量",
+    "expect_tables": ["fact_order", "dim_date"],
+    "expect_not_empty": true
+  }
+]
