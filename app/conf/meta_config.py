@@ -23,8 +23,12 @@ class TableConfig:
 class MetricConfig:
     name: str
     description: str
-    relevant_columns: list[str]
-    alias: list[str]
+    expression: str = ""
+    default_aggregation: str = ""
+    dimensions: Optional[list[str]] = None
+    time_granularity: str = ""
+    relevant_columns: Optional[list[str]] = None
+    alias: Optional[list[str]] = None
 
 
 @dataclass

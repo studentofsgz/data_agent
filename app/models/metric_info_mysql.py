@@ -21,6 +21,22 @@ class MetricInfoMySQL(Base):
         Text,
         comment="指标描述"
     )
+    expression: Mapped[str | None] = mapped_column(
+        Text,
+        comment="指标SQL公式"
+    )
+    default_aggregation: Mapped[str | None] = mapped_column(
+        String(64),
+        comment="默认聚合方式"
+    )
+    dimensions: Mapped[dict | list | None] = mapped_column(
+        JSON,
+        comment="推荐分析维度"
+    )
+    time_granularity: Mapped[str | None] = mapped_column(
+        String(32),
+        comment="建议时间粒度"
+    )
     relevant_columns: Mapped[dict | list | None] = mapped_column(
         JSON,
         comment="关联字段"

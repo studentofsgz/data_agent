@@ -24,6 +24,10 @@ class TableInfoState(TypedDict):
 class MetricInfoState(TypedDict):
     name: str
     description: str
+    expression: str
+    default_aggregation: str
+    dimensions: list[str]
+    time_granularity: str
     relevant_columns: list[str]
     alias: list[str]
 

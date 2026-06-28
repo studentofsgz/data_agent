@@ -166,11 +166,26 @@ tables:
 metrics:
   - name: GMV
     description: 全称Gross Merchandise Value，表示所有订单的成交金额总和。
+    expression: SUM(fact_order.order_amount)
+    default_aggregation: SUM
+    dimensions:
+      - dim_region.region_name
+      - dim_date.month
+      - dim_product.category
+    time_granularity: day
     relevant_columns:
       - fact_order.order_amount
     alias: [成交总额, 订单总额]
   - name: AOV
     description: 全称Average Order Value，表示所有订单的成交金额平均值。
+    expression: AVG(fact_order.order_amount)
+    default_aggregation: AVG
+    dimensions:
+      - dim_customer.gender
+      - dim_customer.member_level
+      - dim_date.month
+    time_granularity: day
     relevant_columns:
-      - fact_order.order_quantity
+      - fact_order.order_amount
+      - fact_order.customer_id
     alias: [平均单价, 平均订单金额]

@@ -90,3 +90,30 @@ FROM fact_order
 JOIN dim_region ON fact_order.region_id = dim_region.region_id
 GROUP BY dim_region.region_name LIMIT 10000
 2026-06-28 21:20:45.343 | INFO     | request_id - 726c777a-7a41-4781-b6b7-36c6e803083a | app.agent.nodes.execute_sql:execute_sql:21 - 执行SQL结果: [{'region_name': '华南', '销售总额': 70202.0}, {'region_name': '华东', '销售总额': 107373.0}, {'region_name': '华北', '销售总额': 41099.5}, {'region_name': '西南', '销售总额': 31528.0}, {'region_name': '华中', '销售总额': 28957.0}]
+2026-06-28 21:57:26.410 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:237 - 加载配置文件
+2026-06-28 21:59:32.704 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:237 - 加载配置文件
+2026-06-28 21:59:32.756 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:242 - 保存表信息到meta数据库
+2026-06-28 22:00:05.419 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:246 - 为字段信息建立向量索引
+2026-06-28 22:00:05.476 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:250 - 为字段取值建立全文索引
+2026-06-28 22:02:42.062 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:237 - 加载配置文件
+2026-06-28 22:02:42.113 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:242 - 保存表信息到meta数据库
+2026-06-28 22:03:21.750 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:246 - 为字段信息建立向量索引
+2026-06-28 22:03:21.812 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:250 - 为字段取值建立全文索引
+2026-06-28 22:03:21.828 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:256 - 保存指标信息到meta数据库
+2026-06-28 22:03:27.443 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:260 - 为指标信息建立向量索引
+2026-06-28 22:03:27.443 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:262 - 元数据知识库构建完成
+2026-06-28 22:04:26.393 | INFO     | request_id - 63e46f65-27da-46ea-a50a-a0ddf07ab085 | app.agent.nodes.extract_keywords:extract_keywords:36 - 抽取关键字: ['GMV是多少', 'GMV']
+2026-06-28 22:04:28.650 | INFO     | request_id - 63e46f65-27da-46ea-a50a-a0ddf07ab085 | app.agent.nodes.recall_metric:recall_metric:36 - 召回指标信息扩展关键词：['交易额', 'GMV是多少', '总成交额', '成交额', 'GMV', '总交易额']
+2026-06-28 22:04:29.055 | INFO     | request_id - 63e46f65-27da-46ea-a50a-a0ddf07ab085 | app.agent.nodes.recall_column:recall_column:39 - 召回字段信息扩展关键词：['GMV', 'GMV是多少', '交易金额']
+2026-06-28 22:04:31.309 | INFO     | request_id - 63e46f65-27da-46ea-a50a-a0ddf07ab085 | app.agent.nodes.recall_column:recall_column:53 - 召回字段信息：['fact_order.order_amount']
+2026-06-28 22:04:32.210 | INFO     | request_id - 63e46f65-27da-46ea-a50a-a0ddf07ab085 | app.agent.nodes.recall_metric:recall_metric:48 - 召回指标信息：['GMV', 'AOV']
+2026-06-28 22:04:34.274 | INFO     | request_id - 63e46f65-27da-46ea-a50a-a0ddf07ab085 | app.agent.nodes.recall_value:recall_value:36 - 召回字段取值扩展关键词：['GMV', 'GMV是多少']
+2026-06-28 22:04:34.333 | INFO     | request_id - 63e46f65-27da-46ea-a50a-a0ddf07ab085 | app.agent.nodes.recall_value:recall_value:47 - 召回字段取值：[]
+2026-06-28 22:04:34.374 | INFO     | request_id - 63e46f65-27da-46ea-a50a-a0ddf07ab085 | app.agent.nodes.merge_retrieved_info:merge_retrieved_info:88 - 合并召回信息: 表信息-['fact_order'],指标信息-['GMV', 'AOV']
+2026-06-28 22:04:36.010 | INFO     | request_id - 63e46f65-27da-46ea-a50a-a0ddf07ab085 | app.agent.nodes.filter_metric:filter_metric:35 - 过滤后的指标: ['GMV']
+2026-06-28 22:04:36.628 | INFO     | request_id - 63e46f65-27da-46ea-a50a-a0ddf07ab085 | app.agent.nodes.filter_table:filter_table:45 - 过滤后的表信息: ['fact_order']
+2026-06-28 22:04:36.675 | INFO     | request_id - 63e46f65-27da-46ea-a50a-a0ddf07ab085 | app.agent.nodes.add_extra_context:add_extra_context:32 - 额外上下文信息：数据库信息-{'version': '8.0.46', 'dialect': 'mysql'} 日期信息-{'date': '2026-06-28', 'weekday': 'Sunday', 'quarter': 'Q2'}
+2026-06-28 22:04:38.982 | INFO     | request_id - 63e46f65-27da-46ea-a50a-a0ddf07ab085 | app.agent.nodes.generate_sql:generate_sql:39 - 生成的SQL: SELECT SUM(order_amount) AS GMV FROM fact_order;
+2026-06-28 22:04:38.990 | INFO     | request_id - 63e46f65-27da-46ea-a50a-a0ddf07ab085 | app.agent.nodes.audit_sql:audit_sql:36 - SQL安全审计通过: SELECT SUM(order_amount) AS GMV FROM fact_order LIMIT 10000
+2026-06-28 22:04:39.008 | INFO     | request_id - 63e46f65-27da-46ea-a50a-a0ddf07ab085 | app.agent.nodes.validate_sql:validate_sql:19 - SQL验证成功: SELECT SUM(order_amount) AS GMV FROM fact_order LIMIT 10000
+2026-06-28 22:04:39.022 | INFO     | request_id - 63e46f65-27da-46ea-a50a-a0ddf07ab085 | app.agent.nodes.execute_sql:execute_sql:21 - 执行SQL结果: [{'GMV': 279159.5}]

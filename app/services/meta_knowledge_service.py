@@ -166,6 +166,10 @@ class MetaKnowledgeService:
                 id=metric.name,
                 name=metric.name,
                 description=metric.description,
+                expression=getattr(metric, 'expression', ''),
+                default_aggregation=getattr(metric, 'default_aggregation', ''),
+                dimensions=getattr(metric, 'dimensions', []),
+                time_granularity=getattr(metric, 'time_granularity', ''),
                 relevant_columns=metric.relevant_columns,
                 alias=metric.alias,
             )
