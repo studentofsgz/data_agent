@@ -18,6 +18,7 @@ from app.agent.nodes.recall_value import recall_value
 from app.agent.nodes.audit_sql import audit_sql
 from app.agent.nodes.validate_sql import validate_sql
 from app.agent.state import DataAgentState
+from app.agent.state import MAX_SQL_RETRIES
 from app.clients.embedding_client_manager import embedding_client_manager
 from app.clients.es_client_manager import es_client_manager
 from app.clients.mysql_client_manager import meta_mysql_client_manager, dw_mysql_client_manager
@@ -62,10 +63,12 @@ graph_builder.add_edge("generate_sql", "audit_sql")
 graph_builder.add_edge("audit_sql", "validate_sql")
 
 graph_builder.add_conditional_edges("validate_sql",
-                                    lambda state: "execute_sql" if state["error"] is None else "correct_sql",
-                                    {"execute_sql": "execute_sql", "correct_sql": "correct_sql"})
+    lambda state: "execute_sql"
+        if state["error"] is None or state.get("retry_count", 0) >= MAX_SQL_RETRIES
+        else "correct_sql",
+    {"execute_sql": "execute_sql", "correct_sql": "correct_sql"})
 
-graph_builder.add_edge("correct_sql", "execute_sql")
+graph_builder.add_edge("correct_sql", "audit_sql")
 graph_builder.add_edge("execute_sql", END)
 
 graph = graph_builder.compile()

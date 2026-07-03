@@ -4,6 +4,7 @@ from app.entities.column_info import ColumnInfo
 from app.entities.metric_info import MetricInfo
 from app.entities.value_info import ValueInfo
 
+MAX_SQL_RETRIES = 3  # SQL 验证失败最大重试次数
 
 class ColumnInfoState(TypedDict):
     name: str
@@ -60,3 +61,5 @@ class DataAgentState(TypedDict):
     sql: str  # 生成的SQL
 
     error: str  # 验证SQL时的错误信息
+
+    retry_count: int  # SQL修正重试次数

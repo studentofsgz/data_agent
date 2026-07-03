@@ -2,6 +2,7 @@ import yaml
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import PromptTemplate
 from langgraph.runtime import Runtime
+from app.agent.state import MAX_SQL_RETRIES
 
 from app.agent.context import DataAgentContext
 from app.agent.llm import llm
@@ -12,7 +13,15 @@ from app.prompt.prompt_loader import load_prompt
 
 async def correct_sql(state: DataAgentState, runtime: Runtime[DataAgentContext]):
     writer = runtime.stream_writer
-    writer({"type": "progress", "step": "校正SQL", "status": "running"})
+
+    retry_count = state.get("retry_count", 0) + 1
+
+    if retry_count > MAX_SQL_RETRIES:
+        writer({"type": "progress", "step": "校正SQL", "status": "error"})
+        logger.warning(f"已达最大重试次数 ({MAX_SQL_RETRIES})，放弃修正")
+        return {"retry_count": retry_count}
+
+    writer({"type": "progress", "step": f"校正SQL (第{retry_count}次)", "status": "running"})
 
     sql = state["sql"]
     error = state["error"]
@@ -38,10 +47,10 @@ async def correct_sql(state: DataAgentState, runtime: Runtime[DataAgentContext])
              "sql": sql,
              "error": error
              })
-        writer({"type": "progress", "step": "校正SQL", "status": "success"})
-        logger.info(f"校正后的SQL: {result}")
-        return {"sql": result}
+        writer({"type": "progress", "step": f"校正SQL (第{retry_count}次)", "status": "success"})
+        logger.info(f"校正后的SQL (第{retry_count}次): {result}")
+        return {"sql": result, "retry_count": retry_count}
     except Exception as e:
-        writer({"type": "progress", "step": "校正SQL", "status": "error"})
+        writer({"type": "progress", "step": f"校正SQL (第{retry_count}次)", "status": "error"})
         logger.error(f"校正SQL失败:{str(e)}")
-        raise
+        return {"retry_count": retry_count}
