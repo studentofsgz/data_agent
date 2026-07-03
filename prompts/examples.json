@@ -1,0 +1,42 @@
+[
+  {
+    "question": "总订单金额是多少",
+    "keywords": ["总", "订单金额", "金额"],
+    "sql": "SELECT SUM(fact_order.order_amount) AS total_amount FROM fact_order"
+  },
+  {
+    "question": "统计各地区的销售总额",
+    "keywords": ["地区", "销售总额", "GMV", "销售额"],
+    "sql": "SELECT dim_region.region_name, SUM(fact_order.order_amount) AS GMV\nFROM fact_order\nJOIN dim_region ON fact_order.region_id = dim_region.region_id\nGROUP BY dim_region.region_name\nORDER BY GMV DESC"
+  },
+  {
+    "question": "查询每个月的总销量",
+    "keywords": ["月", "月份", "总销量", "销量"],
+    "sql": "SELECT dim_date.month, SUM(fact_order.order_quantity) AS total_quantity\nFROM fact_order\nJOIN dim_date ON fact_order.date_id = dim_date.date_id\nGROUP BY dim_date.month\nORDER BY dim_date.month"
+  },
+  {
+    "question": "GMV最高的5个商品",
+    "keywords": ["GMV", "最高", "商品", "排名"],
+    "sql": "SELECT dim_product.product_name, SUM(fact_order.order_amount) AS GMV\nFROM fact_order\nJOIN dim_product ON fact_order.product_id = dim_product.product_id\nGROUP BY dim_product.product_name\nORDER BY GMV DESC\nLIMIT 5"
+  },
+  {
+    "question": "客单价是多少",
+    "keywords": ["客单价", "AOV", "平均", "订单金额"],
+    "sql": "SELECT AVG(fact_order.order_amount) AS AOV FROM fact_order"
+  },
+  {
+    "question": "华为品牌在广东省的销量",
+    "keywords": ["品牌", "华为", "广东", "销量"],
+    "sql": "SELECT dim_product.brand, dim_region.province, SUM(fact_order.order_quantity) AS total_quantity\nFROM fact_order\nJOIN dim_product ON fact_order.product_id = dim_product.product_id\nJOIN dim_region ON fact_order.region_id = dim_region.region_id\nWHERE dim_product.brand = '华为' AND dim_region.province = '广东省'\nGROUP BY dim_product.brand, dim_region.province"
+  },
+  {
+    "question": "广东、浙江、四川三省的销售额对比",
+    "keywords": ["省份", "广东", "浙江", "四川", "销售额", "对比"],
+    "sql": "SELECT dim_region.province, SUM(fact_order.order_amount) AS total_sales\nFROM fact_order\nJOIN dim_region ON fact_order.region_id = dim_region.region_id\nWHERE dim_region.province IN ('广东省', '浙江省', '四川省')\nGROUP BY dim_region.province\nORDER BY total_sales DESC"
+  },
+  {
+    "question": "按月份和品类统计销售额",
+    "keywords": ["月份", "品类", "销售额", "统计"],
+    "sql": "SELECT dim_date.month, dim_product.category, SUM(fact_order.order_amount) AS total_sales\nFROM fact_order\nJOIN dim_date ON fact_order.date_id = dim_date.date_id\nJOIN dim_product ON fact_order.product_id = dim_product.product_id\nGROUP BY dim_date.month, dim_product.category\nORDER BY dim_date.month, total_sales DESC"
+  }
+]
