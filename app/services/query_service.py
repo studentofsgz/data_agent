@@ -27,7 +27,7 @@ class QueryService:
         self.meta_mysql_repository = meta_mysql_repository
         self.dw_mysql_repository = dw_mysql_repository
 
-    async def query(self, query: str):
+    async def query(self, query: str, messages: list[dict] = None):
         context = DataAgentContext(
             embedding_client=self.embedding_client,
             column_qdrant_repository=self.column_qdrant_repository,
@@ -36,7 +36,7 @@ class QueryService:
             meta_mysql_repository=self.meta_mysql_repository,
             dw_mysql_repository=self.dw_mysql_repository
         )
-        state = DataAgentState(query=query)
+        state = DataAgentState(query=query, messages=messages or [])
         try:
             async for chunk in graph.astream(input=state, context=context, stream_mode="custom"):
                 yield f"data: {json.dumps(chunk, ensure_ascii=False, default=str)}\n\n" # SSE格式发送数据

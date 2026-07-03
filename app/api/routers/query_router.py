@@ -14,5 +14,5 @@ async def query(
     query: QuerySchema, query_service: QueryService = Depends(get_query_service)
 ):
     return StreamingResponse(
-        query_service.query(query.query), media_type="text/event-stream"
+        query_service.query(query.query, query.messages), media_type="text/event-stream"
     )

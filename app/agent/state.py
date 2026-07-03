@@ -45,7 +45,8 @@ class DBInfoState(TypedDict):
 
 
 class DataAgentState(TypedDict):
-    query: str  # 用户查询
+    query: str  # 用户查询（可能已被上下文改写）
+    messages: list[dict]  # 历史对话 [{"role":"user","content":"..."},...]
     keywords: list[str]  # 用户查询的关键字
 
     retrieved_columns: list[ColumnInfo]  # 召回的字段信息

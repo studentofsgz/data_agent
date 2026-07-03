@@ -5,6 +5,7 @@ from langgraph.graph import StateGraph
 
 from app.agent.context import DataAgentContext
 from app.agent.nodes.add_extra_context import add_extra_context
+from app.agent.nodes.context_manager import context_manager
 from app.agent.nodes.correct_sql import correct_sql
 from app.agent.nodes.execute_sql import execute_sql
 from app.agent.nodes.extract_keywords import extract_keywords
@@ -32,6 +33,7 @@ from app.repositories.qdrant.metric_qdrant_repository import MetricQdrantReposit
 graph_builder = StateGraph(state_schema=DataAgentState, context_schema=DataAgentContext)
 
 # 添加节点
+graph_builder.add_node("context_manager", context_manager)
 graph_builder.add_node("extract_keywords", extract_keywords)
 graph_builder.add_node("recall_column", recall_column)
 graph_builder.add_node("recall_value", recall_value)
@@ -47,7 +49,8 @@ graph_builder.add_node("correct_sql", correct_sql)
 graph_builder.add_node("execute_sql", execute_sql)
 
 # 添加关系
-graph_builder.add_edge(START, "extract_keywords")
+graph_builder.add_edge(START, "context_manager")
+graph_builder.add_edge("context_manager", "extract_keywords")
 graph_builder.add_edge("extract_keywords", "recall_column")
 graph_builder.add_edge("extract_keywords", "recall_value")
 graph_builder.add_edge("extract_keywords", "recall_metric")
