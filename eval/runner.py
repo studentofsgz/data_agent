@@ -1,7 +1,8 @@
-"""离线评测脚本：跑评测集并输出统计报告"""
+"""离线评测脚本：跑评测集并输出统计报告，支持按难度和类别分组统计"""
 import asyncio
 import json
 import time
+from collections import defaultdict
 from pathlib import Path
 
 from app.agent.context import DataAgentContext
@@ -66,6 +67,8 @@ async def run_eval(questions_path: str):
             results.append({
                 "id": q["id"],
                 "question": q["question"],
+                "difficulty": q.get("difficulty", "unknown"),
+                "category": q.get("category", "unknown"),
                 "executable": sql_executable,
                 "result_count": result_count,
                 "elapsed": elapsed,
@@ -75,21 +78,65 @@ async def run_eval(questions_path: str):
             print(f"   可执行={sql_executable}  行数={result_count}  耗时={elapsed}s  "
                   f"错误={'无' if not error else error}")
 
-    # 统计
+    # ── 统计 ──
     total = len(results)
     executable = sum(1 for r in results if r["executable"])
     avg_time = round(sum(r["elapsed"] for r in results) / total, 2)
 
-    print(f"\n{'='*40}")
-    print(f"评测报告")
-    print(f"总问题数: {total}")
-    print(f"SQL可执行率: {executable}/{total} ({round(executable/total*100, 1)}%)")
-    print(f"平均耗时: {avg_time}s")
+    # 按难度分组统计
+    def _group_stat(items, key):
+        """按 key 对结果分组统计"""
+        groups = defaultdict(lambda: {"total": 0, "executable": 0, "times": []})
+        for item in items:
+            g = groups[item[key]]
+            g["total"] += 1
+            if item["executable"]:
+                g["executable"] += 1
+            g["times"].append(item["elapsed"])
+        return {
+            k: {
+                "total": v["total"],
+                "executable": v["executable"],
+                "rate": round(v["executable"] / v["total"] * 100, 1) if v["total"] else 0,
+                "avg_seconds": round(sum(v["times"]) / len(v["times"]), 2),
+            }
+            for k, v in sorted(groups.items())
+        }
+
+    by_difficulty = _group_stat(results, "difficulty")
+    by_category = _group_stat(results, "category")
+
+    # 终端打印
+    print(f"\n{'='*50}")
+    print(f"  评测报告")
+    print(f"{'='*50}")
+    print(f"  总问题数: {total}")
+    print(f"  SQL可执行率: {executable}/{total} ({round(executable/total*100, 1)}%)")
+    print(f"  平均耗时: {avg_time}s")
+    print(f"\n  ── 按难度 ──")
+    for level in ["easy", "medium", "hard", "unknown"]:
+        if level in by_difficulty:
+            d = by_difficulty[level]
+            print(f"    {level:8s}  {d['executable']}/{d['total']}  "
+                  f"({d['rate']}%)  avg={d['avg_seconds']}s")
+    print(f"\n  ── 按类别 ──")
+    for cat, d in by_category.items():
+        print(f"    {cat:12s}  {d['executable']}/{d['total']}  "
+              f"({d['rate']}%)  avg={d['avg_seconds']}s")
+    print(f"{'='*50}")
 
     # 写报告文件
-    report = {"summary": {"total": total, "executable": executable,
-                           "rate": round(executable / total * 100, 1) if total else 0,
-                           "avg_seconds": avg_time}, "details": results}
+    report = {
+        "summary": {
+            "total": total,
+            "executable": executable,
+            "rate": round(executable / total * 100, 1) if total else 0,
+            "avg_seconds": avg_time,
+            "by_difficulty": by_difficulty,
+            "by_category": by_category,
+        },
+        "details": results,
+    }
     report_path = Path(questions_path).parent / "eval_report.json"
     with open(report_path, "w") as f:
         json.dump(report, f, ensure_ascii=False, indent=2)

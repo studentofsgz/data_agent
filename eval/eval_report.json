@@ -1,49 +1,597 @@
 {
   "summary": {
-    "total": 5,
-    "executable": 5,
-    "rate": 100.0,
-    "avg_seconds": 12.5
+    "total": 50,
+    "executable": 49,
+    "rate": 98.0,
+    "avg_seconds": 23.23,
+    "by_difficulty": {
+      "easy": {
+        "total": 22,
+        "executable": 22,
+        "rate": 100.0,
+        "avg_seconds": 18.64
+      },
+      "hard": {
+        "total": 9,
+        "executable": 9,
+        "rate": 100.0,
+        "avg_seconds": 30.18
+      },
+      "medium": {
+        "total": 19,
+        "executable": 18,
+        "rate": 94.7,
+        "avg_seconds": 25.25
+      }
+    },
+    "by_category": {
+      "分组聚合": {
+        "total": 7,
+        "executable": 7,
+        "rate": 100.0,
+        "avg_seconds": 18.48
+      },
+      "单表聚合": {
+        "total": 4,
+        "executable": 4,
+        "rate": 100.0,
+        "avg_seconds": 15.3
+      },
+      "复合条件": {
+        "total": 5,
+        "executable": 5,
+        "rate": 100.0,
+        "avg_seconds": 22.13
+      },
+      "复杂聚合": {
+        "total": 5,
+        "executable": 5,
+        "rate": 100.0,
+        "avg_seconds": 32.13
+      },
+      "多值过滤": {
+        "total": 3,
+        "executable": 3,
+        "rate": 100.0,
+        "avg_seconds": 32.1
+      },
+      "多表JOIN": {
+        "total": 5,
+        "executable": 5,
+        "rate": 100.0,
+        "avg_seconds": 30.77
+      },
+      "指标查询": {
+        "total": 5,
+        "executable": 4,
+        "rate": 80.0,
+        "avg_seconds": 20.55
+      },
+      "排序/LIMIT": {
+        "total": 5,
+        "executable": 5,
+        "rate": 100.0,
+        "avg_seconds": 20.05
+      },
+      "时间过滤": {
+        "total": 5,
+        "executable": 5,
+        "rate": 100.0,
+        "avg_seconds": 27.61
+      },
+      "歧义消解": {
+        "total": 3,
+        "executable": 3,
+        "rate": 100.0,
+        "avg_seconds": 19.67
+      },
+      "空结果/边界": {
+        "total": 3,
+        "executable": 3,
+        "rate": 100.0,
+        "avg_seconds": 16.37
+      }
+    }
   },
   "details": [
     {
       "id": "q001",
       "question": "统计各地区的销售总额",
+      "difficulty": "easy",
+      "category": "分组聚合",
       "executable": true,
       "result_count": 5,
-      "elapsed": 11.99,
+      "elapsed": 15.55,
       "error": ""
     },
     {
       "id": "q002",
       "question": "北京地区的订单量是多少",
+      "difficulty": "easy",
+      "category": "单表聚合",
       "executable": true,
       "result_count": 1,
-      "elapsed": 13.63,
+      "elapsed": 15.65,
       "error": ""
     },
     {
       "id": "q003",
       "question": "GMV最高的5个商品",
+      "difficulty": "medium",
+      "category": "排序/LIMIT",
       "executable": true,
       "result_count": 5,
-      "elapsed": 12.51,
+      "elapsed": 16.38,
       "error": ""
     },
     {
       "id": "q004",
       "question": "客单价是多少",
+      "difficulty": "easy",
+      "category": "指标查询",
       "executable": true,
       "result_count": 1,
-      "elapsed": 11.16,
+      "elapsed": 23.26,
       "error": ""
     },
     {
       "id": "q005",
       "question": "查询每个月的总销量",
+      "difficulty": "easy",
+      "category": "分组聚合",
       "executable": true,
       "result_count": 3,
-      "elapsed": 13.23,
+      "elapsed": 13.42,
+      "error": ""
+    },
+    {
+      "id": "q006",
+      "question": "总订单金额是多少",
+      "difficulty": "easy",
+      "category": "单表聚合",
+      "executable": true,
+      "result_count": 1,
+      "elapsed": 13.0,
+      "error": ""
+    },
+    {
+      "id": "q007",
+      "question": "一共有多少笔订单",
+      "difficulty": "easy",
+      "category": "单表聚合",
+      "executable": true,
+      "result_count": 1,
+      "elapsed": 12.82,
+      "error": ""
+    },
+    {
+      "id": "q008",
+      "question": "订单的平均购买数量是多少",
+      "difficulty": "easy",
+      "category": "单表聚合",
+      "executable": true,
+      "result_count": 1,
+      "elapsed": 19.73,
+      "error": ""
+    },
+    {
+      "id": "q009",
+      "question": "各品牌的销售额",
+      "difficulty": "easy",
+      "category": "分组聚合",
+      "executable": true,
+      "result_count": 15,
+      "elapsed": 14.39,
+      "error": ""
+    },
+    {
+      "id": "q010",
+      "question": "各品类的订单数量统计",
+      "difficulty": "easy",
+      "category": "分组聚合",
+      "executable": true,
+      "result_count": 6,
+      "elapsed": 28.91,
+      "error": ""
+    },
+    {
+      "id": "q011",
+      "question": "各会员等级的平均订单金额",
+      "difficulty": "medium",
+      "category": "分组聚合",
+      "executable": true,
+      "result_count": 4,
+      "elapsed": 23.15,
+      "error": ""
+    },
+    {
+      "id": "q012",
+      "question": "男女客户的消费总额对比",
+      "difficulty": "easy",
+      "category": "分组聚合",
+      "executable": true,
+      "result_count": 2,
+      "elapsed": 16.61,
+      "error": ""
+    },
+    {
+      "id": "q013",
+      "question": "各省份的订单总额",
+      "difficulty": "easy",
+      "category": "分组聚合",
+      "executable": true,
+      "result_count": 6,
+      "elapsed": 17.36,
+      "error": ""
+    },
+    {
+      "id": "q014",
+      "question": "哪个品牌在华东地区销售额最高",
+      "difficulty": "medium",
+      "category": "多表JOIN",
+      "executable": true,
+      "result_count": 1,
+      "elapsed": 22.32,
+      "error": ""
+    },
+    {
+      "id": "q015",
+      "question": "黄金会员最喜欢购买哪个品类的商品",
+      "difficulty": "hard",
+      "category": "多表JOIN",
+      "executable": true,
+      "result_count": 1,
+      "elapsed": 40.09,
+      "error": ""
+    },
+    {
+      "id": "q016",
+      "question": "华东地区女性客户的消费总额",
+      "difficulty": "hard",
+      "category": "多表JOIN",
+      "executable": true,
+      "result_count": 1,
+      "elapsed": 22.62,
+      "error": ""
+    },
+    {
+      "id": "q017",
+      "question": "1月份销量最高的手机品牌是什么",
+      "difficulty": "medium",
+      "category": "多表JOIN",
+      "executable": true,
+      "result_count": 1,
+      "elapsed": 32.66,
+      "error": ""
+    },
+    {
+      "id": "q018",
+      "question": "华北大区的客户平均客单价",
+      "difficulty": "medium",
+      "category": "多表JOIN",
+      "executable": true,
+      "result_count": 1,
+      "elapsed": 36.14,
+      "error": ""
+    },
+    {
+      "id": "q019",
+      "question": "2025年2月的订单总金额",
+      "difficulty": "easy",
+      "category": "时间过滤",
+      "executable": true,
+      "result_count": 1,
+      "elapsed": 18.47,
+      "error": ""
+    },
+    {
+      "id": "q020",
+      "question": "2025年第一季度（Q1）的总销售额",
+      "difficulty": "easy",
+      "category": "时间过滤",
+      "executable": true,
+      "result_count": 1,
+      "elapsed": 29.24,
+      "error": ""
+    },
+    {
+      "id": "q021",
+      "question": "3月上旬（1号到10号）的订单数量",
+      "difficulty": "medium",
+      "category": "时间过滤",
+      "executable": true,
+      "result_count": 1,
+      "elapsed": 40.85,
+      "error": ""
+    },
+    {
+      "id": "q022",
+      "question": "1月份每天的销售额",
+      "difficulty": "medium",
+      "category": "时间过滤",
+      "executable": true,
+      "result_count": 0,
+      "elapsed": 31.7,
+      "error": ""
+    },
+    {
+      "id": "q023",
+      "question": "2月14日当天产生了几笔订单",
+      "difficulty": "easy",
+      "category": "时间过滤",
+      "executable": true,
+      "result_count": 1,
+      "elapsed": 17.8,
+      "error": ""
+    },
+    {
+      "id": "q024",
+      "question": "女性铂金会员的订单总金额是多少",
+      "difficulty": "medium",
+      "category": "复合条件",
+      "executable": true,
+      "result_count": 1,
+      "elapsed": 23.02,
+      "error": ""
+    },
+    {
+      "id": "q025",
+      "question": "华为品牌在广东省的销量",
+      "difficulty": "medium",
+      "category": "复合条件",
+      "executable": true,
+      "result_count": 1,
+      "elapsed": 18.08,
+      "error": ""
+    },
+    {
+      "id": "q026",
+      "question": "华东地区1月份服饰类商品的销售额",
+      "difficulty": "hard",
+      "category": "复合条件",
+      "executable": true,
+      "result_count": 1,
+      "elapsed": 23.2,
+      "error": ""
+    },
+    {
+      "id": "q027",
+      "question": "男性黄金会员购买了哪些品牌的商品",
+      "difficulty": "hard",
+      "category": "复合条件",
+      "executable": true,
+      "result_count": 10,
+      "elapsed": 25.0,
+      "error": ""
+    },
+    {
+      "id": "q028",
+      "question": "2月份食品饮料类商品的销售额",
+      "difficulty": "medium",
+      "category": "复合条件",
+      "executable": true,
+      "result_count": 1,
+      "elapsed": 21.36,
+      "error": ""
+    },
+    {
+      "id": "q029",
+      "question": "销量最高的3个省份",
+      "difficulty": "easy",
+      "category": "排序/LIMIT",
+      "executable": true,
+      "result_count": 3,
+      "elapsed": 20.89,
+      "error": ""
+    },
+    {
+      "id": "q030",
+      "question": "订单金额最高的5笔订单分别是多少",
+      "difficulty": "easy",
+      "category": "排序/LIMIT",
+      "executable": true,
+      "result_count": 5,
+      "elapsed": 23.03,
+      "error": ""
+    },
+    {
+      "id": "q031",
+      "question": "客单价最低的3个省份",
+      "difficulty": "medium",
+      "category": "排序/LIMIT",
+      "executable": true,
+      "result_count": 3,
+      "elapsed": 19.75,
+      "error": ""
+    },
+    {
+      "id": "q032",
+      "question": "购买数量最多的前5个商品",
+      "difficulty": "easy",
+      "category": "排序/LIMIT",
+      "executable": true,
+      "result_count": 5,
+      "elapsed": 20.22,
+      "error": ""
+    },
+    {
+      "id": "q033",
+      "question": "各地区的GMV和AOV分别是多少",
+      "difficulty": "medium",
+      "category": "指标查询",
+      "executable": false,
+      "result_count": 0,
+      "elapsed": 1.46,
+      "error": "Invalid json output: 请提供用户问题。\nFor troubleshooting, visit: https://docs.langchain.com/oss/python/lang"
+    },
+    {
+      "id": "q034",
+      "question": "按月统计GMV",
+      "difficulty": "easy",
+      "category": "指标查询",
+      "executable": true,
+      "result_count": 3,
+      "elapsed": 16.11,
+      "error": ""
+    },
+    {
+      "id": "q035",
+      "question": "各品类商品的AOV是多少",
+      "difficulty": "medium",
+      "category": "指标查询",
+      "executable": true,
+      "result_count": 6,
+      "elapsed": 37.51,
+      "error": ""
+    },
+    {
+      "id": "q036",
+      "question": "各品牌的GMV排名",
+      "difficulty": "easy",
+      "category": "指标查询",
+      "executable": true,
+      "result_count": 15,
+      "elapsed": 24.42,
+      "error": ""
+    },
+    {
+      "id": "q037",
+      "question": "按月份和品类统计销售额",
+      "difficulty": "hard",
+      "category": "复杂聚合",
+      "executable": true,
+      "result_count": 18,
+      "elapsed": 22.14,
+      "error": ""
+    },
+    {
+      "id": "q038",
+      "question": "按大区统计每个月的订单量",
+      "difficulty": "hard",
+      "category": "复杂聚合",
+      "executable": true,
+      "result_count": 15,
+      "elapsed": 53.3,
+      "error": ""
+    },
+    {
+      "id": "q039",
+      "question": "每个省份每月的平均订单金额",
+      "difficulty": "hard",
+      "category": "复杂聚合",
+      "executable": true,
+      "result_count": 18,
+      "elapsed": 39.8,
+      "error": ""
+    },
+    {
+      "id": "q040",
+      "question": "按品牌和会员等级统计销售额",
+      "difficulty": "hard",
+      "category": "复杂聚合",
+      "executable": true,
+      "result_count": 53,
+      "elapsed": 18.86,
+      "error": ""
+    },
+    {
+      "id": "q041",
+      "question": "各品类在各省份的销售额分布",
+      "difficulty": "hard",
+      "category": "复杂聚合",
+      "executable": true,
+      "result_count": 35,
+      "elapsed": 26.57,
+      "error": ""
+    },
+    {
+      "id": "q042",
+      "question": "黑龙江省的订单总额是多少",
+      "difficulty": "easy",
+      "category": "空结果/边界",
+      "executable": true,
+      "result_count": 1,
+      "elapsed": 14.27,
+      "error": ""
+    },
+    {
+      "id": "q043",
+      "question": "陕西省有哪些订单",
+      "difficulty": "easy",
+      "category": "空结果/边界",
+      "executable": true,
+      "result_count": 0,
+      "elapsed": 18.43,
+      "error": ""
+    },
+    {
+      "id": "q044",
+      "question": "2024年的订单总金额",
+      "difficulty": "easy",
+      "category": "空结果/边界",
+      "executable": true,
+      "result_count": 1,
+      "elapsed": 16.42,
+      "error": ""
+    },
+    {
+      "id": "q045",
+      "question": "销量最高的商品是什么",
+      "difficulty": "medium",
+      "category": "歧义消解",
+      "executable": true,
+      "result_count": 1,
+      "elapsed": 15.86,
+      "error": ""
+    },
+    {
+      "id": "q046",
+      "question": "上个月的销售额",
+      "difficulty": "medium",
+      "category": "歧义消解",
+      "executable": true,
+      "result_count": 1,
+      "elapsed": 23.63,
+      "error": ""
+    },
+    {
+      "id": "q047",
+      "question": "各地区的销售情况如何",
+      "difficulty": "medium",
+      "category": "歧义消解",
+      "executable": true,
+      "result_count": 5,
+      "elapsed": 19.53,
+      "error": ""
+    },
+    {
+      "id": "q048",
+      "question": "广东、浙江、四川三省的销售额对比",
+      "difficulty": "medium",
+      "category": "多值过滤",
+      "executable": true,
+      "result_count": 3,
+      "elapsed": 21.02,
+      "error": ""
+    },
+    {
+      "id": "q049",
+      "question": "手机数码和家用电器两个品类的销售情况对比",
+      "difficulty": "medium",
+      "category": "多值过滤",
+      "executable": true,
+      "result_count": 2,
+      "elapsed": 28.82,
+      "error": ""
+    },
+    {
+      "id": "q050",
+      "question": "黄金会员和铂金会员的消费能力对比",
+      "difficulty": "medium",
+      "category": "多值过滤",
+      "executable": true,
+      "result_count": 2,
+      "elapsed": 46.45,
       "error": ""
     }
   ]
