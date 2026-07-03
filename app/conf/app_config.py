@@ -60,6 +60,19 @@ class ESConfig:
 
 
 @dataclass
+class RerankConfig:
+    column_top_k: int
+    metric_top_k: int
+    similarity_threshold: float
+
+
+@dataclass
+class SQLCacheConfig:
+    similarity_threshold: float
+    collection_name: str
+
+
+@dataclass
 class LLMConfig:
     model_name: str
     api_key: str
@@ -74,6 +87,8 @@ class AppConfig:
     qdrant: QdrantConfig
     embedding: EmbeddingConfig
     es: ESConfig
+    rerank: RerankConfig
+    sql_cache: SQLCacheConfig
     llm: LLMConfig
 
 

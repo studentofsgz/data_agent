@@ -39,6 +39,14 @@ es:
   port: 9200
   index_name: data_agent
 
+rerank:
+  column_top_k: 15
+  metric_top_k: 5
+  similarity_threshold: 0.3
+
+sql_cache:
+  similarity_threshold: 0.95
+  collection_name: data-agent-sql-cache
 
 llm:
   model_name: deepseek-v4-pro
