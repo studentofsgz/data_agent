@@ -11,6 +11,9 @@
 当前的时间信息如下：
 {date_info}
 
+时间语义规则如下：
+{time_semantics}
+
 数据库环境如下：
 {db_info}
 
@@ -24,10 +27,14 @@
 2. 若指标信息中存在 expression 字段，必须直接使用该表达式，这是业务的权威定义，不得自行修改或重新解释。
 3. 若指标信息中存在 dimensions 字段，且用户问题未指定分析维度，优先使用推荐的 dimensions 作为 GROUP BY 字段。
 4. 若指标信息未覆盖用户问题中的指标或口径，则基于用户问题语义与通用业务常识进行。
-5. 生成的SQL只能用于查询，不能涉及数据写入、更新、删除等操作。
-6. 生成的SQL的语法必须严格符合数据库环境中指定的数据库类型与版本。
-7. 默认只生成一条SQL，不可生成多条SQL。
-8. 输出必须仅包含一条完整 SQL 语句的纯文本，严禁使用```、```sql 等 Markdown代码块或任何格式化符号。
+5. 若时间语义规则中的 required 为 true，必须严格遵守 rules：
+   - 必须 JOIN dim_date，并使用 fact_order.date_id = dim_date.date_id 作为关联条件。
+   - 时间过滤、按月/按年/按日分组必须优先使用 dim_date 的 year、month、day、quarter 字段。
+   - 禁止使用 LEFT(date_id)、SUBSTRING(date_id)、date_id DIV、CAST(date_id AS CHAR) 等方式直接截取 fact_order.date_id 表达时间。
+6. 生成的SQL只能用于查询，不能涉及数据写入、更新、删除等操作。
+7. 生成的SQL的语法必须严格符合数据库环境中指定的数据库类型与版本。
+8. 默认只生成一条SQL，不可生成多条SQL。
+9. 输出必须仅包含一条完整 SQL 语句的纯文本，严禁使用```、```sql 等 Markdown代码块或任何格式化符号。
 
 用户查询如下：
 {query}

@@ -81,16 +81,22 @@ async def generate_sql(state: DataAgentState, runtime: Runtime[DataAgentContext]
     metric_infos = state["metric_infos"]
     date_info = state["date_info"]
     db_info = state["db_info"]
+    time_semantics = state.get("time_semantics", {})
 
     try:
         # ====== 缓存检查 ======
         cache_cfg = app_config.sql_cache
         qdrant_client = qdrant_client_manager.client
         embedding_client = runtime.context["embedding_client"]
+        should_use_cache = not time_semantics.get("required", False)
 
         await _ensure_cache_collection(qdrant_client, cache_cfg.collection_name)
         query_emb = await embedding_client.aembed_query(query)
-        cached = await _search_cache(qdrant_client, cache_cfg.collection_name, query_emb, cache_cfg.similarity_threshold)
+        cached = None
+        if should_use_cache:
+            cached = await _search_cache(qdrant_client, cache_cfg.collection_name, query_emb, cache_cfg.similarity_threshold)
+        else:
+            logger.info("检测到时间语义规则，跳过SQL缓存查询，避免命中旧的 date_id 截取写法")
 
         if cached:
             logger.info(f"SQL 缓存命中 (score={cached['score']:.4f}): 已缓存问题='{cached['cached_query']}'")
@@ -101,7 +107,7 @@ async def generate_sql(state: DataAgentState, runtime: Runtime[DataAgentContext]
 
         prompt = PromptTemplate(template=load_prompt("generate_sql"),
                                 input_variables=["query", "table_infos", "metric_infos", "date_info", "db_info",
-                                                 "examples"])
+                                                 "time_semantics", "examples"])
         output_parser = StrOutputParser()
 
         chain = prompt | llm | output_parser
@@ -117,6 +123,7 @@ async def generate_sql(state: DataAgentState, runtime: Runtime[DataAgentContext]
              "metric_infos": yaml.dump(metric_infos, allow_unicode=True, sort_keys=False),
              "date_info": yaml.dump(date_info, allow_unicode=True, sort_keys=False),
              "db_info": yaml.dump(db_info, allow_unicode=True, sort_keys=False),
+             "time_semantics": yaml.dump(time_semantics, allow_unicode=True, sort_keys=False),
              "examples": examples_text,
              })
 

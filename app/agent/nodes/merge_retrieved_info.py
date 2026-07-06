@@ -81,6 +81,10 @@ async def merge_retrieved_info(state: DataAgentState, runtime: Runtime[DataAgent
         # 处理指标信息
         metric_infos: list[MetricInfoState] = [
             MetricInfoState(name=metric_info.name, description=metric_info.description,
+                            expression=metric_info.expression,
+                            default_aggregation=metric_info.default_aggregation,
+                            dimensions=metric_info.dimensions,
+                            time_granularity=metric_info.time_granularity,
                             relevant_columns=metric_info.relevant_columns, alias=metric_info.alias)
             for metric_info in retrieved_metrics]
 
