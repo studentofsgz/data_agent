@@ -49,6 +49,6 @@ sql_cache:
   collection_name: data-agent-sql-cache
 
 llm:
-  model_name: deepseek-v4-pro
-  api_key: sk-2da23282f1634351a64350f304c36053
-  base_url: https://api.deepseek.com
+  model_name: deepseek-ai/DeepSeek-V4-Flash
+  api_key: sk-zdflxfetgnjwyvewtogcbusmbohoaaakbfrjquzbpwuepfwb
+  base_url: https://api.siliconflow.cn/v1
