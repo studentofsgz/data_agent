@@ -1,95 +1,455 @@
 {
   "summary": {
     "total": 50,
-    "executable": 49,
-    "rate": 98.0,
-    "avg_seconds": 23.23,
+    "sql_generated": {
+      "success": 50,
+      "total": 50,
+      "rate": 100.0
+    },
+    "sql_executable": {
+      "success": 50,
+      "total": 50,
+      "rate": 100.0
+    },
+    "expected_tables_hit": {
+      "success": 40,
+      "total": 50,
+      "rate": 80.0
+    },
+    "not_empty_ok": {
+      "success": 50,
+      "total": 50,
+      "rate": 100.0
+    },
+    "expected_result_ok": {
+      "success": 0,
+      "total": 0,
+      "rate": 0.0
+    },
+    "self_repair_cases": 0,
+    "avg_seconds": 35.27,
     "by_difficulty": {
       "easy": {
         "total": 22,
-        "executable": 22,
-        "rate": 100.0,
-        "avg_seconds": 18.64
+        "sql_generated": {
+          "success": 22,
+          "total": 22,
+          "rate": 100.0
+        },
+        "sql_executable": {
+          "success": 22,
+          "total": 22,
+          "rate": 100.0
+        },
+        "expected_tables_hit": {
+          "success": 17,
+          "total": 22,
+          "rate": 77.3
+        },
+        "not_empty_ok": {
+          "success": 22,
+          "total": 22,
+          "rate": 100.0
+        },
+        "expected_result_ok": {
+          "success": 0,
+          "total": 0,
+          "rate": 0.0
+        },
+        "self_repair_cases": 0,
+        "avg_seconds": 25.808
       },
       "hard": {
         "total": 9,
-        "executable": 9,
-        "rate": 100.0,
-        "avg_seconds": 30.18
+        "sql_generated": {
+          "success": 9,
+          "total": 9,
+          "rate": 100.0
+        },
+        "sql_executable": {
+          "success": 9,
+          "total": 9,
+          "rate": 100.0
+        },
+        "expected_tables_hit": {
+          "success": 7,
+          "total": 9,
+          "rate": 77.8
+        },
+        "not_empty_ok": {
+          "success": 9,
+          "total": 9,
+          "rate": 100.0
+        },
+        "expected_result_ok": {
+          "success": 0,
+          "total": 0,
+          "rate": 0.0
+        },
+        "self_repair_cases": 0,
+        "avg_seconds": 36.325
       },
       "medium": {
         "total": 19,
-        "executable": 18,
-        "rate": 94.7,
-        "avg_seconds": 25.25
+        "sql_generated": {
+          "success": 19,
+          "total": 19,
+          "rate": 100.0
+        },
+        "sql_executable": {
+          "success": 19,
+          "total": 19,
+          "rate": 100.0
+        },
+        "expected_tables_hit": {
+          "success": 16,
+          "total": 19,
+          "rate": 84.2
+        },
+        "not_empty_ok": {
+          "success": 19,
+          "total": 19,
+          "rate": 100.0
+        },
+        "expected_result_ok": {
+          "success": 0,
+          "total": 0,
+          "rate": 0.0
+        },
+        "self_repair_cases": 0,
+        "avg_seconds": 45.725
       }
     },
     "by_category": {
       "分组聚合": {
         "total": 7,
-        "executable": 7,
-        "rate": 100.0,
-        "avg_seconds": 18.48
+        "sql_generated": {
+          "success": 7,
+          "total": 7,
+          "rate": 100.0
+        },
+        "sql_executable": {
+          "success": 7,
+          "total": 7,
+          "rate": 100.0
+        },
+        "expected_tables_hit": {
+          "success": 6,
+          "total": 7,
+          "rate": 85.7
+        },
+        "not_empty_ok": {
+          "success": 7,
+          "total": 7,
+          "rate": 100.0
+        },
+        "expected_result_ok": {
+          "success": 0,
+          "total": 0,
+          "rate": 0.0
+        },
+        "self_repair_cases": 0,
+        "avg_seconds": 23.815
       },
       "单表聚合": {
         "total": 4,
-        "executable": 4,
-        "rate": 100.0,
-        "avg_seconds": 15.3
+        "sql_generated": {
+          "success": 4,
+          "total": 4,
+          "rate": 100.0
+        },
+        "sql_executable": {
+          "success": 4,
+          "total": 4,
+          "rate": 100.0
+        },
+        "expected_tables_hit": {
+          "success": 4,
+          "total": 4,
+          "rate": 100.0
+        },
+        "not_empty_ok": {
+          "success": 4,
+          "total": 4,
+          "rate": 100.0
+        },
+        "expected_result_ok": {
+          "success": 0,
+          "total": 0,
+          "rate": 0.0
+        },
+        "self_repair_cases": 0,
+        "avg_seconds": 28.454
       },
       "复合条件": {
         "total": 5,
-        "executable": 5,
-        "rate": 100.0,
-        "avg_seconds": 22.13
+        "sql_generated": {
+          "success": 5,
+          "total": 5,
+          "rate": 100.0
+        },
+        "sql_executable": {
+          "success": 5,
+          "total": 5,
+          "rate": 100.0
+        },
+        "expected_tables_hit": {
+          "success": 5,
+          "total": 5,
+          "rate": 100.0
+        },
+        "not_empty_ok": {
+          "success": 5,
+          "total": 5,
+          "rate": 100.0
+        },
+        "expected_result_ok": {
+          "success": 0,
+          "total": 0,
+          "rate": 0.0
+        },
+        "self_repair_cases": 0,
+        "avg_seconds": 26.995
       },
       "复杂聚合": {
         "total": 5,
-        "executable": 5,
-        "rate": 100.0,
-        "avg_seconds": 32.13
+        "sql_generated": {
+          "success": 5,
+          "total": 5,
+          "rate": 100.0
+        },
+        "sql_executable": {
+          "success": 5,
+          "total": 5,
+          "rate": 100.0
+        },
+        "expected_tables_hit": {
+          "success": 3,
+          "total": 5,
+          "rate": 60.0
+        },
+        "not_empty_ok": {
+          "success": 5,
+          "total": 5,
+          "rate": 100.0
+        },
+        "expected_result_ok": {
+          "success": 0,
+          "total": 0,
+          "rate": 0.0
+        },
+        "self_repair_cases": 0,
+        "avg_seconds": 33.472
       },
       "多值过滤": {
         "total": 3,
-        "executable": 3,
-        "rate": 100.0,
-        "avg_seconds": 32.1
+        "sql_generated": {
+          "success": 3,
+          "total": 3,
+          "rate": 100.0
+        },
+        "sql_executable": {
+          "success": 3,
+          "total": 3,
+          "rate": 100.0
+        },
+        "expected_tables_hit": {
+          "success": 3,
+          "total": 3,
+          "rate": 100.0
+        },
+        "not_empty_ok": {
+          "success": 3,
+          "total": 3,
+          "rate": 100.0
+        },
+        "expected_result_ok": {
+          "success": 0,
+          "total": 0,
+          "rate": 0.0
+        },
+        "self_repair_cases": 0,
+        "avg_seconds": 49.853
       },
       "多表JOIN": {
         "total": 5,
-        "executable": 5,
-        "rate": 100.0,
-        "avg_seconds": 30.77
+        "sql_generated": {
+          "success": 5,
+          "total": 5,
+          "rate": 100.0
+        },
+        "sql_executable": {
+          "success": 5,
+          "total": 5,
+          "rate": 100.0
+        },
+        "expected_tables_hit": {
+          "success": 4,
+          "total": 5,
+          "rate": 80.0
+        },
+        "not_empty_ok": {
+          "success": 5,
+          "total": 5,
+          "rate": 100.0
+        },
+        "expected_result_ok": {
+          "success": 0,
+          "total": 0,
+          "rate": 0.0
+        },
+        "self_repair_cases": 0,
+        "avg_seconds": 77.085
       },
       "指标查询": {
         "total": 5,
-        "executable": 4,
-        "rate": 80.0,
-        "avg_seconds": 20.55
+        "sql_generated": {
+          "success": 5,
+          "total": 5,
+          "rate": 100.0
+        },
+        "sql_executable": {
+          "success": 5,
+          "total": 5,
+          "rate": 100.0
+        },
+        "expected_tables_hit": {
+          "success": 4,
+          "total": 5,
+          "rate": 80.0
+        },
+        "not_empty_ok": {
+          "success": 5,
+          "total": 5,
+          "rate": 100.0
+        },
+        "expected_result_ok": {
+          "success": 0,
+          "total": 0,
+          "rate": 0.0
+        },
+        "self_repair_cases": 0,
+        "avg_seconds": 29.979
       },
       "排序/LIMIT": {
         "total": 5,
-        "executable": 5,
-        "rate": 100.0,
-        "avg_seconds": 20.05
+        "sql_generated": {
+          "success": 5,
+          "total": 5,
+          "rate": 100.0
+        },
+        "sql_executable": {
+          "success": 5,
+          "total": 5,
+          "rate": 100.0
+        },
+        "expected_tables_hit": {
+          "success": 5,
+          "total": 5,
+          "rate": 100.0
+        },
+        "not_empty_ok": {
+          "success": 5,
+          "total": 5,
+          "rate": 100.0
+        },
+        "expected_result_ok": {
+          "success": 0,
+          "total": 0,
+          "rate": 0.0
+        },
+        "self_repair_cases": 0,
+        "avg_seconds": 27.366
       },
       "时间过滤": {
         "total": 5,
-        "executable": 5,
-        "rate": 100.0,
-        "avg_seconds": 27.61
+        "sql_generated": {
+          "success": 5,
+          "total": 5,
+          "rate": 100.0
+        },
+        "sql_executable": {
+          "success": 5,
+          "total": 5,
+          "rate": 100.0
+        },
+        "expected_tables_hit": {
+          "success": 2,
+          "total": 5,
+          "rate": 40.0
+        },
+        "not_empty_ok": {
+          "success": 5,
+          "total": 5,
+          "rate": 100.0
+        },
+        "expected_result_ok": {
+          "success": 0,
+          "total": 0,
+          "rate": 0.0
+        },
+        "self_repair_cases": 0,
+        "avg_seconds": 30.42
       },
       "歧义消解": {
         "total": 3,
-        "executable": 3,
-        "rate": 100.0,
-        "avg_seconds": 19.67
+        "sql_generated": {
+          "success": 3,
+          "total": 3,
+          "rate": 100.0
+        },
+        "sql_executable": {
+          "success": 3,
+          "total": 3,
+          "rate": 100.0
+        },
+        "expected_tables_hit": {
+          "success": 2,
+          "total": 3,
+          "rate": 66.7
+        },
+        "not_empty_ok": {
+          "success": 3,
+          "total": 3,
+          "rate": 100.0
+        },
+        "expected_result_ok": {
+          "success": 0,
+          "total": 0,
+          "rate": 0.0
+        },
+        "self_repair_cases": 0,
+        "avg_seconds": 43.663
       },
       "空结果/边界": {
         "total": 3,
-        "executable": 3,
-        "rate": 100.0,
-        "avg_seconds": 16.37
+        "sql_generated": {
+          "success": 3,
+          "total": 3,
+          "rate": 100.0
+        },
+        "sql_executable": {
+          "success": 3,
+          "total": 3,
+          "rate": 100.0
+        },
+        "expected_tables_hit": {
+          "success": 2,
+          "total": 3,
+          "rate": 66.7
+        },
+        "not_empty_ok": {
+          "success": 3,
+          "total": 3,
+          "rate": 100.0
+        },
+        "expected_result_ok": {
+          "success": 0,
+          "total": 0,
+          "rate": 0.0
+        },
+        "self_repair_cases": 0,
+        "avg_seconds": 25.277
       }
     }
   },
@@ -99,9 +459,25 @@
       "question": "统计各地区的销售总额",
       "difficulty": "easy",
       "category": "分组聚合",
-      "executable": true,
+      "sql": "SELECT dim_region.region_name, SUM(fact_order.order_amount) AS GMV\nFROM fact_order\nJOIN dim_region ON fact_order.region_id = dim_region.region_id\nGROUP BY dim_region.region_name\nORDER BY GMV DESC",
+      "normalized_sql": "select dim_region.region_name, sum(fact_order.order_amount) as gmv from fact_order join dim_region on fact_order.region_id = dim_region.region_id group by dim_region.region_name order by gmv desc",
+      "actual_tables": [
+        "dim_region",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_region",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 5,
-      "elapsed": 15.55,
+      "elapsed_seconds": 22.014,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -109,9 +485,25 @@
       "question": "北京地区的订单量是多少",
       "difficulty": "easy",
       "category": "单表聚合",
-      "executable": true,
+      "sql": "SELECT COUNT(fact_order.order_id) AS order_count\nFROM fact_order\nJOIN dim_region ON fact_order.region_id = dim_region.region_id\nWHERE dim_region.province = '北京市'",
+      "normalized_sql": "select count(fact_order.order_id) as order_count from fact_order join dim_region on fact_order.region_id = dim_region.region_id where dim_region.province = '北京市'",
+      "actual_tables": [
+        "dim_region",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_region",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 1,
-      "elapsed": 15.65,
+      "elapsed_seconds": 20.294,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -119,9 +511,25 @@
       "question": "GMV最高的5个商品",
       "difficulty": "medium",
       "category": "排序/LIMIT",
-      "executable": true,
+      "sql": "SELECT dim_product.product_name, SUM(fact_order.order_amount) AS GMV\nFROM fact_order\nJOIN dim_product ON fact_order.product_id = dim_product.product_id\nGROUP BY dim_product.product_name\nORDER BY GMV DESC\nLIMIT 5",
+      "normalized_sql": "select dim_product.product_name, sum(fact_order.order_amount) as gmv from fact_order join dim_product on fact_order.product_id = dim_product.product_id group by dim_product.product_name order by gmv desc limit 5",
+      "actual_tables": [
+        "dim_product",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_product",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 5,
-      "elapsed": 16.38,
+      "elapsed_seconds": 18.723,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -129,9 +537,23 @@
       "question": "客单价是多少",
       "difficulty": "easy",
       "category": "指标查询",
-      "executable": true,
+      "sql": "SELECT AVG(fact_order.order_amount) AS AOV FROM fact_order",
+      "normalized_sql": "select avg(fact_order.order_amount) as aov from fact_order",
+      "actual_tables": [
+        "fact_order"
+      ],
+      "expected_tables": [
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 1,
-      "elapsed": 23.26,
+      "elapsed_seconds": 25.864,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -139,9 +561,24 @@
       "question": "查询每个月的总销量",
       "difficulty": "easy",
       "category": "分组聚合",
-      "executable": true,
+      "sql": "SELECT (date_id DIV 10000) AS year, (date_id DIV 100) % 100 AS month, SUM(order_quantity) AS total_quantity FROM fact_order GROUP BY year, month ORDER BY year, month",
+      "normalized_sql": "select (date_id div 10000) as year, (date_id div 100) % 100 as month, sum(order_quantity) as total_quantity from fact_order group by year, month order by year, month",
+      "actual_tables": [
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_date",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": false,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 3,
-      "elapsed": 13.42,
+      "elapsed_seconds": 28.206,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -149,9 +586,23 @@
       "question": "总订单金额是多少",
       "difficulty": "easy",
       "category": "单表聚合",
-      "executable": true,
+      "sql": "SELECT SUM(fact_order.order_amount) AS total_amount FROM fact_order",
+      "normalized_sql": "select sum(fact_order.order_amount) as total_amount from fact_order",
+      "actual_tables": [
+        "fact_order"
+      ],
+      "expected_tables": [
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 1,
-      "elapsed": 13.0,
+      "elapsed_seconds": 50.538,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -159,9 +610,23 @@
       "question": "一共有多少笔订单",
       "difficulty": "easy",
       "category": "单表聚合",
-      "executable": true,
+      "sql": "SELECT COUNT(order_id) AS total_orders FROM fact_order",
+      "normalized_sql": "select count(order_id) as total_orders from fact_order",
+      "actual_tables": [
+        "fact_order"
+      ],
+      "expected_tables": [
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 1,
-      "elapsed": 12.82,
+      "elapsed_seconds": 24.151,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -169,9 +634,23 @@
       "question": "订单的平均购买数量是多少",
       "difficulty": "easy",
       "category": "单表聚合",
-      "executable": true,
+      "sql": "SELECT AVG(fact_order.order_quantity) AS avg_order_quantity FROM fact_order",
+      "normalized_sql": "select avg(fact_order.order_quantity) as avg_order_quantity from fact_order",
+      "actual_tables": [
+        "fact_order"
+      ],
+      "expected_tables": [
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 1,
-      "elapsed": 19.73,
+      "elapsed_seconds": 18.835,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -179,9 +658,25 @@
       "question": "各品牌的销售额",
       "difficulty": "easy",
       "category": "分组聚合",
-      "executable": true,
+      "sql": "SELECT dim_product.brand, SUM(fact_order.order_amount) AS GMV FROM fact_order JOIN dim_product ON fact_order.product_id = dim_product.product_id GROUP BY dim_product.brand ORDER BY GMV DESC",
+      "normalized_sql": "select dim_product.brand, sum(fact_order.order_amount) as gmv from fact_order join dim_product on fact_order.product_id = dim_product.product_id group by dim_product.brand order by gmv desc",
+      "actual_tables": [
+        "dim_product",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_product",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 15,
-      "elapsed": 14.39,
+      "elapsed_seconds": 20.27,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -189,9 +684,25 @@
       "question": "各品类的订单数量统计",
       "difficulty": "easy",
       "category": "分组聚合",
-      "executable": true,
+      "sql": "SELECT dim_product.category, COUNT(fact_order.order_id) AS order_count\nFROM fact_order\nJOIN dim_product ON fact_order.product_id = dim_product.product_id\nGROUP BY dim_product.category\nORDER BY order_count DESC",
+      "normalized_sql": "select dim_product.category, count(fact_order.order_id) as order_count from fact_order join dim_product on fact_order.product_id = dim_product.product_id group by dim_product.category order by order_count desc",
+      "actual_tables": [
+        "dim_product",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_product",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 6,
-      "elapsed": 28.91,
+      "elapsed_seconds": 23.006,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -199,9 +710,25 @@
       "question": "各会员等级的平均订单金额",
       "difficulty": "medium",
       "category": "分组聚合",
-      "executable": true,
+      "sql": "SELECT d.member_level, AVG(f.order_amount) AS avg_order_amount FROM fact_order f JOIN dim_customer d ON f.customer_id = d.customer_id GROUP BY d.member_level",
+      "normalized_sql": "select d.member_level, avg(f.order_amount) as avg_order_amount from fact_order f join dim_customer d on f.customer_id = d.customer_id group by d.member_level",
+      "actual_tables": [
+        "dim_customer",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_customer",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 4,
-      "elapsed": 23.15,
+      "elapsed_seconds": 19.319,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -209,9 +736,25 @@
       "question": "男女客户的消费总额对比",
       "difficulty": "easy",
       "category": "分组聚合",
-      "executable": true,
+      "sql": "SELECT dim_customer.gender, SUM(fact_order.order_amount) AS total_consumption\nFROM fact_order\nJOIN dim_customer ON fact_order.customer_id = dim_customer.customer_id\nGROUP BY dim_customer.gender\nORDER BY total_consumption DESC",
+      "normalized_sql": "select dim_customer.gender, sum(fact_order.order_amount) as total_consumption from fact_order join dim_customer on fact_order.customer_id = dim_customer.customer_id group by dim_customer.gender order by total_consumption desc",
+      "actual_tables": [
+        "dim_customer",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_customer",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 2,
-      "elapsed": 16.61,
+      "elapsed_seconds": 23.954,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -219,9 +762,25 @@
       "question": "各省份的订单总额",
       "difficulty": "easy",
       "category": "分组聚合",
-      "executable": true,
+      "sql": "SELECT dim_region.province, SUM(fact_order.order_amount) AS total_amount FROM fact_order JOIN dim_region ON fact_order.region_id = dim_region.region_id GROUP BY dim_region.province",
+      "normalized_sql": "select dim_region.province, sum(fact_order.order_amount) as total_amount from fact_order join dim_region on fact_order.region_id = dim_region.region_id group by dim_region.province",
+      "actual_tables": [
+        "dim_region",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_region",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 6,
-      "elapsed": 17.36,
+      "elapsed_seconds": 29.934,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -229,9 +788,27 @@
       "question": "哪个品牌在华东地区销售额最高",
       "difficulty": "medium",
       "category": "多表JOIN",
-      "executable": true,
+      "sql": "SELECT dim_product.brand, SUM(fact_order.order_amount) AS GMV FROM fact_order JOIN dim_region ON fact_order.region_id = dim_region.region_id JOIN dim_product ON fact_order.product_id = dim_product.product_id WHERE dim_region.region_name = '华东' GROUP BY dim_product.brand ORDER BY GMV DESC LIMIT 1",
+      "normalized_sql": "select dim_product.brand, sum(fact_order.order_amount) as gmv from fact_order join dim_region on fact_order.region_id = dim_region.region_id join dim_product on fact_order.product_id = dim_product.product_id where dim_region.region_name = '华东' group by dim_product.brand order by gmv desc limit 1",
+      "actual_tables": [
+        "dim_product",
+        "dim_region",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_product",
+        "dim_region",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 1,
-      "elapsed": 22.32,
+      "elapsed_seconds": 30.295,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -239,9 +816,27 @@
       "question": "黄金会员最喜欢购买哪个品类的商品",
       "difficulty": "hard",
       "category": "多表JOIN",
-      "executable": true,
+      "sql": "SELECT dim_product.category, SUM(fact_order.order_quantity) AS total_quantity FROM fact_order JOIN dim_customer ON fact_order.customer_id = dim_customer.customer_id JOIN dim_product ON fact_order.product_id = dim_product.product_id WHERE dim_customer.member_level = '黄金' GROUP BY dim_product.category ORDER BY total_quantity DESC LIMIT 1",
+      "normalized_sql": "select dim_product.category, sum(fact_order.order_quantity) as total_quantity from fact_order join dim_customer on fact_order.customer_id = dim_customer.customer_id join dim_product on fact_order.product_id = dim_product.product_id where dim_customer.member_level = '黄金' group by dim_product.category order by total_quantity desc limit 1",
+      "actual_tables": [
+        "dim_customer",
+        "dim_product",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_customer",
+        "dim_product",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 1,
-      "elapsed": 40.09,
+      "elapsed_seconds": 41.957,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -249,9 +844,27 @@
       "question": "华东地区女性客户的消费总额",
       "difficulty": "hard",
       "category": "多表JOIN",
-      "executable": true,
+      "sql": "SELECT SUM(fact_order.order_amount) AS total_amount\nFROM fact_order\nJOIN dim_region ON fact_order.region_id = dim_region.region_id\nJOIN dim_customer ON fact_order.customer_id = dim_customer.customer_id\nWHERE dim_region.region_name = '华东'\n  AND dim_customer.gender = '女'",
+      "normalized_sql": "select sum(fact_order.order_amount) as total_amount from fact_order join dim_region on fact_order.region_id = dim_region.region_id join dim_customer on fact_order.customer_id = dim_customer.customer_id where dim_region.region_name = '华东' and dim_customer.gender = '女'",
+      "actual_tables": [
+        "dim_customer",
+        "dim_region",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_customer",
+        "dim_region",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 1,
-      "elapsed": 22.62,
+      "elapsed_seconds": 67.477,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -259,9 +872,26 @@
       "question": "1月份销量最高的手机品牌是什么",
       "difficulty": "medium",
       "category": "多表JOIN",
-      "executable": true,
+      "sql": "SELECT dim_product.brand, SUM(fact_order.order_quantity) AS total_quantity FROM fact_order JOIN dim_product ON fact_order.product_id = dim_product.product_id WHERE dim_product.category = '手机数码' AND SUBSTRING(CAST(fact_order.date_id AS CHAR), 5, 2) = '01' GROUP BY dim_product.brand ORDER BY total_quantity DESC LIMIT 1",
+      "normalized_sql": "select dim_product.brand, sum(fact_order.order_quantity) as total_quantity from fact_order join dim_product on fact_order.product_id = dim_product.product_id where dim_product.category = '手机数码' and substring(cast(fact_order.date_id as char), 5, 2) = '01' group by dim_product.brand order by total_quantity desc limit 1",
+      "actual_tables": [
+        "dim_product",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_date",
+        "dim_product",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": false,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 1,
-      "elapsed": 32.66,
+      "elapsed_seconds": 195.302,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -269,9 +899,25 @@
       "question": "华北大区的客户平均客单价",
       "difficulty": "medium",
       "category": "多表JOIN",
-      "executable": true,
+      "sql": "SELECT AVG(fact_order.order_amount) AS AOV FROM fact_order JOIN dim_region ON fact_order.region_id = dim_region.region_id WHERE dim_region.region_name = '华北'",
+      "normalized_sql": "select avg(fact_order.order_amount) as aov from fact_order join dim_region on fact_order.region_id = dim_region.region_id where dim_region.region_name = '华北'",
+      "actual_tables": [
+        "dim_region",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_region",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 1,
-      "elapsed": 36.14,
+      "elapsed_seconds": 50.393,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -279,9 +925,24 @@
       "question": "2025年2月的订单总金额",
       "difficulty": "easy",
       "category": "时间过滤",
-      "executable": true,
+      "sql": "SELECT SUM(fact_order.order_amount) AS total_amount FROM fact_order WHERE fact_order.date_id >= 20250201 AND fact_order.date_id <= 20250228",
+      "normalized_sql": "select sum(fact_order.order_amount) as total_amount from fact_order where fact_order.date_id >= 20250201 and fact_order.date_id <= 20250228",
+      "actual_tables": [
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_date",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": false,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 1,
-      "elapsed": 18.47,
+      "elapsed_seconds": 19.522,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -289,9 +950,25 @@
       "question": "2025年第一季度（Q1）的总销售额",
       "difficulty": "easy",
       "category": "时间过滤",
-      "executable": true,
+      "sql": "SELECT SUM(fact_order.order_amount) AS GMV FROM fact_order JOIN dim_date ON fact_order.date_id = dim_date.date_id WHERE dim_date.date_id BETWEEN 20250101 AND 20250331",
+      "normalized_sql": "select sum(fact_order.order_amount) as gmv from fact_order join dim_date on fact_order.date_id = dim_date.date_id where dim_date.date_id between 20250101 and 20250331",
+      "actual_tables": [
+        "dim_date",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_date",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 1,
-      "elapsed": 29.24,
+      "elapsed_seconds": 39.93,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -299,9 +976,24 @@
       "question": "3月上旬（1号到10号）的订单数量",
       "difficulty": "medium",
       "category": "时间过滤",
-      "executable": true,
+      "sql": "SELECT COUNT(order_id) AS order_count FROM fact_order WHERE date_id BETWEEN 20260301 AND 20260310",
+      "normalized_sql": "select count(order_id) as order_count from fact_order where date_id between 20260301 and 20260310",
+      "actual_tables": [
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_date",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": false,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 1,
-      "elapsed": 40.85,
+      "elapsed_seconds": 32.458,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -309,9 +1001,25 @@
       "question": "1月份每天的销售额",
       "difficulty": "medium",
       "category": "时间过滤",
-      "executable": true,
-      "result_count": 0,
-      "elapsed": 31.7,
+      "sql": "SELECT dim_date.date_id, SUM(fact_order.order_amount) AS daily_sales FROM fact_order JOIN dim_date ON fact_order.date_id = dim_date.date_id WHERE dim_date.month = 1 GROUP BY dim_date.date_id ORDER BY dim_date.date_id",
+      "normalized_sql": "select dim_date.date_id, sum(fact_order.order_amount) as daily_sales from fact_order join dim_date on fact_order.date_id = dim_date.date_id where dim_date.month = 1 group by dim_date.date_id order by dim_date.date_id",
+      "actual_tables": [
+        "dim_date",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_date",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
+      "result_count": 31,
+      "elapsed_seconds": 30.913,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -319,9 +1027,24 @@
       "question": "2月14日当天产生了几笔订单",
       "difficulty": "easy",
       "category": "时间过滤",
-      "executable": true,
+      "sql": "SELECT COUNT(order_id) AS order_count FROM fact_order WHERE date_id = 20260214",
+      "normalized_sql": "select count(order_id) as order_count from fact_order where date_id = 20260214",
+      "actual_tables": [
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_date",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": false,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 1,
-      "elapsed": 17.8,
+      "elapsed_seconds": 29.276,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -329,9 +1052,25 @@
       "question": "女性铂金会员的订单总金额是多少",
       "difficulty": "medium",
       "category": "复合条件",
-      "executable": true,
+      "sql": "SELECT SUM(fact_order.order_amount) AS total_amount\nFROM fact_order\nJOIN dim_customer ON fact_order.customer_id = dim_customer.customer_id\nWHERE dim_customer.gender = '女' AND dim_customer.member_level = '铂金'",
+      "normalized_sql": "select sum(fact_order.order_amount) as total_amount from fact_order join dim_customer on fact_order.customer_id = dim_customer.customer_id where dim_customer.gender = '女' and dim_customer.member_level = '铂金'",
+      "actual_tables": [
+        "dim_customer",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_customer",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 1,
-      "elapsed": 23.02,
+      "elapsed_seconds": 24.686,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -339,9 +1078,27 @@
       "question": "华为品牌在广东省的销量",
       "difficulty": "medium",
       "category": "复合条件",
-      "executable": true,
+      "sql": "SELECT dim_product.brand, dim_region.province, SUM(fact_order.order_quantity) AS total_quantity\nFROM fact_order\nJOIN dim_product ON fact_order.product_id = dim_product.product_id\nJOIN dim_region ON fact_order.region_id = dim_region.region_id\nWHERE dim_product.brand = '华为' AND dim_region.province = '广东省'\nGROUP BY dim_product.brand, dim_region.province",
+      "normalized_sql": "select dim_product.brand, dim_region.province, sum(fact_order.order_quantity) as total_quantity from fact_order join dim_product on fact_order.product_id = dim_product.product_id join dim_region on fact_order.region_id = dim_region.region_id where dim_product.brand = '华为' and dim_region.province = '广东省' group by dim_product.brand, dim_region.province",
+      "actual_tables": [
+        "dim_product",
+        "dim_region",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_product",
+        "dim_region",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 1,
-      "elapsed": 18.08,
+      "elapsed_seconds": 33.501,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -349,9 +1106,29 @@
       "question": "华东地区1月份服饰类商品的销售额",
       "difficulty": "hard",
       "category": "复合条件",
-      "executable": true,
+      "sql": "SELECT SUM(fact_order.order_amount) AS sales FROM fact_order JOIN dim_region ON fact_order.region_id = dim_region.region_id JOIN dim_date ON fact_order.date_id = dim_date.date_id JOIN dim_product ON fact_order.product_id = dim_product.product_id WHERE dim_region.region_name = '华东' AND dim_date.month = 1 AND dim_product.category = '服饰'",
+      "normalized_sql": "select sum(fact_order.order_amount) as sales from fact_order join dim_region on fact_order.region_id = dim_region.region_id join dim_date on fact_order.date_id = dim_date.date_id join dim_product on fact_order.product_id = dim_product.product_id where dim_region.region_name = '华东' and dim_date.month = 1 and dim_product.category = '服饰'",
+      "actual_tables": [
+        "dim_date",
+        "dim_product",
+        "dim_region",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_date",
+        "dim_product",
+        "dim_region",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 1,
-      "elapsed": 23.2,
+      "elapsed_seconds": 25.276,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -359,9 +1136,27 @@
       "question": "男性黄金会员购买了哪些品牌的商品",
       "difficulty": "hard",
       "category": "复合条件",
-      "executable": true,
+      "sql": "SELECT DISTINCT dim_product.brand\nFROM fact_order\nJOIN dim_customer ON fact_order.customer_id = dim_customer.customer_id\nJOIN dim_product ON fact_order.product_id = dim_product.product_id\nWHERE dim_customer.gender = '男' AND dim_customer.member_level = '黄金'",
+      "normalized_sql": "select distinct dim_product.brand from fact_order join dim_customer on fact_order.customer_id = dim_customer.customer_id join dim_product on fact_order.product_id = dim_product.product_id where dim_customer.gender = '男' and dim_customer.member_level = '黄金'",
+      "actual_tables": [
+        "dim_customer",
+        "dim_product",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_customer",
+        "dim_product",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 10,
-      "elapsed": 25.0,
+      "elapsed_seconds": 24.856,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -369,9 +1164,27 @@
       "question": "2月份食品饮料类商品的销售额",
       "difficulty": "medium",
       "category": "复合条件",
-      "executable": true,
+      "sql": "SELECT SUM(fact_order.order_amount) AS total_sales\nFROM fact_order\nJOIN dim_date ON fact_order.date_id = dim_date.date_id\nJOIN dim_product ON fact_order.product_id = dim_product.product_id\nWHERE dim_date.month = 2 AND dim_product.category = '食品饮料'",
+      "normalized_sql": "select sum(fact_order.order_amount) as total_sales from fact_order join dim_date on fact_order.date_id = dim_date.date_id join dim_product on fact_order.product_id = dim_product.product_id where dim_date.month = 2 and dim_product.category = '食品饮料'",
+      "actual_tables": [
+        "dim_date",
+        "dim_product",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_date",
+        "dim_product",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 1,
-      "elapsed": 21.36,
+      "elapsed_seconds": 26.657,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -379,9 +1192,25 @@
       "question": "销量最高的3个省份",
       "difficulty": "easy",
       "category": "排序/LIMIT",
-      "executable": true,
+      "sql": "SELECT dim_region.province, SUM(fact_order.order_quantity) AS total_quantity FROM fact_order JOIN dim_region ON fact_order.region_id = dim_region.region_id GROUP BY dim_region.province ORDER BY total_quantity DESC LIMIT 3",
+      "normalized_sql": "select dim_region.province, sum(fact_order.order_quantity) as total_quantity from fact_order join dim_region on fact_order.region_id = dim_region.region_id group by dim_region.province order by total_quantity desc limit 3",
+      "actual_tables": [
+        "dim_region",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_region",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 3,
-      "elapsed": 20.89,
+      "elapsed_seconds": 30.106,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -389,9 +1218,23 @@
       "question": "订单金额最高的5笔订单分别是多少",
       "difficulty": "easy",
       "category": "排序/LIMIT",
-      "executable": true,
+      "sql": "SELECT fact_order.order_id, fact_order.order_amount FROM fact_order ORDER BY fact_order.order_amount DESC LIMIT 5",
+      "normalized_sql": "select fact_order.order_id, fact_order.order_amount from fact_order order by fact_order.order_amount desc limit 5",
+      "actual_tables": [
+        "fact_order"
+      ],
+      "expected_tables": [
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 5,
-      "elapsed": 23.03,
+      "elapsed_seconds": 19.349,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -399,9 +1242,25 @@
       "question": "客单价最低的3个省份",
       "difficulty": "medium",
       "category": "排序/LIMIT",
-      "executable": true,
+      "sql": "SELECT dim_region.province, AVG(fact_order.order_amount) AS avg_order_value FROM fact_order JOIN dim_region ON fact_order.region_id = dim_region.region_id GROUP BY dim_region.province ORDER BY avg_order_value ASC LIMIT 3",
+      "normalized_sql": "select dim_region.province, avg(fact_order.order_amount) as avg_order_value from fact_order join dim_region on fact_order.region_id = dim_region.region_id group by dim_region.province order by avg_order_value asc limit 3",
+      "actual_tables": [
+        "dim_region",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_region",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 3,
-      "elapsed": 19.75,
+      "elapsed_seconds": 48.432,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -409,9 +1268,25 @@
       "question": "购买数量最多的前5个商品",
       "difficulty": "easy",
       "category": "排序/LIMIT",
-      "executable": true,
+      "sql": "SELECT dim_product.product_name, SUM(fact_order.order_quantity) AS total_quantity\nFROM fact_order\nJOIN dim_product ON fact_order.product_id = dim_product.product_id\nGROUP BY dim_product.product_name\nORDER BY total_quantity DESC\nLIMIT 5",
+      "normalized_sql": "select dim_product.product_name, sum(fact_order.order_quantity) as total_quantity from fact_order join dim_product on fact_order.product_id = dim_product.product_id group by dim_product.product_name order by total_quantity desc limit 5",
+      "actual_tables": [
+        "dim_product",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_product",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 5,
-      "elapsed": 20.22,
+      "elapsed_seconds": 20.219,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -419,19 +1294,50 @@
       "question": "各地区的GMV和AOV分别是多少",
       "difficulty": "medium",
       "category": "指标查询",
-      "executable": false,
-      "result_count": 0,
-      "elapsed": 1.46,
-      "error": "Invalid json output: 请提供用户问题。\nFor troubleshooting, visit: https://docs.langchain.com/oss/python/lang"
+      "sql": "SELECT dim_region.region_name, SUM(fact_order.order_amount) AS GMV, AVG(fact_order.order_amount) AS AOV FROM fact_order JOIN dim_region ON fact_order.region_id = dim_region.region_id GROUP BY dim_region.region_name ORDER BY GMV DESC",
+      "normalized_sql": "select dim_region.region_name, sum(fact_order.order_amount) as gmv, avg(fact_order.order_amount) as aov from fact_order join dim_region on fact_order.region_id = dim_region.region_id group by dim_region.region_name order by gmv desc",
+      "actual_tables": [
+        "dim_region",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_region",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
+      "result_count": 5,
+      "elapsed_seconds": 46.624,
+      "correction_attempts": 0,
+      "event_count": 29,
+      "error": ""
     },
     {
       "id": "q034",
       "question": "按月统计GMV",
       "difficulty": "easy",
       "category": "指标查询",
-      "executable": true,
+      "sql": "SELECT LEFT(CAST(date_id AS CHAR), 6) AS month, SUM(order_amount) AS GMV FROM fact_order GROUP BY month ORDER BY month",
+      "normalized_sql": "select left(cast(date_id as char), 6) as month, sum(order_amount) as gmv from fact_order group by month order by month",
+      "actual_tables": [
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_date",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": false,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 3,
-      "elapsed": 16.11,
+      "elapsed_seconds": 22.352,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -439,9 +1345,25 @@
       "question": "各品类商品的AOV是多少",
       "difficulty": "medium",
       "category": "指标查询",
-      "executable": true,
+      "sql": "SELECT dim_product.category, AVG(fact_order.order_amount) AS AOV FROM fact_order JOIN dim_product ON fact_order.product_id = dim_product.product_id GROUP BY dim_product.category",
+      "normalized_sql": "select dim_product.category, avg(fact_order.order_amount) as aov from fact_order join dim_product on fact_order.product_id = dim_product.product_id group by dim_product.category",
+      "actual_tables": [
+        "dim_product",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_product",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 6,
-      "elapsed": 37.51,
+      "elapsed_seconds": 30.929,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -449,9 +1371,25 @@
       "question": "各品牌的GMV排名",
       "difficulty": "easy",
       "category": "指标查询",
-      "executable": true,
+      "sql": "SELECT dim_product.brand, SUM(fact_order.order_amount) AS GMV FROM fact_order JOIN dim_product ON fact_order.product_id = dim_product.product_id GROUP BY dim_product.brand ORDER BY GMV DESC",
+      "normalized_sql": "select dim_product.brand, sum(fact_order.order_amount) as gmv from fact_order join dim_product on fact_order.product_id = dim_product.product_id group by dim_product.brand order by gmv desc",
+      "actual_tables": [
+        "dim_product",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_product",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 15,
-      "elapsed": 24.42,
+      "elapsed_seconds": 24.126,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -459,9 +1397,27 @@
       "question": "按月份和品类统计销售额",
       "difficulty": "hard",
       "category": "复杂聚合",
-      "executable": true,
+      "sql": "SELECT dim_date.month, dim_product.category, SUM(fact_order.order_amount) AS total_sales FROM fact_order JOIN dim_date ON fact_order.date_id = dim_date.date_id JOIN dim_product ON fact_order.product_id = dim_product.product_id GROUP BY dim_date.month, dim_product.category ORDER BY dim_date.month, total_sales DESC",
+      "normalized_sql": "select dim_date.month, dim_product.category, sum(fact_order.order_amount) as total_sales from fact_order join dim_date on fact_order.date_id = dim_date.date_id join dim_product on fact_order.product_id = dim_product.product_id group by dim_date.month, dim_product.category order by dim_date.month, total_sales desc",
+      "actual_tables": [
+        "dim_date",
+        "dim_product",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_date",
+        "dim_product",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 18,
-      "elapsed": 22.14,
+      "elapsed_seconds": 20.828,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -469,9 +1425,26 @@
       "question": "按大区统计每个月的订单量",
       "difficulty": "hard",
       "category": "复杂聚合",
-      "executable": true,
-      "result_count": 15,
-      "elapsed": 53.3,
+      "sql": "SELECT dim_region.region_name, fact_order.date_id, COUNT(fact_order.order_id) AS order_count FROM fact_order JOIN dim_region ON fact_order.region_id = dim_region.region_id GROUP BY dim_region.region_name, fact_order.date_id ORDER BY dim_region.region_name, fact_order.date_id",
+      "normalized_sql": "select dim_region.region_name, fact_order.date_id, count(fact_order.order_id) as order_count from fact_order join dim_region on fact_order.region_id = dim_region.region_id group by dim_region.region_name, fact_order.date_id order by dim_region.region_name, fact_order.date_id",
+      "actual_tables": [
+        "dim_region",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_date",
+        "dim_region",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": false,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
+      "result_count": 110,
+      "elapsed_seconds": 45.51,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -479,9 +1452,26 @@
       "question": "每个省份每月的平均订单金额",
       "difficulty": "hard",
       "category": "复杂聚合",
-      "executable": true,
+      "sql": "SELECT dim_region.province, SUBSTRING(CAST(fact_order.date_id AS CHAR), 1, 6) AS month, AVG(fact_order.order_amount) AS avg_order_amount FROM fact_order JOIN dim_region ON fact_order.region_id = dim_region.region_id GROUP BY dim_region.province, month ORDER BY dim_region.province, month",
+      "normalized_sql": "select dim_region.province, substring(cast(fact_order.date_id as char), 1, 6) as month, avg(fact_order.order_amount) as avg_order_amount from fact_order join dim_region on fact_order.region_id = dim_region.region_id group by dim_region.province, month order by dim_region.province, month",
+      "actual_tables": [
+        "dim_region",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_date",
+        "dim_region",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": false,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 18,
-      "elapsed": 39.8,
+      "elapsed_seconds": 30.346,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -489,9 +1479,27 @@
       "question": "按品牌和会员等级统计销售额",
       "difficulty": "hard",
       "category": "复杂聚合",
-      "executable": true,
+      "sql": "SELECT dim_product.brand, dim_customer.member_level, SUM(fact_order.order_amount) AS total_sales\nFROM fact_order\nJOIN dim_product ON fact_order.product_id = dim_product.product_id\nJOIN dim_customer ON fact_order.customer_id = dim_customer.customer_id\nGROUP BY dim_product.brand, dim_customer.member_level\nORDER BY dim_product.brand, total_sales DESC",
+      "normalized_sql": "select dim_product.brand, dim_customer.member_level, sum(fact_order.order_amount) as total_sales from fact_order join dim_product on fact_order.product_id = dim_product.product_id join dim_customer on fact_order.customer_id = dim_customer.customer_id group by dim_product.brand, dim_customer.member_level order by dim_product.brand, total_sales desc",
+      "actual_tables": [
+        "dim_customer",
+        "dim_product",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_customer",
+        "dim_product",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 53,
-      "elapsed": 18.86,
+      "elapsed_seconds": 37.275,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -499,9 +1507,27 @@
       "question": "各品类在各省份的销售额分布",
       "difficulty": "hard",
       "category": "复杂聚合",
-      "executable": true,
+      "sql": "SELECT dim_product.category, dim_region.province, SUM(fact_order.order_amount) AS total_sales\nFROM fact_order\nJOIN dim_product ON fact_order.product_id = dim_product.product_id\nJOIN dim_region ON fact_order.region_id = dim_region.region_id\nGROUP BY dim_product.category, dim_region.province\nORDER BY dim_product.category, dim_region.province",
+      "normalized_sql": "select dim_product.category, dim_region.province, sum(fact_order.order_amount) as total_sales from fact_order join dim_product on fact_order.product_id = dim_product.product_id join dim_region on fact_order.region_id = dim_region.region_id group by dim_product.category, dim_region.province order by dim_product.category, dim_region.province",
+      "actual_tables": [
+        "dim_product",
+        "dim_region",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_product",
+        "dim_region",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 35,
-      "elapsed": 26.57,
+      "elapsed_seconds": 33.402,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -509,9 +1535,25 @@
       "question": "黑龙江省的订单总额是多少",
       "difficulty": "easy",
       "category": "空结果/边界",
-      "executable": true,
+      "sql": "SELECT SUM(fact_order.order_amount) AS total_amount FROM fact_order JOIN dim_region ON fact_order.region_id = dim_region.region_id WHERE dim_region.province = '黑龙江省'",
+      "normalized_sql": "select sum(fact_order.order_amount) as total_amount from fact_order join dim_region on fact_order.region_id = dim_region.region_id where dim_region.province = '黑龙江省'",
+      "actual_tables": [
+        "dim_region",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_region",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 1,
-      "elapsed": 14.27,
+      "elapsed_seconds": 24.882,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -519,9 +1561,25 @@
       "question": "陕西省有哪些订单",
       "difficulty": "easy",
       "category": "空结果/边界",
-      "executable": true,
+      "sql": "SELECT fact_order.order_id FROM fact_order JOIN dim_region ON fact_order.region_id = dim_region.region_id WHERE dim_region.province = '陕西省'",
+      "normalized_sql": "select fact_order.order_id from fact_order join dim_region on fact_order.region_id = dim_region.region_id where dim_region.province = '陕西省'",
+      "actual_tables": [
+        "dim_region",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_region",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 0,
-      "elapsed": 18.43,
+      "elapsed_seconds": 26.878,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -529,9 +1587,24 @@
       "question": "2024年的订单总金额",
       "difficulty": "easy",
       "category": "空结果/边界",
-      "executable": true,
+      "sql": "SELECT SUM(fact_order.order_amount) AS total_amount FROM fact_order WHERE fact_order.date_id >= 20240101 AND fact_order.date_id <= 20241231",
+      "normalized_sql": "select sum(fact_order.order_amount) as total_amount from fact_order where fact_order.date_id >= 20240101 and fact_order.date_id <= 20241231",
+      "actual_tables": [
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_date",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": false,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 1,
-      "elapsed": 16.42,
+      "elapsed_seconds": 24.072,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -539,9 +1612,25 @@
       "question": "销量最高的商品是什么",
       "difficulty": "medium",
       "category": "歧义消解",
-      "executable": true,
+      "sql": "SELECT dim_product.product_name, SUM(fact_order.order_quantity) AS total_sales\nFROM fact_order\nJOIN dim_product ON fact_order.product_id = dim_product.product_id\nGROUP BY dim_product.product_name\nORDER BY total_sales DESC\nLIMIT 1",
+      "normalized_sql": "select dim_product.product_name, sum(fact_order.order_quantity) as total_sales from fact_order join dim_product on fact_order.product_id = dim_product.product_id group by dim_product.product_name order by total_sales desc limit 1",
+      "actual_tables": [
+        "dim_product",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_product",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 1,
-      "elapsed": 15.86,
+      "elapsed_seconds": 42.881,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -549,9 +1638,24 @@
       "question": "上个月的销售额",
       "difficulty": "medium",
       "category": "歧义消解",
-      "executable": true,
+      "sql": "SELECT SUM(order_amount) AS GMV FROM fact_order WHERE date_id BETWEEN 20260601 AND 20260630",
+      "normalized_sql": "select sum(order_amount) as gmv from fact_order where date_id between 20260601 and 20260630",
+      "actual_tables": [
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_date",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": false,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 1,
-      "elapsed": 23.63,
+      "elapsed_seconds": 52.224,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -559,9 +1663,25 @@
       "question": "各地区的销售情况如何",
       "difficulty": "medium",
       "category": "歧义消解",
-      "executable": true,
+      "sql": "SELECT dim_region.region_name, SUM(fact_order.order_amount) AS GMV FROM fact_order JOIN dim_region ON fact_order.region_id = dim_region.region_id GROUP BY dim_region.region_name ORDER BY GMV DESC",
+      "normalized_sql": "select dim_region.region_name, sum(fact_order.order_amount) as gmv from fact_order join dim_region on fact_order.region_id = dim_region.region_id group by dim_region.region_name order by gmv desc",
+      "actual_tables": [
+        "dim_region",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_region",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 5,
-      "elapsed": 19.53,
+      "elapsed_seconds": 35.885,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -569,9 +1689,25 @@
       "question": "广东、浙江、四川三省的销售额对比",
       "difficulty": "medium",
       "category": "多值过滤",
-      "executable": true,
+      "sql": "SELECT dim_region.province, SUM(fact_order.order_amount) AS total_sales\nFROM fact_order\nJOIN dim_region ON fact_order.region_id = dim_region.region_id\nWHERE dim_region.province IN ('广东省', '浙江省', '四川省')\nGROUP BY dim_region.province\nORDER BY total_sales DESC",
+      "normalized_sql": "select dim_region.province, sum(fact_order.order_amount) as total_sales from fact_order join dim_region on fact_order.region_id = dim_region.region_id where dim_region.province in ('广东省', '浙江省', '四川省') group by dim_region.province order by total_sales desc",
+      "actual_tables": [
+        "dim_region",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_region",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 3,
-      "elapsed": 21.02,
+      "elapsed_seconds": 26.139,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -579,9 +1715,25 @@
       "question": "手机数码和家用电器两个品类的销售情况对比",
       "difficulty": "medium",
       "category": "多值过滤",
-      "executable": true,
+      "sql": "SELECT dim_product.category, SUM(fact_order.order_amount) AS total_sales, SUM(fact_order.order_quantity) AS total_quantity\nFROM fact_order\nJOIN dim_product ON fact_order.product_id = dim_product.product_id\nWHERE dim_product.category IN ('手机数码', '家用电器')\nGROUP BY dim_product.category\nORDER BY total_sales DESC",
+      "normalized_sql": "select dim_product.category, sum(fact_order.order_amount) as total_sales, sum(fact_order.order_quantity) as total_quantity from fact_order join dim_product on fact_order.product_id = dim_product.product_id where dim_product.category in ('手机数码', '家用电器') group by dim_product.category order by total_sales desc",
+      "actual_tables": [
+        "dim_product",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_product",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 2,
-      "elapsed": 28.82,
+      "elapsed_seconds": 36.477,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     },
     {
@@ -589,9 +1741,25 @@
       "question": "黄金会员和铂金会员的消费能力对比",
       "difficulty": "medium",
       "category": "多值过滤",
-      "executable": true,
+      "sql": "SELECT dim_customer.member_level, SUM(fact_order.order_amount) AS total_sales, AVG(fact_order.order_amount) AS avg_order_amount FROM fact_order JOIN dim_customer ON fact_order.customer_id = dim_customer.customer_id WHERE dim_customer.member_level IN ('黄金', '铂金') GROUP BY dim_customer.member_level ORDER BY total_sales DESC",
+      "normalized_sql": "select dim_customer.member_level, sum(fact_order.order_amount) as total_sales, avg(fact_order.order_amount) as avg_order_amount from fact_order join dim_customer on fact_order.customer_id = dim_customer.customer_id where dim_customer.member_level in ('黄金', '铂金') group by dim_customer.member_level order by total_sales desc",
+      "actual_tables": [
+        "dim_customer",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_customer",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
       "result_count": 2,
-      "elapsed": 46.45,
+      "elapsed_seconds": 86.943,
+      "correction_attempts": 0,
+      "event_count": 29,
       "error": ""
     }
   ]
