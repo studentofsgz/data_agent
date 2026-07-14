@@ -11,6 +11,7 @@
     "id": "q002",
     "question": "北京地区的订单量是多少",
     "expect_tables": ["fact_order", "dim_region"],
+    "expect_sql_contains": ["count(distinct", "order_id"],
     "expect_not_empty": true,
     "difficulty": "easy",
     "category": "单表聚合"
@@ -27,6 +28,8 @@
     "id": "q004",
     "question": "客单价是多少",
     "expect_tables": ["fact_order"],
+    "expect_sql_contains": ["sum(", "order_amount", "count(distinct", "order_id"],
+    "expect_sql_forbid": ["avg("],
     "expect_not_empty": true,
     "difficulty": "easy",
     "category": "指标查询"
@@ -35,6 +38,7 @@
     "id": "q005",
     "question": "查询每个月的总销量",
     "expect_tables": ["fact_order", "dim_date"],
+    "expect_sql_contains": ["sum(", "order_quantity"],
     "expect_not_empty": true,
     "difficulty": "easy",
     "category": "分组聚合"
@@ -51,6 +55,7 @@
     "id": "q007",
     "question": "一共有多少笔订单",
     "expect_tables": ["fact_order"],
+    "expect_sql_contains": ["count(distinct", "order_id"],
     "expect_not_empty": true,
     "difficulty": "easy",
     "category": "单表聚合"
@@ -75,6 +80,7 @@
     "id": "q010",
     "question": "各品类的订单数量统计",
     "expect_tables": ["fact_order", "dim_product"],
+    "expect_sql_contains": ["count(distinct", "order_id"],
     "expect_not_empty": true,
     "difficulty": "easy",
     "category": "分组聚合"
@@ -83,6 +89,8 @@
     "id": "q011",
     "question": "各会员等级的平均订单金额",
     "expect_tables": ["fact_order", "dim_customer"],
+    "expect_sql_contains": ["sum(", "order_amount", "count(distinct", "order_id"],
+    "expect_sql_forbid": ["avg("],
     "expect_not_empty": true,
     "difficulty": "medium",
     "category": "分组聚合"
@@ -131,6 +139,7 @@
     "id": "q017",
     "question": "1月份销量最高的手机品牌是什么",
     "expect_tables": ["fact_order", "dim_date", "dim_product"],
+    "expect_sql_contains": ["sum(", "order_quantity"],
     "expect_not_empty": true,
     "difficulty": "medium",
     "category": "多表JOIN"
@@ -139,6 +148,8 @@
     "id": "q018",
     "question": "华北大区的客户平均客单价",
     "expect_tables": ["fact_order", "dim_region"],
+    "expect_sql_contains": ["sum(", "order_amount", "count(distinct", "order_id"],
+    "expect_sql_forbid": ["avg("],
     "expect_not_empty": true,
     "difficulty": "medium",
     "category": "多表JOIN"
@@ -163,6 +174,7 @@
     "id": "q021",
     "question": "3月上旬（1号到10号）的订单数量",
     "expect_tables": ["fact_order", "dim_date"],
+    "expect_sql_contains": ["count(distinct", "order_id"],
     "expect_not_empty": true,
     "difficulty": "medium",
     "category": "时间过滤"
@@ -179,6 +191,7 @@
     "id": "q023",
     "question": "2月14日当天产生了几笔订单",
     "expect_tables": ["fact_order", "dim_date"],
+    "expect_sql_contains": ["count(distinct", "order_id"],
     "expect_not_empty": true,
     "difficulty": "easy",
     "category": "时间过滤"
@@ -195,6 +208,7 @@
     "id": "q025",
     "question": "华为品牌在广东省的销量",
     "expect_tables": ["fact_order", "dim_region", "dim_product"],
+    "expect_sql_contains": ["sum(", "order_quantity"],
     "expect_not_empty": true,
     "difficulty": "medium",
     "category": "复合条件"
@@ -227,6 +241,7 @@
     "id": "q029",
     "question": "销量最高的3个省份",
     "expect_tables": ["fact_order", "dim_region"],
+    "expect_sql_contains": ["sum(", "order_quantity"],
     "expect_not_empty": true,
     "difficulty": "easy",
     "category": "排序/LIMIT"
@@ -243,6 +258,8 @@
     "id": "q031",
     "question": "客单价最低的3个省份",
     "expect_tables": ["fact_order", "dim_region"],
+    "expect_sql_contains": ["sum(", "order_amount", "count(distinct", "order_id"],
+    "expect_sql_forbid": ["avg("],
     "expect_not_empty": true,
     "difficulty": "medium",
     "category": "排序/LIMIT"
@@ -251,6 +268,7 @@
     "id": "q032",
     "question": "购买数量最多的前5个商品",
     "expect_tables": ["fact_order", "dim_product"],
+    "expect_sql_contains": ["sum(", "order_quantity"],
     "expect_not_empty": true,
     "difficulty": "easy",
     "category": "排序/LIMIT"
@@ -259,6 +277,8 @@
     "id": "q033",
     "question": "各地区的GMV和AOV分别是多少",
     "expect_tables": ["fact_order", "dim_region"],
+    "expect_sql_contains": ["sum(", "order_amount", "count(distinct", "order_id"],
+    "expect_sql_forbid": ["avg("],
     "expect_not_empty": true,
     "difficulty": "medium",
     "category": "指标查询"
@@ -275,6 +295,8 @@
     "id": "q035",
     "question": "各品类商品的AOV是多少",
     "expect_tables": ["fact_order", "dim_product"],
+    "expect_sql_contains": ["sum(", "order_amount", "count(distinct", "order_id"],
+    "expect_sql_forbid": ["avg("],
     "expect_not_empty": true,
     "difficulty": "medium",
     "category": "指标查询"
@@ -299,6 +321,7 @@
     "id": "q038",
     "question": "按大区统计每个月的订单量",
     "expect_tables": ["fact_order", "dim_region", "dim_date"],
+    "expect_sql_contains": ["count(distinct", "order_id"],
     "expect_not_empty": true,
     "difficulty": "hard",
     "category": "复杂聚合"
@@ -307,6 +330,8 @@
     "id": "q039",
     "question": "每个省份每月的平均订单金额",
     "expect_tables": ["fact_order", "dim_region", "dim_date"],
+    "expect_sql_contains": ["sum(", "order_amount", "count(distinct", "order_id"],
+    "expect_sql_forbid": ["avg("],
     "expect_not_empty": true,
     "difficulty": "hard",
     "category": "复杂聚合"
@@ -355,6 +380,7 @@
     "id": "q045",
     "question": "销量最高的商品是什么",
     "expect_tables": ["fact_order", "dim_product"],
+    "expect_sql_contains": ["sum(", "order_quantity"],
     "expect_not_empty": true,
     "difficulty": "medium",
     "category": "歧义消解"

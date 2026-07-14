@@ -175,17 +175,42 @@ metrics:
     time_granularity: day
     relevant_columns:
       - fact_order.order_amount
-    alias: [成交总额, 订单总额]
+    alias: [销售额, 销售总额, 销售金额, 销售收入, 成交额, 交易额, 成交总额, 订单总额, 消费总额, 总订单金额]
   - name: AOV
-    description: 全称Average Order Value，表示所有订单的成交金额平均值。
-    expression: AVG(fact_order.order_amount)
-    default_aggregation: AVG
+    description: 全称Average Order Value，表示每笔订单的平均成交金额，口径为成交总额除以订单数。
+    expression: SUM(fact_order.order_amount) / COUNT(DISTINCT fact_order.order_id)
+    default_aggregation: CUSTOM
     dimensions:
       - dim_customer.gender
       - dim_customer.member_level
+      - dim_region.region_name
       - dim_date.month
     time_granularity: day
     relevant_columns:
       - fact_order.order_amount
-      - fact_order.customer_id
-    alias: [平均单价, 平均订单金额]
+      - fact_order.order_id
+    alias: [客单价, 平均客单价, 平均订单金额, 每单均价, 订单均价, 每单金额, 平均交易金额]
+  - name: ORDER_COUNT
+    description: 订单量，表示去重后的订单笔数。
+    expression: COUNT(DISTINCT fact_order.order_id)
+    default_aggregation: COUNT_DISTINCT
+    dimensions:
+      - dim_region.region_name
+      - dim_product.category
+      - dim_date.month
+    time_granularity: day
+    relevant_columns:
+      - fact_order.order_id
+    alias: [订单量, 订单数, 订单数量, 订单笔数, 订单总数, 下单量]
+  - name: SALES_QUANTITY
+    description: 销量，表示订单中商品购买数量的合计。
+    expression: SUM(fact_order.order_quantity)
+    default_aggregation: SUM
+    dimensions:
+      - dim_product.category
+      - dim_product.brand
+      - dim_date.month
+    time_granularity: day
+    relevant_columns:
+      - fact_order.order_quantity
+    alias: [销量, 销售量, 销售数量, 总销量, 月销量, 购买数量最多]

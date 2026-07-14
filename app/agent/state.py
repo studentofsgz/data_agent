@@ -53,6 +53,21 @@ class TimeSemanticState(TypedDict):
     rules: list[str]
 
 
+class MetricSemanticItemState(TypedDict):
+    name: str
+    display_name: str
+    expression: str
+    aliases: list[str]
+    required_columns: list[str]
+    dimensions: list[str]
+
+
+class MetricSemanticState(TypedDict):
+    required: bool
+    metrics: list[MetricSemanticItemState]
+    rules: list[str]
+
+
 class DataAgentState(TypedDict):
     query: str  # 用户查询（可能已被上下文改写）
     messages: list[dict]  # 历史对话 [{"role":"user","content":"..."},...]
@@ -68,6 +83,7 @@ class DataAgentState(TypedDict):
     date_info: DateInfoState  # 日期信息
     db_info: DBInfoState  # 数据库信息
     time_semantics: TimeSemanticState  # 时间语义规则
+    metric_semantics: MetricSemanticState  # 指标语义规则
 
     sql: str  # 生成的SQL
 

@@ -46,6 +46,21 @@ def result_matches_expected(
     return normalize_rows(rows) == normalize_rows(expected_result)
 
 
+def sql_rule_matches(sql: str, case: dict[str, Any]) -> bool | None:
+    contains = case.get("expect_sql_contains") or []
+    forbids = case.get("expect_sql_forbid") or []
+    regexes = case.get("expect_sql_regex") or []
+
+    if not contains and not forbids and not regexes:
+        return None
+
+    normalized = normalize_sql(sql)
+    contains_ok = all(str(token).lower() in normalized for token in contains)
+    forbids_ok = all(str(token).lower() not in normalized for token in forbids)
+    regex_ok = all(re.search(pattern, normalized, re.IGNORECASE) for pattern in regexes)
+    return bool(contains_ok and forbids_ok and regex_ok)
+
+
 def rate(numerator: int, denominator: int) -> float:
     if denominator <= 0:
         return 0.0
@@ -86,6 +101,7 @@ def evaluate_case(
         expected_tables_hit = expected_tables.issubset(actual_tables)
 
     expected_result_ok = result_matches_expected(rows, expected_result)
+    expected_sql_rule_ok = sql_rule_matches(sql, case)
 
     return {
         "id": case.get("id"),
@@ -101,6 +117,7 @@ def evaluate_case(
         "expected_tables_hit": expected_tables_hit,
         "not_empty_ok": not_empty_ok,
         "expected_result_ok": expected_result_ok,
+        "expected_sql_rule_ok": expected_sql_rule_ok,
         "result_count": len(rows),
         "elapsed_seconds": elapsed_seconds,
         "correction_attempts": correction_attempts,
@@ -112,6 +129,7 @@ def evaluate_case(
 def aggregate_group(results: list[dict[str, Any]]) -> dict[str, Any]:
     total = len(results)
     expected_result_cases = [r for r in results if r["expected_result_ok"] is not None]
+    expected_sql_rule_cases = [r for r in results if r["expected_sql_rule_ok"] is not None]
     return {
         "total": total,
         "sql_generated": metric_block(sum(r["sql_generated"] for r in results), total),
@@ -121,6 +139,10 @@ def aggregate_group(results: list[dict[str, Any]]) -> dict[str, Any]:
         "expected_result_ok": metric_block(
             sum(r["expected_result_ok"] for r in expected_result_cases),
             len(expected_result_cases),
+        ),
+        "expected_sql_rule_ok": metric_block(
+            sum(r["expected_sql_rule_ok"] for r in expected_sql_rule_cases),
+            len(expected_sql_rule_cases),
         ),
         "self_repair_cases": sum(1 for r in results if r["correction_attempts"] > 0),
         "avg_seconds": round(sum(r["elapsed_seconds"] for r in results) / total, 3)

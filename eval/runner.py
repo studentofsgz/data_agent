@@ -178,10 +178,15 @@ async def run_eval(args: argparse.Namespace) -> dict[str, Any]:
                 )
                 results.append(result)
 
+                sql_rule_text = ""
+                if result["expected_sql_rule_ok"] is not None:
+                    sql_rule_text = f" sql_rule={result['expected_sql_rule_ok']}"
+
                 print(
                     f"[{index}/{len(cases)}] {case['id']} {case['question']}\n"
                     f"  sql={result['sql_generated']} executable={result['sql_executable']} "
                     f"tables={result['expected_tables_hit']} non_empty={result['not_empty_ok']} "
+                    f"{sql_rule_text} "
                     f"repair={result['correction_attempts']} elapsed={result['elapsed_seconds']}s"
                 )
                 if result["error"]:
@@ -204,6 +209,7 @@ def print_summary(report: dict[str, Any]) -> None:
     print(f"SQL executable: {summary['sql_executable']['rate']}%")
     print(f"Expected table hit: {summary['expected_tables_hit']['rate']}%")
     print(f"Non-empty check: {summary['not_empty_ok']['rate']}%")
+    print(f"SQL rule check: {summary['expected_sql_rule_ok']['rate']}%")
     print(f"Expected result check: {summary['expected_result_ok']['rate']}%")
     print(f"Self-repair cases: {summary['self_repair_cases']}")
     print(f"Average latency: {summary['avg_seconds']}s")
