@@ -1,4 +1,4 @@
-from typing import TypedDict
+from typing import Any, TypedDict
 
 from app.entities.column_info import ColumnInfo
 from app.entities.metric_info import MetricInfo
@@ -68,6 +68,19 @@ class MetricSemanticState(TypedDict):
     rules: list[str]
 
 
+class SQLAuditResultState(TypedDict):
+    passed: bool
+    code: str
+    message: str
+    sql: str
+    tables: list[str]
+    columns: list[str]
+    limit: int | None
+    limit_added: bool
+    limit_capped: bool
+    details: dict[str, Any]
+
+
 class DataAgentState(TypedDict):
     query: str  # 用户查询（可能已被上下文改写）
     messages: list[dict]  # 历史对话 [{"role":"user","content":"..."},...]
@@ -87,6 +100,8 @@ class DataAgentState(TypedDict):
 
     sql: str  # 生成的SQL
 
-    error: str  # 验证SQL时的错误信息
+    audit_result: SQLAuditResultState  # AST安全审计结果
+
+    error: str | None  # 安全审计或验证SQL时的结构化错误信息
 
     retry_count: int  # SQL修正重试次数

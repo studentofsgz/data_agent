@@ -19,6 +19,7 @@ from app.agent.nodes.recall_value import recall_value
 from app.agent.nodes.rerank import rerank
 from app.agent.nodes.audit_sql import audit_sql
 from app.agent.nodes.validate_sql import validate_sql
+from app.agent.observability import instrument_node
 from app.agent.state import DataAgentState
 from app.agent.state import MAX_SQL_RETRIES
 from app.clients.embedding_client_manager import embedding_client_manager
@@ -31,24 +32,43 @@ from app.repositories.mysql.meta.meta_mysql_repository import MetaMySQLRepositor
 from app.repositories.qdrant.column_qdrant_repository import ColumnQdrantRepository
 from app.repositories.qdrant.metric_qdrant_repository import MetricQdrantRepository
 
-graph_builder = StateGraph(state_schema=DataAgentState, context_schema=DataAgentContext)
 
-# 添加节点
-graph_builder.add_node("context_manager", context_manager)
-graph_builder.add_node("extract_keywords", extract_keywords)
-graph_builder.add_node("recall_column", recall_column)
-graph_builder.add_node("recall_value", recall_value)
-graph_builder.add_node("recall_metric", recall_metric)
-graph_builder.add_node("rerank", rerank)
-graph_builder.add_node("merge_retrieved_info", merge_retrieved_info)
-graph_builder.add_node("filter_metric", filter_metric)
-graph_builder.add_node("filter_table", filter_table)
-graph_builder.add_node("add_extra_context", add_extra_context)
-graph_builder.add_node("generate_sql", generate_sql)
-graph_builder.add_node("validate_sql", validate_sql)
-graph_builder.add_node("audit_sql", audit_sql)
-graph_builder.add_node("correct_sql", correct_sql)
-graph_builder.add_node("execute_sql", execute_sql)
+def route_after_audit(state: DataAgentState) -> str:
+    if state.get("error") is None:
+        return "validate_sql"
+    if state.get("retry_count", 0) >= MAX_SQL_RETRIES:
+        return "end"
+    return "correct_sql"
+
+
+def route_after_validation(state: DataAgentState) -> str:
+    if state.get("error") is None:
+        return "execute_sql"
+    if state.get("retry_count", 0) >= MAX_SQL_RETRIES:
+        return "end"
+    return "correct_sql"
+
+graph_builder = StateGraph(state_schema=DataAgentState, context_schema=DataAgentContext)
+# 添加节点并统一启用耗时监控
+nodes = {
+    "context_manager": context_manager,
+    "extract_keywords": extract_keywords,
+    "recall_column": recall_column,
+    "recall_value": recall_value,
+    "recall_metric": recall_metric,
+    "rerank": rerank,
+    "merge_retrieved_info": merge_retrieved_info,
+    "filter_metric": filter_metric,
+    "filter_table": filter_table,
+    "add_extra_context": add_extra_context,
+    "generate_sql": generate_sql,
+    "validate_sql": validate_sql,
+    "audit_sql": audit_sql,
+    "correct_sql": correct_sql,
+    "execute_sql": execute_sql,
+}
+for node_name, node in nodes.items():
+    graph_builder.add_node(node_name, instrument_node(node_name, node))
 
 # 添加关系
 graph_builder.add_edge(START, "context_manager")
@@ -66,13 +86,17 @@ graph_builder.add_edge("filter_table", "add_extra_context")
 graph_builder.add_edge("filter_metric", "add_extra_context")
 graph_builder.add_edge("add_extra_context", "generate_sql")
 graph_builder.add_edge("generate_sql", "audit_sql")
-graph_builder.add_edge("audit_sql", "validate_sql")
+graph_builder.add_conditional_edges(
+    "audit_sql",
+    route_after_audit,
+    {"validate_sql": "validate_sql", "correct_sql": "correct_sql", "end": END},
+)
 
-graph_builder.add_conditional_edges("validate_sql",
-    lambda state: "execute_sql"
-        if state["error"] is None or state.get("retry_count", 0) >= MAX_SQL_RETRIES
-        else "correct_sql",
-    {"execute_sql": "execute_sql", "correct_sql": "correct_sql"})
+graph_builder.add_conditional_edges(
+    "validate_sql",
+    route_after_validation,
+    {"execute_sql": "execute_sql", "correct_sql": "correct_sql", "end": END},
+)
 
 graph_builder.add_edge("correct_sql", "audit_sql")
 graph_builder.add_edge("execute_sql", END)

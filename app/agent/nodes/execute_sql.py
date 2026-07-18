@@ -9,6 +9,14 @@ async def execute_sql(state: DataAgentState, runtime: Runtime[DataAgentContext])
     writer = runtime.stream_writer
     writer({"type": "progress", "step": "执行SQL", "status": "running"})
 
+    # 纵深防御：即使图路由被错误修改，也不能执行未通过审计或验证的SQL。
+    if state.get("error"):
+        message = f"SQL仍存在错误，拒绝执行: {state['error']}"
+        writer({"type": "progress", "step": "执行SQL", "status": "error"})
+        writer({"type": "error", "code": "SQL_NOT_APPROVED", "message": message})
+        logger.error(message)
+        return {"error": state["error"]}
+
     sql = state["sql"]
 
     dw_mysql_repository = runtime.context["dw_mysql_repository"]

@@ -20,6 +20,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+from eval.llm_tracking import LLMCallTracker
 from eval.metrics import aggregate_results, evaluate_case
 
 
@@ -38,6 +39,36 @@ def load_cases(path: Path) -> list[dict[str, Any]]:
     if not isinstance(data, list):
         raise ValueError("evaluation cases must be a JSON array or JSONL records")
     return data
+
+
+def load_goldens(path: Path) -> dict[str, dict[str, Any]]:
+    if not path.exists():
+        return {}
+
+    with path.open(encoding="utf-8") as f:
+        data = json.load(f)
+
+    if isinstance(data, list):
+        goldens = {str(item["id"]): item for item in data}
+    elif isinstance(data, dict):
+        goldens = {str(case_id): item for case_id, item in data.items()}
+    else:
+        raise ValueError("golden results must be a JSON object or array")
+
+    for case_id, golden in goldens.items():
+        if not isinstance(golden, dict):
+            raise ValueError(f"golden result for {case_id} must be an object")
+    return goldens
+
+
+def merge_goldens(
+    cases: list[dict[str, Any]],
+    goldens: dict[str, dict[str, Any]],
+) -> list[dict[str, Any]]:
+    return [
+        {**case, **goldens.get(str(case.get("id")), {})}
+        for case in cases
+    ]
 
 
 def load_runtime_deps() -> dict[str, Any]:
@@ -105,11 +136,15 @@ async def run_one_case(
     error = ""
     correction_attempts = 0
     result_received = False
+    node_timings: list[dict[str, Any]] = []
+    sql_cache_status: str | None = None
+    llm_tracker = LLMCallTracker()
 
     try:
         async for chunk in graph.astream(
             input=state,
             context=context,
+            config={"callbacks": [llm_tracker]},
             stream_mode="custom",
         ):
             events.append(chunk)
@@ -123,6 +158,22 @@ async def run_one_case(
                 result_received = True
             elif event_type == "error":
                 error = chunk.get("message") or error
+            elif (
+                event_type == "node_timing"
+                and chunk.get("status") in {"success", "error"}
+            ):
+                node_timings.append(
+                    {
+                        "node": chunk.get("node"),
+                        "invocation_id": chunk.get("invocation_id"),
+                        "status": chunk.get("status"),
+                        "elapsed_seconds": chunk.get("elapsed_seconds"),
+                        "error_type": chunk.get("error_type"),
+                        "error": chunk.get("error"),
+                    }
+                )
+            elif event_type == "sql_cache":
+                sql_cache_status = str(chunk.get("status") or "") or None
 
             step = str(chunk.get("step") or "")
             if step.startswith("校正SQL") and chunk.get("status") == "running":
@@ -140,13 +191,22 @@ async def run_one_case(
         correction_attempts=correction_attempts,
         event_count=len(events),
         result_received=result_received,
+        node_timings=node_timings,
+        llm_calls=llm_tracker.snapshot(),
+        sql_cache_status=sql_cache_status,
     )
 
 
 async def run_eval(args: argparse.Namespace) -> dict[str, Any]:
     cases = load_cases(args.cases)
+    goldens = load_goldens(args.goldens)
+    cases = merge_goldens(cases, goldens)
+    if args.only_gold:
+        cases = [case for case in cases if case.get("expected_result") is not None]
     if args.limit:
         cases = cases[: args.limit]
+    if not cases:
+        raise ValueError("no evaluation cases selected")
 
     deps = load_runtime_deps()
     init_clients(deps)
@@ -182,17 +242,46 @@ async def run_eval(args: argparse.Namespace) -> dict[str, Any]:
                 if result["expected_sql_rule_ok"] is not None:
                     sql_rule_text = f" sql_rule={result['expected_sql_rule_ok']}"
 
+                expected_result_text = ""
+                if result["expected_result_ok"] is not None:
+                    expected_result_text = (
+                        f" result_check={result['expected_result_ok']}"
+                    )
+
                 print(
                     f"[{index}/{len(cases)}] {case['id']} {case['question']}\n"
                     f"  sql={result['sql_generated']} executable={result['sql_executable']} "
                     f"tables={result['expected_tables_hit']} non_empty={result['not_empty_ok']} "
-                    f"{sql_rule_text} "
-                    f"repair={result['correction_attempts']} elapsed={result['elapsed_seconds']}s"
+                    f"{sql_rule_text}{expected_result_text} "
+                    f"repair={result['correction_attempts']} "
+                    f"llm_calls={result['llm_call_count']} "
+                    f"elapsed={result['elapsed_seconds']}s"
                 )
+                if result["slowest_node"]:
+                    slowest = result["slowest_node"]
+                    print(
+                        f"  slowest_node={slowest['node']} "
+                        f"elapsed={slowest['elapsed_seconds']}s "
+                        f"llm_elapsed={result['llm_elapsed_seconds']}s"
+                    )
                 if result["error"]:
                     print(f"  error={result['error'][:200]}")
+                if result["expected_result_diff"]:
+                    diff = json.dumps(
+                        result["expected_result_diff"],
+                        ensure_ascii=False,
+                    )
+                    print(f"  result_diff={diff[:1000]}")
 
         report = aggregate_results(results)
+        report["metadata"] = {
+            "cases_file": str(args.cases),
+            "goldens_file": str(args.goldens),
+            "golden_cases": sum(
+                result["expected_result_ok"] is not None
+                for result in results
+            ),
+        }
         report["details"] = results
         return report
     finally:
@@ -201,34 +290,110 @@ async def run_eval(args: argparse.Namespace) -> dict[str, Any]:
 
 def print_summary(report: dict[str, Any]) -> None:
     summary = report["summary"]
+
+    def format_metric(metric: dict[str, Any]) -> str:
+        metric_rate = metric["rate"]
+        if metric_rate is None:
+            return "N/A (0 configured)"
+        return f"{metric_rate}% ({metric['success']}/{metric['total']})"
+
     print("\n" + "=" * 60)
     print("Text2SQL Offline Evaluation")
     print("=" * 60)
     print(f"Total cases: {summary['total']}")
-    print(f"SQL generated: {summary['sql_generated']['rate']}%")
-    print(f"SQL executable: {summary['sql_executable']['rate']}%")
-    print(f"Expected table hit: {summary['expected_tables_hit']['rate']}%")
-    print(f"Non-empty check: {summary['not_empty_ok']['rate']}%")
-    print(f"SQL rule check: {summary['expected_sql_rule_ok']['rate']}%")
-    print(f"Expected result check: {summary['expected_result_ok']['rate']}%")
+    print(f"SQL generated: {format_metric(summary['sql_generated'])}")
+    print(f"SQL executable: {format_metric(summary['sql_executable'])}")
+    print(f"Expected table hit: {format_metric(summary['expected_tables_hit'])}")
+    print(f"Empty/non-empty check: {format_metric(summary['not_empty_ok'])}")
+    print(f"SQL rule check: {format_metric(summary['expected_sql_rule_ok'])}")
+    print(f"Expected result check: {format_metric(summary['expected_result_ok'])}")
     print(f"Self-repair cases: {summary['self_repair_cases']}")
     print(f"Average latency: {summary['avg_seconds']}s")
 
+    observability = summary.get("observability") or {}
+    llm_summary = observability.get("llm") or {}
+    if llm_summary.get("count"):
+        print(
+            "LLM calls: "
+            f"{llm_summary['count']} "
+            f"(errors={llm_summary['error']}, "
+            f"avg={llm_summary['avg_seconds']}s, "
+            f"P50={llm_summary['p50_seconds']}s, "
+            f"P95={llm_summary['p95_seconds']}s, "
+            f"max={llm_summary['max_seconds']}s)"
+        )
+        if llm_summary.get("usage_reported_calls"):
+            print(
+                "LLM tokens: "
+                f"input={llm_summary['input_tokens']} "
+                f"output={llm_summary['output_tokens']} "
+                f"total={llm_summary['total_tokens']} "
+                f"reported_calls={llm_summary['usage_reported_calls']}"
+            )
+
+    cache_summary = observability.get("sql_cache") or {}
+    if cache_summary.get("observed"):
+        print(
+            "SQL cache: "
+            f"hits={cache_summary['hits']} "
+            f"misses={cache_summary['misses']} "
+            f"bypassed={cache_summary['bypassed']}"
+        )
+
+    node_summary = observability.get("node_timings") or {}
+    if node_summary:
+        print("\nNode latency (slowest average first):")
+        ordered_nodes = sorted(
+            node_summary.items(),
+            key=lambda item: item[1].get("avg_seconds") or 0,
+            reverse=True,
+        )
+        for node, stats in ordered_nodes:
+            print(
+                f"  {node:24s} calls={stats['count']:3d} "
+                f"avg={stats['avg_seconds']:8.3f}s "
+                f"P50={stats['p50_seconds']:8.3f}s "
+                f"P95={stats['p95_seconds']:8.3f}s "
+                f"max={stats['max_seconds']:8.3f}s "
+                f"errors={stats['error']}"
+            )
+
+    llm_by_node = llm_summary.get("by_node") or {}
+    if llm_by_node:
+        print("\nLLM latency by node:")
+        ordered_llm_nodes = sorted(
+            llm_by_node.items(),
+            key=lambda item: item[1].get("avg_seconds") or 0,
+            reverse=True,
+        )
+        for node, stats in ordered_llm_nodes:
+            print(
+                f"  {node:24s} calls={stats['count']:3d} "
+                f"avg={stats['avg_seconds']:8.3f}s "
+                f"P95={stats['p95_seconds']:8.3f}s "
+                f"max={stats['max_seconds']:8.3f}s "
+                f"errors={stats['error']}"
+            )
+
     print("\nBy difficulty:")
     for key, item in summary["by_difficulty"].items():
+        exec_rate = item["sql_executable"]["rate"]
+        table_rate = item["expected_tables_hit"]["rate"]
         print(
             f"  {key:8s} total={item['total']:3d} "
-            f"exec={item['sql_executable']['rate']:5.1f}% "
-            f"table={item['expected_tables_hit']['rate']:5.1f}% "
+            f"exec={exec_rate if exec_rate is not None else 'N/A'}% "
+            f"table={table_rate if table_rate is not None else 'N/A'}% "
             f"avg={item['avg_seconds']}s"
         )
 
     print("\nBy category:")
     for key, item in summary["by_category"].items():
+        exec_rate = item["sql_executable"]["rate"]
+        table_rate = item["expected_tables_hit"]["rate"]
         print(
             f"  {key:12s} total={item['total']:3d} "
-            f"exec={item['sql_executable']['rate']:5.1f}% "
-            f"table={item['expected_tables_hit']['rate']:5.1f}% "
+            f"exec={exec_rate if exec_rate is not None else 'N/A'}% "
+            f"table={table_rate if table_rate is not None else 'N/A'}% "
             f"avg={item['avg_seconds']}s"
         )
     print("=" * 60)
@@ -240,14 +405,25 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--cases",
         type=Path,
-        default=base_dir / "questions.json",
+        default=base_dir / "data" / "questions.json",
         help="Path to JSON/JSONL evaluation cases.",
     )
     parser.add_argument(
         "--report",
         type=Path,
-        default=base_dir / "eval_report.json",
+        default=base_dir / "reports" / "eval_report.json",
         help="Path to write evaluation report JSON.",
+    )
+    parser.add_argument(
+        "--goldens",
+        type=Path,
+        default=base_dir / "data" / "golden_results.json",
+        help="Path to manually reviewed SQL and expected results.",
+    )
+    parser.add_argument(
+        "--only-gold",
+        action="store_true",
+        help="Only run cases that have an expected result.",
     )
     parser.add_argument(
         "--limit",

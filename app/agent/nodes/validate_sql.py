@@ -1,7 +1,7 @@
 from langgraph.runtime import Runtime
 
 from app.agent.context import DataAgentContext
-from app.agent.state import DataAgentState
+from app.agent.state import DataAgentState, MAX_SQL_RETRIES
 from app.core.log import logger
 
 
@@ -19,6 +19,9 @@ async def validate_sql(state: DataAgentState, runtime: Runtime[DataAgentContext]
         logger.info(f"SQL验证成功 (重试{state.get('retry_count', 0)}次): {sql}")
         return {"error": None}
     except Exception as e:
+        error = str(e)
         writer({"type": "progress", "step": "验证SQL", "status": "error"})
         logger.error(f"SQL验证失败 (重试{state.get('retry_count', 0)}次): {sql}")
-        return {"error": str(e)}
+        if state.get("retry_count", 0) >= MAX_SQL_RETRIES:
+            writer({"type": "error", "code": "SQL_VALIDATION_FAILED", "message": error})
+        return {"error": error}

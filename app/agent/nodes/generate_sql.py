@@ -99,8 +99,17 @@ async def generate_sql(state: DataAgentState, runtime: Runtime[DataAgentContext]
         cached = None
         if should_use_cache:
             cached = await _search_cache(qdrant_client, cache_cfg.collection_name, query_emb, cache_cfg.similarity_threshold)
+            writer({
+                "type": "sql_cache",
+                "status": "hit" if cached else "miss",
+            })
         else:
             logger.info("检测到语义规则，跳过SQL缓存查询，避免命中旧的时间或指标口径写法")
+            writer({
+                "type": "sql_cache",
+                "status": "bypassed",
+                "reason": "semantic_rules",
+            })
 
         if cached:
             logger.info(f"SQL 缓存命中 (score={cached['score']:.4f}): 已缓存问题='{cached['cached_query']}'")

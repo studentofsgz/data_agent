@@ -1,0 +1,299 @@
+{
+  "summary": {
+    "total": 3,
+    "sql_generated": {
+      "success": 3,
+      "total": 3,
+      "rate": 100.0
+    },
+    "sql_executable": {
+      "success": 3,
+      "total": 3,
+      "rate": 100.0
+    },
+    "expected_tables_hit": {
+      "success": 3,
+      "total": 3,
+      "rate": 100.0
+    },
+    "not_empty_ok": {
+      "success": 3,
+      "total": 3,
+      "rate": 100.0
+    },
+    "expected_result_ok": {
+      "success": 0,
+      "total": 0,
+      "rate": 0.0
+    },
+    "expected_sql_rule_ok": {
+      "success": 1,
+      "total": 1,
+      "rate": 100.0
+    },
+    "self_repair_cases": 0,
+    "avg_seconds": 45.022,
+    "by_difficulty": {
+      "easy": {
+        "total": 2,
+        "sql_generated": {
+          "success": 2,
+          "total": 2,
+          "rate": 100.0
+        },
+        "sql_executable": {
+          "success": 2,
+          "total": 2,
+          "rate": 100.0
+        },
+        "expected_tables_hit": {
+          "success": 2,
+          "total": 2,
+          "rate": 100.0
+        },
+        "not_empty_ok": {
+          "success": 2,
+          "total": 2,
+          "rate": 100.0
+        },
+        "expected_result_ok": {
+          "success": 0,
+          "total": 0,
+          "rate": 0.0
+        },
+        "expected_sql_rule_ok": {
+          "success": 1,
+          "total": 1,
+          "rate": 100.0
+        },
+        "self_repair_cases": 0,
+        "avg_seconds": 50.566
+      },
+      "medium": {
+        "total": 1,
+        "sql_generated": {
+          "success": 1,
+          "total": 1,
+          "rate": 100.0
+        },
+        "sql_executable": {
+          "success": 1,
+          "total": 1,
+          "rate": 100.0
+        },
+        "expected_tables_hit": {
+          "success": 1,
+          "total": 1,
+          "rate": 100.0
+        },
+        "not_empty_ok": {
+          "success": 1,
+          "total": 1,
+          "rate": 100.0
+        },
+        "expected_result_ok": {
+          "success": 0,
+          "total": 0,
+          "rate": 0.0
+        },
+        "expected_sql_rule_ok": {
+          "success": 0,
+          "total": 0,
+          "rate": 0.0
+        },
+        "self_repair_cases": 0,
+        "avg_seconds": 33.933
+      }
+    },
+    "by_category": {
+      "分组聚合": {
+        "total": 1,
+        "sql_generated": {
+          "success": 1,
+          "total": 1,
+          "rate": 100.0
+        },
+        "sql_executable": {
+          "success": 1,
+          "total": 1,
+          "rate": 100.0
+        },
+        "expected_tables_hit": {
+          "success": 1,
+          "total": 1,
+          "rate": 100.0
+        },
+        "not_empty_ok": {
+          "success": 1,
+          "total": 1,
+          "rate": 100.0
+        },
+        "expected_result_ok": {
+          "success": 0,
+          "total": 0,
+          "rate": 0.0
+        },
+        "expected_sql_rule_ok": {
+          "success": 0,
+          "total": 0,
+          "rate": 0.0
+        },
+        "self_repair_cases": 0,
+        "avg_seconds": 62.048
+      },
+      "单表聚合": {
+        "total": 1,
+        "sql_generated": {
+          "success": 1,
+          "total": 1,
+          "rate": 100.0
+        },
+        "sql_executable": {
+          "success": 1,
+          "total": 1,
+          "rate": 100.0
+        },
+        "expected_tables_hit": {
+          "success": 1,
+          "total": 1,
+          "rate": 100.0
+        },
+        "not_empty_ok": {
+          "success": 1,
+          "total": 1,
+          "rate": 100.0
+        },
+        "expected_result_ok": {
+          "success": 0,
+          "total": 0,
+          "rate": 0.0
+        },
+        "expected_sql_rule_ok": {
+          "success": 1,
+          "total": 1,
+          "rate": 100.0
+        },
+        "self_repair_cases": 0,
+        "avg_seconds": 39.084
+      },
+      "排序/LIMIT": {
+        "total": 1,
+        "sql_generated": {
+          "success": 1,
+          "total": 1,
+          "rate": 100.0
+        },
+        "sql_executable": {
+          "success": 1,
+          "total": 1,
+          "rate": 100.0
+        },
+        "expected_tables_hit": {
+          "success": 1,
+          "total": 1,
+          "rate": 100.0
+        },
+        "not_empty_ok": {
+          "success": 1,
+          "total": 1,
+          "rate": 100.0
+        },
+        "expected_result_ok": {
+          "success": 0,
+          "total": 0,
+          "rate": 0.0
+        },
+        "expected_sql_rule_ok": {
+          "success": 0,
+          "total": 0,
+          "rate": 0.0
+        },
+        "self_repair_cases": 0,
+        "avg_seconds": 33.933
+      }
+    }
+  },
+  "details": [
+    {
+      "id": "q001",
+      "question": "统计各地区的销售总额",
+      "difficulty": "easy",
+      "category": "分组聚合",
+      "sql": "SELECT dim_region.region_name, SUM(fact_order.order_amount) AS GMV FROM fact_order JOIN dim_region ON fact_order.region_id = dim_region.region_id GROUP BY dim_region.region_name ORDER BY GMV DESC",
+      "normalized_sql": "select dim_region.region_name, sum(fact_order.order_amount) as gmv from fact_order join dim_region on fact_order.region_id = dim_region.region_id group by dim_region.region_name order by gmv desc",
+      "actual_tables": [
+        "dim_region",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_region",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
+      "expected_sql_rule_ok": null,
+      "result_count": 5,
+      "elapsed_seconds": 62.048,
+      "correction_attempts": 0,
+      "event_count": 29,
+      "error": ""
+    },
+    {
+      "id": "q002",
+      "question": "北京地区的订单量是多少",
+      "difficulty": "easy",
+      "category": "单表聚合",
+      "sql": "SELECT COUNT(DISTINCT fact_order.order_id) AS order_count FROM fact_order JOIN dim_region ON fact_order.region_id = dim_region.region_id WHERE dim_region.province = '北京市'",
+      "normalized_sql": "select count(distinct fact_order.order_id) as order_count from fact_order join dim_region on fact_order.region_id = dim_region.region_id where dim_region.province = '北京市'",
+      "actual_tables": [
+        "dim_region",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_region",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
+      "expected_sql_rule_ok": true,
+      "result_count": 1,
+      "elapsed_seconds": 39.084,
+      "correction_attempts": 0,
+      "event_count": 29,
+      "error": ""
+    },
+    {
+      "id": "q003",
+      "question": "GMV最高的5个商品",
+      "difficulty": "medium",
+      "category": "排序/LIMIT",
+      "sql": "SELECT dim_product.product_name, SUM(fact_order.order_amount) AS GMV\nFROM fact_order\nJOIN dim_product ON fact_order.product_id = dim_product.product_id\nGROUP BY dim_product.product_name\nORDER BY GMV DESC\nLIMIT 5",
+      "normalized_sql": "select dim_product.product_name, sum(fact_order.order_amount) as gmv from fact_order join dim_product on fact_order.product_id = dim_product.product_id group by dim_product.product_name order by gmv desc limit 5",
+      "actual_tables": [
+        "dim_product",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_product",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": null,
+      "expected_sql_rule_ok": null,
+      "result_count": 5,
+      "elapsed_seconds": 33.933,
+      "correction_attempts": 0,
+      "event_count": 29,
+      "error": ""
+    }
+  ]
+}

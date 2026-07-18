@@ -1,0 +1,1034 @@
+{
+  "summary": {
+    "total": 1,
+    "sql_generated": {
+      "success": 1,
+      "total": 1,
+      "rate": 100.0
+    },
+    "sql_executable": {
+      "success": 1,
+      "total": 1,
+      "rate": 100.0
+    },
+    "expected_tables_hit": {
+      "success": 1,
+      "total": 1,
+      "rate": 100.0
+    },
+    "not_empty_ok": {
+      "success": 1,
+      "total": 1,
+      "rate": 100.0
+    },
+    "expected_result_ok": {
+      "success": 1,
+      "total": 1,
+      "rate": 100.0
+    },
+    "expected_sql_rule_ok": {
+      "success": 0,
+      "total": 0,
+      "rate": null
+    },
+    "self_repair_cases": 0,
+    "avg_seconds": 20.2,
+    "observability": {
+      "node_timings": {
+        "add_extra_context": {
+          "count": 1,
+          "success": 1,
+          "error": 0,
+          "avg_seconds": 0.024,
+          "p50_seconds": 0.024,
+          "p95_seconds": 0.024,
+          "max_seconds": 0.024
+        },
+        "audit_sql": {
+          "count": 1,
+          "success": 1,
+          "error": 0,
+          "avg_seconds": 0.033,
+          "p50_seconds": 0.033,
+          "p95_seconds": 0.033,
+          "max_seconds": 0.033
+        },
+        "context_manager": {
+          "count": 1,
+          "success": 1,
+          "error": 0,
+          "avg_seconds": 0.0,
+          "p50_seconds": 0.0,
+          "p95_seconds": 0.0,
+          "max_seconds": 0.0
+        },
+        "execute_sql": {
+          "count": 1,
+          "success": 1,
+          "error": 0,
+          "avg_seconds": 0.002,
+          "p50_seconds": 0.002,
+          "p95_seconds": 0.002,
+          "max_seconds": 0.002
+        },
+        "extract_keywords": {
+          "count": 1,
+          "success": 1,
+          "error": 0,
+          "avg_seconds": 0.366,
+          "p50_seconds": 0.366,
+          "p95_seconds": 0.366,
+          "max_seconds": 0.366
+        },
+        "filter_metric": {
+          "count": 1,
+          "success": 1,
+          "error": 0,
+          "avg_seconds": 2.258,
+          "p50_seconds": 2.258,
+          "p95_seconds": 2.258,
+          "max_seconds": 2.258
+        },
+        "filter_table": {
+          "count": 1,
+          "success": 1,
+          "error": 0,
+          "avg_seconds": 2.869,
+          "p50_seconds": 2.869,
+          "p95_seconds": 2.869,
+          "max_seconds": 2.869
+        },
+        "generate_sql": {
+          "count": 1,
+          "success": 1,
+          "error": 0,
+          "avg_seconds": 4.41,
+          "p50_seconds": 4.41,
+          "p95_seconds": 4.41,
+          "max_seconds": 4.41
+        },
+        "merge_retrieved_info": {
+          "count": 1,
+          "success": 1,
+          "error": 0,
+          "avg_seconds": 0.054,
+          "p50_seconds": 0.054,
+          "p95_seconds": 0.054,
+          "max_seconds": 0.054
+        },
+        "recall_column": {
+          "count": 1,
+          "success": 1,
+          "error": 0,
+          "avg_seconds": 6.576,
+          "p50_seconds": 6.576,
+          "p95_seconds": 6.576,
+          "max_seconds": 6.576
+        },
+        "recall_metric": {
+          "count": 1,
+          "success": 1,
+          "error": 0,
+          "avg_seconds": 7.445,
+          "p50_seconds": 7.445,
+          "p95_seconds": 7.445,
+          "max_seconds": 7.445
+        },
+        "recall_value": {
+          "count": 1,
+          "success": 1,
+          "error": 0,
+          "avg_seconds": 4.551,
+          "p50_seconds": 4.551,
+          "p95_seconds": 4.551,
+          "max_seconds": 4.551
+        },
+        "rerank": {
+          "count": 1,
+          "success": 1,
+          "error": 0,
+          "avg_seconds": 4.895,
+          "p50_seconds": 4.895,
+          "p95_seconds": 4.895,
+          "max_seconds": 4.895
+        },
+        "validate_sql": {
+          "count": 1,
+          "success": 1,
+          "error": 0,
+          "avg_seconds": 0.004,
+          "p50_seconds": 0.004,
+          "p95_seconds": 0.004,
+          "max_seconds": 0.004
+        }
+      },
+      "llm": {
+        "count": 6,
+        "success": 6,
+        "error": 0,
+        "avg_seconds": 3.256,
+        "p50_seconds": 2.992,
+        "p95_seconds": 4.368,
+        "max_seconds": 4.514,
+        "total_seconds": 19.536,
+        "input_tokens": 5021,
+        "output_tokens": 904,
+        "total_tokens": 5925,
+        "usage_reported_calls": 6,
+        "by_node": {
+          "filter_metric": {
+            "count": 1,
+            "success": 1,
+            "error": 0,
+            "avg_seconds": 2.247,
+            "p50_seconds": 2.247,
+            "p95_seconds": 2.247,
+            "max_seconds": 2.247
+          },
+          "filter_table": {
+            "count": 1,
+            "success": 1,
+            "error": 0,
+            "avg_seconds": 2.862,
+            "p50_seconds": 2.862,
+            "p95_seconds": 2.862,
+            "max_seconds": 2.862
+          },
+          "generate_sql": {
+            "count": 1,
+            "success": 1,
+            "error": 0,
+            "avg_seconds": 3.929,
+            "p50_seconds": 3.929,
+            "p95_seconds": 3.929,
+            "max_seconds": 3.929
+          },
+          "recall_column": {
+            "count": 1,
+            "success": 1,
+            "error": 0,
+            "avg_seconds": 2.992,
+            "p50_seconds": 2.992,
+            "p95_seconds": 2.992,
+            "max_seconds": 2.992
+          },
+          "recall_metric": {
+            "count": 1,
+            "success": 1,
+            "error": 0,
+            "avg_seconds": 2.992,
+            "p50_seconds": 2.992,
+            "p95_seconds": 2.992,
+            "max_seconds": 2.992
+          },
+          "recall_value": {
+            "count": 1,
+            "success": 1,
+            "error": 0,
+            "avg_seconds": 4.514,
+            "p50_seconds": 4.514,
+            "p95_seconds": 4.514,
+            "max_seconds": 4.514
+          }
+        }
+      },
+      "sql_cache": {
+        "observed": 1,
+        "hits": 0,
+        "misses": 0,
+        "bypassed": 1
+      }
+    },
+    "by_difficulty": {
+      "easy": {
+        "total": 1,
+        "sql_generated": {
+          "success": 1,
+          "total": 1,
+          "rate": 100.0
+        },
+        "sql_executable": {
+          "success": 1,
+          "total": 1,
+          "rate": 100.0
+        },
+        "expected_tables_hit": {
+          "success": 1,
+          "total": 1,
+          "rate": 100.0
+        },
+        "not_empty_ok": {
+          "success": 1,
+          "total": 1,
+          "rate": 100.0
+        },
+        "expected_result_ok": {
+          "success": 1,
+          "total": 1,
+          "rate": 100.0
+        },
+        "expected_sql_rule_ok": {
+          "success": 0,
+          "total": 0,
+          "rate": null
+        },
+        "self_repair_cases": 0,
+        "avg_seconds": 20.2,
+        "observability": {
+          "node_timings": {
+            "add_extra_context": {
+              "count": 1,
+              "success": 1,
+              "error": 0,
+              "avg_seconds": 0.024,
+              "p50_seconds": 0.024,
+              "p95_seconds": 0.024,
+              "max_seconds": 0.024
+            },
+            "audit_sql": {
+              "count": 1,
+              "success": 1,
+              "error": 0,
+              "avg_seconds": 0.033,
+              "p50_seconds": 0.033,
+              "p95_seconds": 0.033,
+              "max_seconds": 0.033
+            },
+            "context_manager": {
+              "count": 1,
+              "success": 1,
+              "error": 0,
+              "avg_seconds": 0.0,
+              "p50_seconds": 0.0,
+              "p95_seconds": 0.0,
+              "max_seconds": 0.0
+            },
+            "execute_sql": {
+              "count": 1,
+              "success": 1,
+              "error": 0,
+              "avg_seconds": 0.002,
+              "p50_seconds": 0.002,
+              "p95_seconds": 0.002,
+              "max_seconds": 0.002
+            },
+            "extract_keywords": {
+              "count": 1,
+              "success": 1,
+              "error": 0,
+              "avg_seconds": 0.366,
+              "p50_seconds": 0.366,
+              "p95_seconds": 0.366,
+              "max_seconds": 0.366
+            },
+            "filter_metric": {
+              "count": 1,
+              "success": 1,
+              "error": 0,
+              "avg_seconds": 2.258,
+              "p50_seconds": 2.258,
+              "p95_seconds": 2.258,
+              "max_seconds": 2.258
+            },
+            "filter_table": {
+              "count": 1,
+              "success": 1,
+              "error": 0,
+              "avg_seconds": 2.869,
+              "p50_seconds": 2.869,
+              "p95_seconds": 2.869,
+              "max_seconds": 2.869
+            },
+            "generate_sql": {
+              "count": 1,
+              "success": 1,
+              "error": 0,
+              "avg_seconds": 4.41,
+              "p50_seconds": 4.41,
+              "p95_seconds": 4.41,
+              "max_seconds": 4.41
+            },
+            "merge_retrieved_info": {
+              "count": 1,
+              "success": 1,
+              "error": 0,
+              "avg_seconds": 0.054,
+              "p50_seconds": 0.054,
+              "p95_seconds": 0.054,
+              "max_seconds": 0.054
+            },
+            "recall_column": {
+              "count": 1,
+              "success": 1,
+              "error": 0,
+              "avg_seconds": 6.576,
+              "p50_seconds": 6.576,
+              "p95_seconds": 6.576,
+              "max_seconds": 6.576
+            },
+            "recall_metric": {
+              "count": 1,
+              "success": 1,
+              "error": 0,
+              "avg_seconds": 7.445,
+              "p50_seconds": 7.445,
+              "p95_seconds": 7.445,
+              "max_seconds": 7.445
+            },
+            "recall_value": {
+              "count": 1,
+              "success": 1,
+              "error": 0,
+              "avg_seconds": 4.551,
+              "p50_seconds": 4.551,
+              "p95_seconds": 4.551,
+              "max_seconds": 4.551
+            },
+            "rerank": {
+              "count": 1,
+              "success": 1,
+              "error": 0,
+              "avg_seconds": 4.895,
+              "p50_seconds": 4.895,
+              "p95_seconds": 4.895,
+              "max_seconds": 4.895
+            },
+            "validate_sql": {
+              "count": 1,
+              "success": 1,
+              "error": 0,
+              "avg_seconds": 0.004,
+              "p50_seconds": 0.004,
+              "p95_seconds": 0.004,
+              "max_seconds": 0.004
+            }
+          },
+          "llm": {
+            "count": 6,
+            "success": 6,
+            "error": 0,
+            "avg_seconds": 3.256,
+            "p50_seconds": 2.992,
+            "p95_seconds": 4.368,
+            "max_seconds": 4.514,
+            "total_seconds": 19.536,
+            "input_tokens": 5021,
+            "output_tokens": 904,
+            "total_tokens": 5925,
+            "usage_reported_calls": 6,
+            "by_node": {
+              "filter_metric": {
+                "count": 1,
+                "success": 1,
+                "error": 0,
+                "avg_seconds": 2.247,
+                "p50_seconds": 2.247,
+                "p95_seconds": 2.247,
+                "max_seconds": 2.247
+              },
+              "filter_table": {
+                "count": 1,
+                "success": 1,
+                "error": 0,
+                "avg_seconds": 2.862,
+                "p50_seconds": 2.862,
+                "p95_seconds": 2.862,
+                "max_seconds": 2.862
+              },
+              "generate_sql": {
+                "count": 1,
+                "success": 1,
+                "error": 0,
+                "avg_seconds": 3.929,
+                "p50_seconds": 3.929,
+                "p95_seconds": 3.929,
+                "max_seconds": 3.929
+              },
+              "recall_column": {
+                "count": 1,
+                "success": 1,
+                "error": 0,
+                "avg_seconds": 2.992,
+                "p50_seconds": 2.992,
+                "p95_seconds": 2.992,
+                "max_seconds": 2.992
+              },
+              "recall_metric": {
+                "count": 1,
+                "success": 1,
+                "error": 0,
+                "avg_seconds": 2.992,
+                "p50_seconds": 2.992,
+                "p95_seconds": 2.992,
+                "max_seconds": 2.992
+              },
+              "recall_value": {
+                "count": 1,
+                "success": 1,
+                "error": 0,
+                "avg_seconds": 4.514,
+                "p50_seconds": 4.514,
+                "p95_seconds": 4.514,
+                "max_seconds": 4.514
+              }
+            }
+          },
+          "sql_cache": {
+            "observed": 1,
+            "hits": 0,
+            "misses": 0,
+            "bypassed": 1
+          }
+        }
+      }
+    },
+    "by_category": {
+      "分组聚合": {
+        "total": 1,
+        "sql_generated": {
+          "success": 1,
+          "total": 1,
+          "rate": 100.0
+        },
+        "sql_executable": {
+          "success": 1,
+          "total": 1,
+          "rate": 100.0
+        },
+        "expected_tables_hit": {
+          "success": 1,
+          "total": 1,
+          "rate": 100.0
+        },
+        "not_empty_ok": {
+          "success": 1,
+          "total": 1,
+          "rate": 100.0
+        },
+        "expected_result_ok": {
+          "success": 1,
+          "total": 1,
+          "rate": 100.0
+        },
+        "expected_sql_rule_ok": {
+          "success": 0,
+          "total": 0,
+          "rate": null
+        },
+        "self_repair_cases": 0,
+        "avg_seconds": 20.2,
+        "observability": {
+          "node_timings": {
+            "add_extra_context": {
+              "count": 1,
+              "success": 1,
+              "error": 0,
+              "avg_seconds": 0.024,
+              "p50_seconds": 0.024,
+              "p95_seconds": 0.024,
+              "max_seconds": 0.024
+            },
+            "audit_sql": {
+              "count": 1,
+              "success": 1,
+              "error": 0,
+              "avg_seconds": 0.033,
+              "p50_seconds": 0.033,
+              "p95_seconds": 0.033,
+              "max_seconds": 0.033
+            },
+            "context_manager": {
+              "count": 1,
+              "success": 1,
+              "error": 0,
+              "avg_seconds": 0.0,
+              "p50_seconds": 0.0,
+              "p95_seconds": 0.0,
+              "max_seconds": 0.0
+            },
+            "execute_sql": {
+              "count": 1,
+              "success": 1,
+              "error": 0,
+              "avg_seconds": 0.002,
+              "p50_seconds": 0.002,
+              "p95_seconds": 0.002,
+              "max_seconds": 0.002
+            },
+            "extract_keywords": {
+              "count": 1,
+              "success": 1,
+              "error": 0,
+              "avg_seconds": 0.366,
+              "p50_seconds": 0.366,
+              "p95_seconds": 0.366,
+              "max_seconds": 0.366
+            },
+            "filter_metric": {
+              "count": 1,
+              "success": 1,
+              "error": 0,
+              "avg_seconds": 2.258,
+              "p50_seconds": 2.258,
+              "p95_seconds": 2.258,
+              "max_seconds": 2.258
+            },
+            "filter_table": {
+              "count": 1,
+              "success": 1,
+              "error": 0,
+              "avg_seconds": 2.869,
+              "p50_seconds": 2.869,
+              "p95_seconds": 2.869,
+              "max_seconds": 2.869
+            },
+            "generate_sql": {
+              "count": 1,
+              "success": 1,
+              "error": 0,
+              "avg_seconds": 4.41,
+              "p50_seconds": 4.41,
+              "p95_seconds": 4.41,
+              "max_seconds": 4.41
+            },
+            "merge_retrieved_info": {
+              "count": 1,
+              "success": 1,
+              "error": 0,
+              "avg_seconds": 0.054,
+              "p50_seconds": 0.054,
+              "p95_seconds": 0.054,
+              "max_seconds": 0.054
+            },
+            "recall_column": {
+              "count": 1,
+              "success": 1,
+              "error": 0,
+              "avg_seconds": 6.576,
+              "p50_seconds": 6.576,
+              "p95_seconds": 6.576,
+              "max_seconds": 6.576
+            },
+            "recall_metric": {
+              "count": 1,
+              "success": 1,
+              "error": 0,
+              "avg_seconds": 7.445,
+              "p50_seconds": 7.445,
+              "p95_seconds": 7.445,
+              "max_seconds": 7.445
+            },
+            "recall_value": {
+              "count": 1,
+              "success": 1,
+              "error": 0,
+              "avg_seconds": 4.551,
+              "p50_seconds": 4.551,
+              "p95_seconds": 4.551,
+              "max_seconds": 4.551
+            },
+            "rerank": {
+              "count": 1,
+              "success": 1,
+              "error": 0,
+              "avg_seconds": 4.895,
+              "p50_seconds": 4.895,
+              "p95_seconds": 4.895,
+              "max_seconds": 4.895
+            },
+            "validate_sql": {
+              "count": 1,
+              "success": 1,
+              "error": 0,
+              "avg_seconds": 0.004,
+              "p50_seconds": 0.004,
+              "p95_seconds": 0.004,
+              "max_seconds": 0.004
+            }
+          },
+          "llm": {
+            "count": 6,
+            "success": 6,
+            "error": 0,
+            "avg_seconds": 3.256,
+            "p50_seconds": 2.992,
+            "p95_seconds": 4.368,
+            "max_seconds": 4.514,
+            "total_seconds": 19.536,
+            "input_tokens": 5021,
+            "output_tokens": 904,
+            "total_tokens": 5925,
+            "usage_reported_calls": 6,
+            "by_node": {
+              "filter_metric": {
+                "count": 1,
+                "success": 1,
+                "error": 0,
+                "avg_seconds": 2.247,
+                "p50_seconds": 2.247,
+                "p95_seconds": 2.247,
+                "max_seconds": 2.247
+              },
+              "filter_table": {
+                "count": 1,
+                "success": 1,
+                "error": 0,
+                "avg_seconds": 2.862,
+                "p50_seconds": 2.862,
+                "p95_seconds": 2.862,
+                "max_seconds": 2.862
+              },
+              "generate_sql": {
+                "count": 1,
+                "success": 1,
+                "error": 0,
+                "avg_seconds": 3.929,
+                "p50_seconds": 3.929,
+                "p95_seconds": 3.929,
+                "max_seconds": 3.929
+              },
+              "recall_column": {
+                "count": 1,
+                "success": 1,
+                "error": 0,
+                "avg_seconds": 2.992,
+                "p50_seconds": 2.992,
+                "p95_seconds": 2.992,
+                "max_seconds": 2.992
+              },
+              "recall_metric": {
+                "count": 1,
+                "success": 1,
+                "error": 0,
+                "avg_seconds": 2.992,
+                "p50_seconds": 2.992,
+                "p95_seconds": 2.992,
+                "max_seconds": 2.992
+              },
+              "recall_value": {
+                "count": 1,
+                "success": 1,
+                "error": 0,
+                "avg_seconds": 4.514,
+                "p50_seconds": 4.514,
+                "p95_seconds": 4.514,
+                "max_seconds": 4.514
+              }
+            }
+          },
+          "sql_cache": {
+            "observed": 1,
+            "hits": 0,
+            "misses": 0,
+            "bypassed": 1
+          }
+        }
+      }
+    }
+  },
+  "metadata": {
+    "cases_file": "/Users/zhansuping/Downloads/面试/面试项目/问数/data-agent/eval/questions.json",
+    "goldens_file": "/Users/zhansuping/Downloads/面试/面试项目/问数/data-agent/eval/golden_results.json",
+    "golden_cases": 1
+  },
+  "details": [
+    {
+      "id": "q001",
+      "question": "统计各地区的销售总额",
+      "difficulty": "easy",
+      "category": "分组聚合",
+      "sql": "SELECT dim_region.region_name, SUM(fact_order.order_amount) AS GMV FROM fact_order JOIN dim_region ON fact_order.region_id = dim_region.region_id GROUP BY dim_region.region_name ORDER BY GMV DESC",
+      "gold_sql": "SELECT r.region_name, SUM(f.order_amount) AS total_amount FROM fact_order f JOIN dim_region r ON f.region_id = r.region_id GROUP BY r.region_name ORDER BY r.region_name",
+      "normalized_sql": "select dim_region.region_name, sum(fact_order.order_amount) as gmv from fact_order join dim_region on fact_order.region_id = dim_region.region_id group by dim_region.region_name order by gmv desc",
+      "actual_tables": [
+        "dim_region",
+        "fact_order"
+      ],
+      "expected_tables": [
+        "dim_region",
+        "fact_order"
+      ],
+      "sql_generated": true,
+      "sql_executable": true,
+      "expected_tables_hit": true,
+      "not_empty_ok": true,
+      "expected_result_ok": true,
+      "expected_result_diff": null,
+      "expected_result": [
+        {
+          "region_name": "华东",
+          "total_amount": 107373.0
+        },
+        {
+          "region_name": "华中",
+          "total_amount": 28957.0
+        },
+        {
+          "region_name": "华北",
+          "total_amount": 41099.5
+        },
+        {
+          "region_name": "华南",
+          "total_amount": 70202.0
+        },
+        {
+          "region_name": "西南",
+          "total_amount": 31528.0
+        }
+      ],
+      "actual_result": [
+        {
+          "region_name": "华东",
+          "GMV": 107373.0
+        },
+        {
+          "region_name": "华南",
+          "GMV": 70202.0
+        },
+        {
+          "region_name": "华北",
+          "GMV": 41099.5
+        },
+        {
+          "region_name": "西南",
+          "GMV": 31528.0
+        },
+        {
+          "region_name": "华中",
+          "GMV": 28957.0
+        }
+      ],
+      "expected_sql_rule_ok": null,
+      "result_count": 5,
+      "elapsed_seconds": 20.2,
+      "correction_attempts": 0,
+      "event_count": 59,
+      "node_timings": [
+        {
+          "node": "context_manager",
+          "invocation_id": "9656afc50b5b4fcaa82e6391bf89bb74",
+          "status": "success",
+          "elapsed_seconds": 1.6e-05,
+          "error_type": null,
+          "error": null
+        },
+        {
+          "node": "extract_keywords",
+          "invocation_id": "0827347b9cfa46c7a093b466c7be907c",
+          "status": "success",
+          "elapsed_seconds": 0.365592,
+          "error_type": null,
+          "error": null
+        },
+        {
+          "node": "recall_value",
+          "invocation_id": "85da2ef3d4ad42f491adb1cbc25f5e14",
+          "status": "success",
+          "elapsed_seconds": 4.550668,
+          "error_type": null,
+          "error": null
+        },
+        {
+          "node": "recall_column",
+          "invocation_id": "d76a834cb0cc4ed2be4a6edbda7c9c44",
+          "status": "success",
+          "elapsed_seconds": 6.576071,
+          "error_type": null,
+          "error": null
+        },
+        {
+          "node": "recall_metric",
+          "invocation_id": "35c3f76ebc7d48ca8471349e481a70e8",
+          "status": "success",
+          "elapsed_seconds": 7.444805,
+          "error_type": null,
+          "error": null
+        },
+        {
+          "node": "rerank",
+          "invocation_id": "411dd5337b534ac9be63ed2a45d9538c",
+          "status": "success",
+          "elapsed_seconds": 4.894941,
+          "error_type": null,
+          "error": null
+        },
+        {
+          "node": "merge_retrieved_info",
+          "invocation_id": "55ae2d6291da4cfc809f15639160ef26",
+          "status": "success",
+          "elapsed_seconds": 0.054136,
+          "error_type": null,
+          "error": null
+        },
+        {
+          "node": "filter_metric",
+          "invocation_id": "e406986ebfb7417495d76e32a52277f4",
+          "status": "success",
+          "elapsed_seconds": 2.257637,
+          "error_type": null,
+          "error": null
+        },
+        {
+          "node": "filter_table",
+          "invocation_id": "ccae6fcc4b2d4981a59661ed48fa35b9",
+          "status": "success",
+          "elapsed_seconds": 2.869242,
+          "error_type": null,
+          "error": null
+        },
+        {
+          "node": "add_extra_context",
+          "invocation_id": "d44304e0bd874edaac4bd0c9d1f4e4f4",
+          "status": "success",
+          "elapsed_seconds": 0.023756,
+          "error_type": null,
+          "error": null
+        },
+        {
+          "node": "generate_sql",
+          "invocation_id": "2b7d475f424b4f96850fdcbf0dd24ed5",
+          "status": "success",
+          "elapsed_seconds": 4.40971,
+          "error_type": null,
+          "error": null
+        },
+        {
+          "node": "audit_sql",
+          "invocation_id": "d77097d4fd894811a3068954607af19f",
+          "status": "success",
+          "elapsed_seconds": 0.033274,
+          "error_type": null,
+          "error": null
+        },
+        {
+          "node": "validate_sql",
+          "invocation_id": "17363924640b49a7b24a8ac0d730d3c5",
+          "status": "success",
+          "elapsed_seconds": 0.004261,
+          "error_type": null,
+          "error": null
+        },
+        {
+          "node": "execute_sql",
+          "invocation_id": "f7a2d38e468d4ea584b5a42faf0741fa",
+          "status": "success",
+          "elapsed_seconds": 0.001929,
+          "error_type": null,
+          "error": null
+        }
+      ],
+      "node_timing_count": 14,
+      "slowest_node": {
+        "node": "recall_metric",
+        "elapsed_seconds": 7.444805
+      },
+      "llm_calls": [
+        {
+          "sequence": 0,
+          "node": "recall_value",
+          "model": "deepseek-v4-flash",
+          "status": "success",
+          "elapsed_seconds": 4.513869,
+          "input_chars": 634,
+          "output_chars": 2,
+          "input_tokens": 372,
+          "output_tokens": 258,
+          "total_tokens": 630,
+          "usage_reported": true,
+          "first_token_seconds": null,
+          "error_type": null,
+          "error": null
+        },
+        {
+          "sequence": 1,
+          "node": "recall_metric",
+          "model": "deepseek-v4-flash",
+          "status": "success",
+          "elapsed_seconds": 2.991887,
+          "input_chars": 881,
+          "output_chars": 50,
+          "input_tokens": 527,
+          "output_tokens": 104,
+          "total_tokens": 631,
+          "usage_reported": true,
+          "first_token_seconds": null,
+          "error_type": null,
+          "error": null
+        },
+        {
+          "sequence": 2,
+          "node": "recall_column",
+          "model": "deepseek-v4-flash",
+          "status": "success",
+          "elapsed_seconds": 2.992042,
+          "input_chars": 780,
+          "output_chars": 19,
+          "input_tokens": 461,
+          "output_tokens": 107,
+          "total_tokens": 568,
+          "usage_reported": true,
+          "first_token_seconds": null,
+          "error_type": null,
+          "error": null
+        },
+        {
+          "sequence": 3,
+          "node": "filter_table",
+          "model": "deepseek-v4-flash",
+          "status": "success",
+          "elapsed_seconds": 2.861755,
+          "input_chars": 3067,
+          "output_chars": 99,
+          "input_tokens": 1393,
+          "output_tokens": 151,
+          "total_tokens": 1544,
+          "usage_reported": true,
+          "first_token_seconds": null,
+          "error_type": null,
+          "error": null
+        },
+        {
+          "sequence": 4,
+          "node": "filter_metric",
+          "model": "deepseek-v4-flash",
+          "status": "success",
+          "elapsed_seconds": 2.247155,
+          "input_chars": 1542,
+          "output_chars": 7,
+          "input_tokens": 725,
+          "output_tokens": 109,
+          "total_tokens": 834,
+          "usage_reported": true,
+          "first_token_seconds": null,
+          "error_type": null,
+          "error": null
+        },
+        {
+          "sequence": 5,
+          "node": "generate_sql",
+          "model": "deepseek-v4-flash",
+          "status": "success",
+          "elapsed_seconds": 3.929135,
+          "input_chars": 4038,
+          "output_chars": 195,
+          "input_tokens": 1543,
+          "output_tokens": 175,
+          "total_tokens": 1718,
+          "usage_reported": true,
+          "first_token_seconds": null,
+          "error_type": null,
+          "error": null
+        }
+      ],
+      "llm_call_count": 6,
+      "llm_elapsed_seconds": 19.536,
+      "llm_input_tokens": 5021,
+      "llm_output_tokens": 904,
+      "llm_total_tokens": 5925,
+      "llm_usage_reported_calls": 6,
+      "sql_cache_status": "bypassed",
+      "sql_cache_hit": null,
+      "error": ""
+    }
+  ]
+}
