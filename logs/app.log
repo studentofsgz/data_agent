@@ -8408,3 +8408,26 @@ WHERE dim_date.year = 2024
 2026-07-19 12:28:32.950 | INFO     | request_id - 1 | app.agent.nodes.validate_sql:validate_sql:19 - SQL验证成功 (重试0次): SELECT dim_customer.member_level, SUM(fact_order.order_amount) AS total_sales, AVG(fact_order.order_amount) AS avg_order_amount FROM fact_order JOIN dim_customer ON fact_order.customer_id = dim_customer.customer_id WHERE dim_customer.member_level IN ('黄金', '铂金') GROUP BY dim_customer.member_level ORDER BY total_sales DESC LIMIT 10000
 2026-07-19 12:28:32.954 | INFO     | request_id - 1 | app.agent.nodes.query_plan_guard:query_plan_guard:77 - 查询成本检查通过: estimated_rows=1 query_cost=0.7
 2026-07-19 12:28:32.979 | INFO     | request_id - 1 | app.agent.nodes.execute_sql:execute_sql:83 - 执行SQL结果: [{'member_level': '黄金', 'total_sales': 100178.5, 'avg_order_amount': 2946.426470588235}, {'member_level': '铂金', 'total_sales': 57679.0, 'avg_order_amount': 2307.16}]
+2026-07-19 15:32:30.456 | INFO     | request_id - 1 | app.agent.nodes.extract_keywords:extract_keywords:36 - 抽取关键字: ['地区', '统计', '销售总额', '统计各地区的销售总额']
+2026-07-19 15:32:32.471 | INFO     | request_id - 1 | app.agent.nodes.recall_metric:recall_metric:40 - 召回指标信息扩展关键词：['地区', '统计', '销售总额', '统计各地区的销售总额', '销售额', '总销售额', '销售金额', '销售收入']
+2026-07-19 15:32:32.627 | INFO     | request_id - 1 | app.agent.nodes.recall_column:recall_column:43 - 召回字段信息扩展关键词：['地区', '统计', '销售总额', '统计各地区的销售总额', '销售金额']
+2026-07-19 15:32:34.401 | INFO     | request_id - 1 | app.agent.nodes.recall_value:recall_value:37 - 召回字段取值扩展关键词：['地区', '统计', '销售总额', '统计各地区的销售总额', '各地区']
+2026-07-19 15:32:34.432 | INFO     | request_id - 1 | app.agent.nodes.recall_value:recall_value:73 - 召回字段取值：[]
+2026-07-19 15:32:36.320 | INFO     | request_id - 1 | app.agent.nodes.recall_column:recall_column:108 - 召回字段信息：['dim_region.region_name', 'fact_order.order_quantity', 'fact_order.order_amount']
+2026-07-19 15:32:37.254 | INFO     | request_id - 1 | app.agent.nodes.recall_metric:recall_metric:98 - 召回指标信息：['GMV', 'AOV']
+2026-07-19 15:32:42.654 | INFO     | request_id - 1 | app.agent.nodes.rerank:rerank:111 - Rerank 后字段: ['dim_region.region_name', 'fact_order.order_amount', 'fact_order.order_quantity']
+2026-07-19 15:32:42.655 | INFO     | request_id - 1 | app.agent.nodes.rerank:rerank:112 - Rerank 后指标: ['GMV', 'AOV']
+2026-07-19 15:32:42.736 | INFO     | request_id - 1 | app.agent.nodes.merge_retrieved_info:merge_retrieved_info:104 - 合并召回信息: 表信息-['dim_region', 'fact_order'],指标信息-['GMV', 'AOV']
+2026-07-19 15:32:44.850 | INFO     | request_id - 1 | app.agent.nodes.filter_metric:filter_metric:41 - 过滤后的指标: ['GMV']
+2026-07-19 15:32:46.588 | INFO     | request_id - 1 | app.agent.nodes.filter_table:filter_table:56 - 过滤后的表信息: ['dim_region', 'fact_order']
+2026-07-19 15:32:46.602 | INFO     | request_id - 1 | app.agent.nodes.add_extra_context:add_extra_context:247 - 额外上下文信息：数据库信息-{'version': '8.0.46', 'dialect': 'mysql'} 日期信息-{'date': '2026-07-19', 'weekday': 'Sunday', 'quarter': 'Q3'} 时间语义-{'required': False, 'reason': '', 'table': 'dim_date', 'join_condition': 'fact_order.date_id = dim_date.date_id', 'required_columns': [], 'rules': []} 指标语义-{'required': True, 'metrics': [{'name': 'GMV', 'display_name': '成交总额', 'expression': 'SUM(fact_order.order_amount)', 'aliases': ['销售额', '销售总额', '销售金额', '销售收入', '成交额', '交易额', '订单总额', '消费总额', '总订单金额'], 'required_columns': ['fact_order.order_amount'], 'dimensions': ['dim_region.region_name', 'dim_product.category', 'dim_product.brand', 'dim_date.month']}], 'rules': ['命中的业务指标必须使用 metric_semantics 中提供的 expression，这是企业统一指标口径。', '当 metric_semantics 与召回指标 metric_infos 存在口径冲突时，以 metric_semantics 为准。', '不得将 AOV/客单价 写成 AVG(fact_order.order_amount)，必须使用 SUM(fact_order.order_amount) / COUNT(DISTINCT fact_order.order_id)。', '不得将订单量写成普通 COUNT(*)，必须使用 COUNT(DISTINCT fact_order.order_id)。']}
+2026-07-19 15:32:47.060 | INFO     | request_id - 1 | app.agent.nodes.generate_sql:generate_sql:107 - 检测到语义规则，跳过SQL缓存查询，避免命中旧的时间或指标口径写法
+2026-07-19 15:32:49.680 | INFO     | request_id - 1 | app.agent.nodes.generate_sql:generate_sql:154 - 生成的SQL（已缓存）: SELECT dim_region.region_name, SUM(fact_order.order_amount) AS GMV
+FROM fact_order
+JOIN dim_region ON fact_order.region_id = dim_region.region_id
+GROUP BY dim_region.region_name
+ORDER BY GMV DESC
+2026-07-19 15:32:49.714 | INFO     | request_id - 1 | app.agent.nodes.audit_sql:audit_sql:419 - SQL安全审计通过: SELECT dim_region.region_name, SUM(fact_order.order_amount) AS GMV FROM fact_order JOIN dim_region ON fact_order.region_id = dim_region.region_id GROUP BY dim_region.region_name ORDER BY GMV DESC LIMIT 10000
+2026-07-19 15:32:49.721 | INFO     | request_id - 1 | app.agent.nodes.validate_sql:validate_sql:19 - SQL验证成功 (重试0次): SELECT dim_region.region_name, SUM(fact_order.order_amount) AS GMV FROM fact_order JOIN dim_region ON fact_order.region_id = dim_region.region_id GROUP BY dim_region.region_name ORDER BY GMV DESC LIMIT 10000
+2026-07-19 15:32:49.723 | INFO     | request_id - 1 | app.agent.nodes.query_plan_guard:query_plan_guard:77 - 查询成本检查通过: estimated_rows=1 query_cost=0.7
+2026-07-19 15:32:49.727 | INFO     | request_id - 1 | app.agent.nodes.execute_sql:execute_sql:83 - 执行SQL结果: [{'region_name': '华东', 'GMV': 107373.0}, {'region_name': '华南', 'GMV': 70202.0}, {'region_name': '华北', 'GMV': 41099.5}, {'region_name': '西南', 'GMV': 31528.0}, {'region_name': '华中', 'GMV': 28957.0}]
