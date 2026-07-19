@@ -24,6 +24,7 @@ class QueryIntentTests(unittest.TestCase):
         self.assertTrue(ambiguity["needs_clarification"])
         self.assertEqual("MISSING_YEAR_FOR_MONTH", ambiguity["code"])
         self.assertEqual(["time.year"], ambiguity["missing_slots"])
+        self.assertEqual("time.year", ambiguity["asked_slot"])
         self.assertIn("哪一年的1月", ambiguity["question"])
 
     def test_explicit_year_or_relative_month_is_clear(self):
@@ -73,7 +74,7 @@ class QueryIntentTests(unittest.TestCase):
 
 
 class AmbiguityGuardNodeTests(unittest.TestCase):
-    def test_guard_emits_structured_clarification_and_stops(self):
+    def test_guard_routes_structured_clarification_to_interrupt_node(self):
         runtime = FakeRuntime()
         update = ambiguity_guard(
             {"query": "2月份食品饮料类商品的销售额", "messages": []},
@@ -81,7 +82,7 @@ class AmbiguityGuardNodeTests(unittest.TestCase):
         )
 
         self.assertTrue(update["clarification_required"])
-        self.assertEqual("end", route_after_ambiguity_guard(update))
+        self.assertEqual("clarify_intent", route_after_ambiguity_guard(update))
         event = next(
             event
             for event in runtime.events
@@ -89,6 +90,7 @@ class AmbiguityGuardNodeTests(unittest.TestCase):
         )
         self.assertEqual("MISSING_YEAR_FOR_MONTH", event["code"])
         self.assertEqual(["time.year"], event["missing_slots"])
+        self.assertEqual("time.year", event["asked_slot"])
 
     def test_clear_query_continues_to_retrieval(self):
         runtime = FakeRuntime()

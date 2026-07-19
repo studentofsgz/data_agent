@@ -39,7 +39,12 @@ async def main():
 
         state = DataAgentState(query=QUESTION)
 
-        async for chunk in graph.astream(input=state, context=context, stream_mode="custom"):
+        async for chunk in graph.astream(
+            input=state,
+            context=context,
+            config={"configurable": {"thread_id": "test-single"}},
+            stream_mode="custom",
+        ):
             t = chunk.get("type", "")
 
             if t == "progress":

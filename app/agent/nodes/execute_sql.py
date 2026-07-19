@@ -81,7 +81,21 @@ async def execute_sql(state: DataAgentState, runtime: Runtime[DataAgentContext])
         writer({"type": "chart_suggestion", "chart": chart})
         writer({"type": "result", "data": result})
         logger.info(f"执行SQL结果: {result}")
-        return {"error": None, "execution_stats": execution_stats}
+        result_summary = {
+            "row_count": len(result),
+            "columns": list(result[0].keys()) if result else [],
+            "preview": json.loads(json.dumps(
+                result[: max(0, app_config.conversation.result_preview_rows)],
+                ensure_ascii=False,
+                default=str,
+            )),
+            "truncated": outcome.truncated,
+        }
+        return {
+            "error": None,
+            "execution_stats": execution_stats,
+            "result_summary": result_summary,
+        }
 
     except SQLExecutionTimeoutError as e:
         error = json.dumps(

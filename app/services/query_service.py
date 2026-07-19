@@ -1,10 +1,16 @@
 import json
+import re
+import uuid
+from datetime import datetime, timezone
 
 from langchain_huggingface import HuggingFaceEndpointEmbeddings
+from langgraph.types import Command
 
 from app.agent.context import DataAgentContext
-from app.agent.graph import graph
+from app.agent.conversation_memory import build_turn_input
+from app.agent.graph_runtime import graph_runtime
 from app.agent.state import DataAgentState
+from app.conf.app_config import app_config
 from app.repositories.es.value_es_repository import ValueESRepository
 from app.repositories.mysql.dw.dw_mysql_repository import DWMySQLRepository
 from app.repositories.mysql.meta.meta_mysql_repository import MetaMySQLRepository
@@ -13,21 +19,85 @@ from app.repositories.qdrant.metric_qdrant_repository import MetricQdrantReposit
 
 
 class QueryService:
+    THREAD_ID_PATTERN = re.compile(r"^[A-Za-z0-9_-]{1,128}$")
+
     def __init__(self,
                  embedding_client: HuggingFaceEndpointEmbeddings,
                  column_qdrant_repository: ColumnQdrantRepository,
                  value_es_repository: ValueESRepository,
                  metric_qdrant_repository: MetricQdrantRepository,
                  meta_mysql_repository: MetaMySQLRepository,
-                 dw_mysql_repository: DWMySQLRepository):
+                 dw_mysql_repository: DWMySQLRepository,
+                 workflow_graph=None):
         self.embedding_client = embedding_client
         self.column_qdrant_repository = column_qdrant_repository
         self.value_es_repository = value_es_repository
         self.metric_qdrant_repository = metric_qdrant_repository
         self.meta_mysql_repository = meta_mysql_repository
         self.dw_mysql_repository = dw_mysql_repository
+        self.workflow_graph = workflow_graph
 
-    async def query(self, query: str, messages: list[dict] = None):
+    @staticmethod
+    def _sse(event: dict) -> str:
+        return f"data: {json.dumps(event, ensure_ascii=False, default=str)}\n\n"
+
+    @staticmethod
+    def _interrupts(snapshot) -> list:
+        return [
+            item
+            for task in snapshot.tasks
+            for item in task.interrupts
+        ]
+
+    @staticmethod
+    def _session_expired(values: dict) -> bool:
+        timestamps = [
+            values.get("last_completed_at"),
+            values.get("turn_started_at"),
+        ]
+        has_timestamp = any(timestamps)
+        parsed: list[datetime] = []
+        for timestamp in timestamps:
+            if not timestamp:
+                continue
+            try:
+                value = datetime.fromisoformat(str(timestamp))
+                if value.tzinfo is None:
+                    value = value.replace(tzinfo=timezone.utc)
+                parsed.append(value)
+            except (TypeError, ValueError):
+                continue
+        if not parsed:
+            return has_timestamp
+        elapsed = (datetime.now(timezone.utc) - max(parsed)).total_seconds()
+        return elapsed > app_config.conversation.session_ttl_seconds
+
+    @staticmethod
+    async def _delete_thread(workflow_graph, thread_id: str) -> None:
+        checkpointer = getattr(workflow_graph, "checkpointer", None)
+        delete = getattr(checkpointer, "adelete_thread", None)
+        if delete is not None:
+            await delete(thread_id)
+
+    async def query(
+        self,
+        query: str | None = None,
+        messages: list[dict] | None = None,
+        thread_id: str | None = None,
+        resume: str | None = None,
+    ):
+        workflow_id = str(thread_id or uuid.uuid4().hex)
+        if not self.THREAD_ID_PATTERN.fullmatch(workflow_id):
+            yield self._sse({
+                "type": "error",
+                "code": "INVALID_THREAD_ID",
+                "message": "thread_id只能包含字母、数字、下划线或短横线，最长128位",
+                "thread_id": workflow_id,
+            })
+            return
+
+        config = {"configurable": {"thread_id": workflow_id}}
+        workflow_graph = self.workflow_graph or graph_runtime.get_graph()
         context = DataAgentContext(
             embedding_client=self.embedding_client,
             column_qdrant_repository=self.column_qdrant_repository,
@@ -36,9 +106,102 @@ class QueryService:
             meta_mysql_repository=self.meta_mysql_repository,
             dw_mysql_repository=self.dw_mysql_repository
         )
-        state = DataAgentState(query=query, messages=messages or [])
+
+        snapshot = await workflow_graph.aget_state(config)
+        expired = self._session_expired(snapshot.values)
+        if expired:
+            await self._delete_thread(workflow_graph, workflow_id)
+            if resume is not None:
+                yield self._sse({
+                    "type": "error",
+                    "code": "SESSION_EXPIRED",
+                    "message": "会话已经过期，请重新提交完整问题",
+                    "thread_id": workflow_id,
+                })
+                return
+            snapshot = await workflow_graph.aget_state(config)
+
+        if resume is not None:
+            if thread_id is None:
+                yield self._sse({
+                    "type": "error",
+                    "code": "THREAD_ID_REQUIRED_FOR_RESUME",
+                    "message": "恢复任务必须提供原来的thread_id",
+                    "thread_id": workflow_id,
+                })
+                return
+            pending_interrupts = self._interrupts(snapshot)
+            if not pending_interrupts:
+                yield self._sse({
+                    "type": "error",
+                    "code": "RESUME_NOT_AVAILABLE",
+                    "message": "该thread_id没有等待恢复的澄清任务",
+                    "thread_id": workflow_id,
+                })
+                return
+            graph_input = Command(resume=resume)
+            yield self._sse({
+                "type": "workflow_resuming",
+                "thread_id": workflow_id,
+            })
+        else:
+            if not query or not str(query).strip():
+                yield self._sse({
+                    "type": "error",
+                    "code": "QUERY_REQUIRED",
+                    "message": "新任务必须提供query",
+                    "thread_id": workflow_id,
+                })
+                return
+            if self._interrupts(snapshot):
+                yield self._sse({
+                    "type": "error",
+                    "code": "WORKFLOW_PAUSED",
+                    "message": "该会话正在等待澄清，请使用resume回答或取消",
+                    "thread_id": workflow_id,
+                })
+                return
+            mode = (
+                "follow_up"
+                if snapshot.values.get("last_query_intent")
+                else "new"
+            )
+            graph_input = DataAgentState(**build_turn_input(query, messages))
+            yield self._sse({
+                "type": "workflow_started",
+                "thread_id": workflow_id,
+                "mode": mode,
+            })
+
         try:
-            async for chunk in graph.astream(input=state, context=context, stream_mode="custom"):
-                yield f"data: {json.dumps(chunk, ensure_ascii=False, default=str)}\n\n" # SSE格式发送数据
+            async for chunk in workflow_graph.astream(
+                input=graph_input,
+                context=context,
+                config=config,
+                stream_mode="custom",
+            ):
+                yield self._sse({**chunk, "thread_id": workflow_id})
+
+            snapshot = await workflow_graph.aget_state(config)
+            interrupts = self._interrupts(snapshot)
+            if interrupts:
+                yield self._sse({
+                    "type": "workflow_paused",
+                    "thread_id": workflow_id,
+                    "interrupts": [
+                        {"id": item.id, "value": item.value}
+                        for item in interrupts
+                    ],
+                })
+            else:
+                yield self._sse({
+                    "type": "workflow_completed",
+                    "thread_id": workflow_id,
+                    "conversation_turn": snapshot.values.get("conversation_turn", 0),
+                })
         except Exception as e:
-            yield f"data: {json.dumps({'type': 'error', 'message': str(e)}, ensure_ascii=False, default=str)}\n\n" 
+            yield self._sse({
+                "type": "error",
+                "message": str(e),
+                "thread_id": workflow_id,
+            })

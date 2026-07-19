@@ -2,7 +2,11 @@ import asyncio
 import json
 import unittest
 
-from app.agent.graph import route_after_query_plan, route_after_validation
+from app.agent.graph import (
+    route_after_execution,
+    route_after_query_plan,
+    route_after_validation,
+)
 from app.agent.nodes.execute_sql import execute_sql
 from app.agent.nodes.query_plan_guard import query_plan_guard
 from app.agent.nodes.validate_sql import validate_sql
@@ -126,6 +130,10 @@ class QueryPlanPolicyTests(unittest.TestCase):
 
 
 class QueryGovernanceNodeTests(unittest.TestCase):
+    def test_only_successful_execution_is_saved_to_conversation_memory(self):
+        self.assertEqual("remember_turn", route_after_execution({"error": None}))
+        self.assertEqual("end", route_after_execution({"error": "timeout"}))
+
     def test_validation_returns_explain_plan(self):
         class Repository:
             async def explain_sql(self, sql):

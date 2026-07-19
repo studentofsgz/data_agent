@@ -16,7 +16,8 @@ where we need to prove that the Text2SQL chain did not regress.
     ├── metrics.py               # Result comparison and metric aggregation
     ├── llm_tracking.py          # LLM latency and token tracking
     ├── validate_goldens.py      # Verifies the reviewed answers
-    └── replay_report.py         # Re-executes saved SQL without calling the LLM
+    ├── replay_report.py         # Re-executes saved SQL without calling the LLM
+    └── conversation_eval.py     # Fast structured multi-turn regression set
 
 ## Run
 
@@ -155,15 +156,42 @@ read-only database account and a read replica in production. Offline reports
 aggregate plan pass/reject counts, stable rejection codes, estimated rows,
 plan warnings, execution timeouts, and truncated results.
 
-## Intent ambiguity and clarification
+## Intent ambiguity and human-in-the-loop clarification
 
 After conversation rewriting and before retrieval, a deterministic QueryIntent
 layer extracts metrics, dimensions, time fields, filters, ordering, and TopK.
-The ambiguity guard currently stops before any retrieval or database access and
-emits a structured `clarification_required` event when an explicit month lacks
-a year, a recent range has no duration, an analytical question lacks a metric,
-or a ranking lacks TopK. It deliberately treats relative expressions such as
-"last month" as complete.
+The ambiguity guard runs before retrieval and emits a structured
+`clarification_required` event when an explicit month lacks a year, a recent
+range has no duration, an analytical question lacks a metric, or a ranking
+lacks TopK. It deliberately treats relative expressions such as "last month"
+as complete.
+
+The production graph is compiled with a LangGraph checkpointer. When a query
+needs clarification, `clarify_intent` calls `interrupt()` and the service emits
+`workflow_paused` with a generated `thread_id`. Send the user's answer back in
+a second request with the same `thread_id` and `resume`; the service invokes
+`Command(resume=...)`, merges the answer into the original question, checks the
+intent again, and continues from the saved graph state. Multiple missing slots
+are asked one at a time, up to the configured round limit.
+
+First request:
+
+```json
+{"query": "1月份每天的销售额"}
+```
+
+Resume request:
+
+```json
+{"thread_id": "the-id-from-workflow_started", "resume": "2025年"}
+```
+
+The FastAPI lifespan now opens an official asynchronous SQLite checkpointer at
+`.runtime/checkpoints.sqlite`. Paused workflows and completed short-term
+conversation memory therefore survive a process restart. The path is excluded
+from version control. SQLite is appropriate for this local project and a
+single application process; use a shared PostgreSQL checkpointer for a
+multi-worker production deployment.
 
 Run the dedicated ambiguity set with:
 
@@ -174,8 +202,37 @@ Run the dedicated ambiguity set with:
 Cases may configure `expect_clarification` and
 `expect_clarification_code`. Reports aggregate accuracy, precision, recall,
 unnecessary clarification rate, and the TP/TN/FP/FN confusion counts. This
-stage returns a question event; LangGraph interrupt/checkpoint resume is the
-next upgrade.
+evaluation intentionally stops at the first question; interrupt/resume,
+multi-round clarification, cancellation, and thread isolation are covered by
+the unit tests.
+
+## Persistent multi-turn conversation memory
+
+Completed turns save a bounded structured record containing the raw and
+resolved question, QueryIntent, approved SQL, result row count, columns, and a
+small JSON-safe preview. A new request may reuse the same `thread_id`. The
+service clears all per-turn retrieval, SQL, error, and retry fields while
+preserving the bounded conversation history.
+
+The context manager first resolves supported references deterministically. For
+example, after `统计2025年各地区的GMV`, `那华东呢？` inherits the year, metric,
+and dimension and adds the region filter. A new explicit metric or time slot
+overrides the old value. Unsupported references use the LLM fallback; complete
+standalone questions do not inherit old constraints and do not call the
+context-rewrite model.
+
+The API rejects malformed thread IDs and prevents a new query from overwriting
+a workflow that is still paused. Sessions expire after the configured TTL.
+Thread IDs must be bound to the authenticated user when authentication is
+added; format validation alone is not an authorization boundary.
+
+Run the deterministic multi-turn set without any model or database call:
+
+    python -m eval.conversation_eval
+
+The report records the rewritten query, inherited slots, overridden slots,
+fallback strategy, and context-resolution accuracy. Full graph reports also
+store `context_resolution_event` and `conversation_memory_event`.
 
 ## Metrics
 
@@ -198,4 +255,5 @@ next upgrade.
 - Query-plan pass/reject counts, estimates, warnings, and rejection reasons
 - Execution-sandbox timeout and result-truncation counts
 - Clarification accuracy, precision, recall, and unnecessary clarification rate
+- Structured follow-up resolution accuracy and inherited/overridden slots
 - Grouped metrics by difficulty and category

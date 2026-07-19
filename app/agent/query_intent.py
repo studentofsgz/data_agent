@@ -253,19 +253,27 @@ def evaluate_ambiguity(
         else "CLEAR"
     )
 
+    asked_slot: str | None
     if "time.year" in missing_slots and time_info.get("month") is not None:
+        asked_slot = "time.year"
         question = f"你指的是哪一年的{time_info['month']}月？例如2025年。"
     elif "time.month" in missing_slots:
+        asked_slot = "time.month"
         question = "你指的是哪一年、哪一个月的这个日期？"
     elif "metric" in missing_slots:
+        asked_slot = "metric"
         question = "你希望分析哪个指标？例如销售额、销量、订单量或客单价。"
     elif "time.range" in missing_slots:
+        asked_slot = "time.range"
         question = "你说的最近是多长时间？例如最近7天、30天或3个月。"
     elif "top_k" in missing_slots:
+        asked_slot = "top_k"
         question = "你希望返回排名前多少条？例如前5名或前10名。"
     elif "context.reference" in missing_slots:
+        asked_slot = "context.reference"
         question = "你指的是哪个指标或哪一次查询结果？请补充具体内容。"
     else:
+        asked_slot = None
         question = ""
 
     return {
@@ -275,7 +283,46 @@ def evaluate_ambiguity(
         "missing_slots": missing_slots,
         "reasons": reasons,
         "question": question,
+        "asked_slot": asked_slot,
     }
+
+
+def merge_clarification_answer(
+    query: str,
+    *,
+    asked_slot: str | None,
+    answer: str,
+) -> str:
+    """Merge one human answer into the natural-language query deterministically."""
+    original_query = str(query or "").strip()
+    normalized_answer = str(answer or "").strip()
+    if not normalized_answer:
+        return original_query
+
+    if asked_slot == "time.year":
+        year_match = re.search(r"((?:19|20)\d{2})", normalized_answer)
+        if year_match and not EXPLICIT_YEAR_PATTERN.search(original_query):
+            return f"{year_match.group(1)}年{original_query}"
+
+    if asked_slot == "time.month":
+        return f"{normalized_answer}，{original_query}"
+
+    if asked_slot == "metric":
+        return f"{original_query}，要分析的指标是{normalized_answer}"
+
+    if asked_slot == "time.range":
+        return VAGUE_RECENT_PATTERN.sub(normalized_answer, original_query, count=1)
+
+    if asked_slot == "top_k":
+        count_match = re.search(r"(\d+)", normalized_answer)
+        if count_match:
+            replacement = f"排名前{count_match.group(1)}"
+            return VAGUE_TOP_K_PATTERN.sub(replacement, original_query, count=1)
+
+    if asked_slot == "context.reference":
+        return CONTEXT_REFERENCE_PATTERN.sub(normalized_answer, original_query, count=1)
+
+    return f"{original_query}，用户补充：{normalized_answer}"
 
 
 def analyze_query_intent(

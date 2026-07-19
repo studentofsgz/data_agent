@@ -59,7 +59,7 @@ sql_execution:
   max_result_rows: 10000
   max_concurrent_queries: 4
 
-# 第二阶段：问题歧义检测。当前先返回结构化澄清事件，后续接入interrupt/resume。
+# 第二阶段：问题歧义检测与多轮澄清。
 ambiguity:
   enabled: true
   stop_on_ambiguity: true
@@ -67,6 +67,15 @@ ambiguity:
   clarify_vague_metric: true
   clarify_vague_time: true
   clarify_vague_top_k: true
+  max_rounds: 3
+
+# 多轮会话使用SQLite持久化LangGraph状态；生产环境可替换为PostgreSQL Saver。
+conversation:
+  persistent_checkpointer: true
+  checkpoint_path: .runtime/checkpoints.sqlite
+  session_ttl_seconds: 86400
+  max_history_turns: 6
+  result_preview_rows: 3
 
 sql_cache:
   similarity_threshold: 0.95

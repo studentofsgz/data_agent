@@ -92,6 +92,16 @@ class AmbiguityConfig:
     clarify_vague_metric: bool
     clarify_vague_time: bool
     clarify_vague_top_k: bool
+    max_rounds: int
+
+
+@dataclass
+class ConversationConfig:
+    persistent_checkpointer: bool
+    checkpoint_path: str
+    session_ttl_seconds: int
+    max_history_turns: int
+    result_preview_rows: int
 
 
 @dataclass
@@ -119,6 +129,7 @@ class AppConfig:
     schema_linking: SchemaLinkingConfig
     sql_execution: SQLExecutionConfig
     ambiguity: AmbiguityConfig
+    conversation: ConversationConfig
     sql_cache: SQLCacheConfig
     llm: LLMConfig
 

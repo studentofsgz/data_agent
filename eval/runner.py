@@ -15,6 +15,7 @@ import sys
 import time
 from pathlib import Path
 from typing import Any
+from uuid import uuid4
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
@@ -144,13 +145,20 @@ async def run_one_case(
     sql_sandbox_events: list[dict[str, Any]] = []
     query_intent_event: dict[str, Any] | None = None
     clarification_event: dict[str, Any] | None = None
+    context_resolution_event: dict[str, Any] | None = None
+    conversation_memory_event: dict[str, Any] | None = None
     llm_tracker = LLMCallTracker()
 
     try:
         async for chunk in graph.astream(
             input=state,
             context=context,
-            config={"callbacks": [llm_tracker]},
+            config={
+                "callbacks": [llm_tracker],
+                "configurable": {
+                    "thread_id": f"eval-{case.get('id')}-{uuid4().hex}",
+                },
+            },
             stream_mode="custom",
         ):
             events.append(chunk)
@@ -218,6 +226,18 @@ async def run_one_case(
                     for key, value in chunk.items()
                     if key != "type"
                 }
+            elif event_type == "context_resolution":
+                context_resolution_event = {
+                    key: value
+                    for key, value in chunk.items()
+                    if key != "type"
+                }
+            elif event_type == "conversation_memory_saved":
+                conversation_memory_event = {
+                    key: value
+                    for key, value in chunk.items()
+                    if key != "type"
+                }
 
             step = str(chunk.get("step") or "")
             if step.startswith("校正SQL") and chunk.get("status") == "running":
@@ -244,6 +264,8 @@ async def run_one_case(
         sql_sandbox_events=sql_sandbox_events,
         query_intent_event=query_intent_event,
         clarification_event=clarification_event,
+        context_resolution_event=context_resolution_event,
+        conversation_memory_event=conversation_memory_event,
     )
 
 

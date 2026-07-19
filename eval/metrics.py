@@ -467,6 +467,8 @@ def evaluate_case(
     sql_sandbox_events: list[dict[str, Any]] | None = None,
     query_intent_event: dict[str, Any] | None = None,
     clarification_event: dict[str, Any] | None = None,
+    context_resolution_event: dict[str, Any] | None = None,
+    conversation_memory_event: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     expected_tables = {str(t).lower() for t in case.get("expect_tables", [])}
     actual_tables = extract_tables(sql)
@@ -602,6 +604,8 @@ def evaluate_case(
         "query_plan_events": query_plan_events,
         "sql_sandbox_events": sql_sandbox_events,
         "query_intent_event": query_intent_event,
+        "context_resolution_event": context_resolution_event,
+        "conversation_memory_event": conversation_memory_event,
         "clarification_event": clarification_event,
         "clarification_required": clarification_required,
         "clarification_expected": clarification_expected

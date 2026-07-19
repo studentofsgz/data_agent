@@ -141,15 +141,66 @@ class AmbiguityResultState(TypedDict):
     missing_slots: list[str]
     reasons: list[str]
     question: str
+    asked_slot: str | None
+
+
+class ClarificationAttemptState(TypedDict):
+    round: int
+    asked_slot: str | None
+    question: str
+    answer: str
+    query_before: str
+    query_after: str
+
+
+class ResultSummaryState(TypedDict):
+    row_count: int
+    columns: list[str]
+    preview: list[dict[str, Any]]
+    truncated: bool
+
+
+class ContextResolutionState(TypedDict):
+    applied: bool
+    strategy: str
+    query_before: str
+    query_after: str
+    inherited_slots: list[str]
+    overridden_slots: list[str]
+
+
+class ConversationTurnState(TypedDict):
+    turn: int
+    raw_query: str
+    resolved_query: str
+    intent: QueryIntentState
+    sql: str
+    result_summary: ResultSummaryState
+    completed_at: str
 
 
 class DataAgentState(TypedDict):
     query: str  # 用户查询（可能已被上下文改写）
+    raw_query: str  # 当前轮用户原始输入
     messages: list[dict]  # 历史对话 [{"role":"user","content":"..."},...]
+    turn_id: str  # 当前轮唯一标识
+    turn_started_at: str  # 当前轮开始时间，用于会话过期判断
+    context_resolution: ContextResolutionState  # 本轮上下文继承决策
+    conversation_turn: int  # 已完成的业务查询轮数
+    conversation_history: list[ConversationTurnState]  # 有上限的结构化短期记忆
+    last_query: str  # 最近一次成功查询
+    last_query_intent: QueryIntentState  # 最近一次成功查询意图
+    last_sql: str  # 最近一次成功SQL
+    last_result_summary: ResultSummaryState  # 最近一次结果摘要
+    last_completed_at: str  # 最近一次成功完成时间
     query_intent: QueryIntentState  # 结构化查询意图
     ambiguity_result: AmbiguityResultState  # 问题完整性判定
     clarification_required: bool  # 是否需要向用户追问
     clarification_question: str  # 最小必要澄清问题
+    clarification_answer: str  # 最近一次用户补充
+    clarification_history: list[ClarificationAttemptState]  # 澄清问答与查询合并历史
+    clarification_rounds: int  # 当前工作流已经澄清的轮数
+    clarification_cancelled: bool  # 用户是否主动取消澄清
     keywords: list[str]  # 用户查询的关键字
 
     retrieved_columns: list[ColumnInfo]  # 召回的字段信息
@@ -173,6 +224,7 @@ class DataAgentState(TypedDict):
     query_plan: dict[str, Any]  # MySQL EXPLAIN FORMAT=JSON原始执行计划
     query_plan_result: SQLQueryPlanResultState  # 执行前成本策略判定
     execution_stats: SQLExecutionStatsState  # 执行沙箱耗时和结果截断信息
+    result_summary: ResultSummaryState  # 当前轮结果摘要，只保存少量预览
     repair_history: list[SQLRepairAttemptState]  # 每次修复的输入、输出、错误和判定
     repair_guard_result: SQLRepairGuardResultState  # 最近一次防漂移检查结果
     repair_stop_reason: str | None  # 重复、循环或语义漂移等提前停止原因
