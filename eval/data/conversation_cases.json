@@ -1,0 +1,68 @@
+[
+  {
+    "id": "c001",
+    "previous_question": "统计2025年各地区的GMV",
+    "question": "那华东呢？",
+    "expect_strategy": "structured_memory",
+    "expect_applied": true,
+    "expect_contains": ["2025年", "华东地区", "统计销售额"]
+  },
+  {
+    "id": "c002",
+    "previous_question": "统计2025年各地区的GMV",
+    "question": "改成销量",
+    "expect_strategy": "structured_memory",
+    "expect_applied": true,
+    "expect_contains": ["2025年", "按地区", "统计销量"],
+    "expect_excludes": ["统计销售额"]
+  },
+  {
+    "id": "c003",
+    "previous_question": "统计2025年各地区的GMV",
+    "question": "那2024年呢？",
+    "expect_strategy": "structured_memory",
+    "expect_applied": true,
+    "expect_contains": ["2024年", "按地区", "统计销售额"],
+    "expect_excludes": ["2025年"]
+  },
+  {
+    "id": "c004",
+    "previous_question": "统计2025年1月每天的销售额",
+    "question": "那华东呢？",
+    "expect_strategy": "structured_memory",
+    "expect_applied": true,
+    "expect_contains": ["2025年1月", "华东地区", "按天展示"]
+  },
+  {
+    "id": "c005",
+    "previous_question": "统计2025年各地区的GMV",
+    "question": "统计今年各城市的GMV",
+    "expect_strategy": "none",
+    "expect_applied": false,
+    "expect_contains": ["统计今年各城市的GMV"]
+  },
+  {
+    "id": "c006",
+    "previous_question": "统计2025年各地区的GMV",
+    "question": "那利润呢？",
+    "expect_strategy": "llm_fallback_required",
+    "expect_applied": false,
+    "expect_contains": ["那利润呢？"]
+  },
+  {
+    "id": "c007",
+    "previous_question": "统计2025年各商品的GMV",
+    "question": "那排名前5名呢？",
+    "expect_strategy": "structured_memory",
+    "expect_applied": true,
+    "expect_contains": ["2025年", "按商品", "前5名"]
+  },
+  {
+    "id": "c008",
+    "previous_question": "按地区统计GMV",
+    "question": "那上个月呢？",
+    "expect_strategy": "structured_memory",
+    "expect_applied": true,
+    "expect_contains": ["上个月", "按地区", "统计销售额"]
+  }
+]
