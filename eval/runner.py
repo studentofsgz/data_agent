@@ -147,6 +147,7 @@ async def run_one_case(
     clarification_event: dict[str, Any] | None = None
     context_resolution_event: dict[str, Any] | None = None
     conversation_memory_event: dict[str, Any] | None = None
+    confidence_events: list[dict[str, Any]] = []
     llm_tracker = LLMCallTracker()
 
     try:
@@ -238,6 +239,8 @@ async def run_one_case(
                     for key, value in chunk.items()
                     if key != "type"
                 }
+            elif str(event_type).startswith("confidence_"):
+                confidence_events.append(dict(chunk))
 
             step = str(chunk.get("step") or "")
             if step.startswith("校正SQL") and chunk.get("status") == "running":
@@ -266,6 +269,7 @@ async def run_one_case(
         clarification_event=clarification_event,
         context_resolution_event=context_resolution_event,
         conversation_memory_event=conversation_memory_event,
+        confidence_events=confidence_events,
     )
 
 
@@ -437,6 +441,26 @@ def print_summary(report: dict[str, Any]) -> None:
             f"FP={clarification['false_positive']} "
             f"FN={clarification['false_negative']}"
         )
+
+    confidence = summary.get("confidence") or {}
+    if confidence.get("assessed_cases"):
+        print("\nConfidence governance:")
+        print(
+            "  Assessments: "
+            f"total={confidence['assessed_cases']} "
+            f"levels={confidence['levels']} "
+            f"actions={confidence['actions']}"
+        )
+        print(
+            "  Scores: "
+            f"avg={confidence['avg_score']} "
+            f"rejections={confidence['rejection_codes']}"
+        )
+        if confidence.get("configured_cases"):
+            print(
+                "  Expected action accuracy: "
+                f"{format_metric(confidence['accuracy'])}"
+            )
 
     observability = summary.get("observability") or {}
     llm_summary = observability.get("llm") or {}

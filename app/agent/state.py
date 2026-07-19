@@ -126,6 +126,7 @@ class SQLExecutionStatsState(TypedDict):
 class QueryIntentState(TypedDict):
     query: str
     metrics: list[str]
+    unresolved_metric_mentions: list[str]
     dimensions: list[str]
     time: dict[str, Any]
     filters: list[dict[str, str]]
@@ -142,6 +143,17 @@ class AmbiguityResultState(TypedDict):
     reasons: list[str]
     question: str
     asked_slot: str | None
+
+
+class ConfidenceResultState(TypedDict):
+    score: float
+    level: str
+    action: str
+    code: str
+    reasons: list[str]
+    evidence: dict[str, Any]
+    interpretation: dict[str, Any]
+    question: str
 
 
 class ClarificationAttemptState(TypedDict):
@@ -208,6 +220,9 @@ class DataAgentState(TypedDict):
     retrieved_metrics: list[MetricInfo]  # 召回的指标信息
     column_recall_sources: dict[str, list[str]]  # 字段候选的向量、精确别名等召回来源
     metric_recall_sources: dict[str, list[str]]  # 指标候选的召回来源
+    column_candidate_scores: dict[str, float | None]  # 字段重排分数
+    metric_candidate_scores: dict[str, float | None]  # 指标重排分数
+    schema_linking_degraded: bool  # 重排是否降级
 
     table_infos: list[TableInfoState]  # 表信息
     metric_infos: list[MetricInfoState]  # 指标信息
@@ -216,6 +231,9 @@ class DataAgentState(TypedDict):
     db_info: DBInfoState  # 数据库信息
     time_semantics: TimeSemanticState  # 时间语义规则
     metric_semantics: MetricSemanticState  # 指标语义规则
+    confidence_result: ConfidenceResultState  # SQL生成前置信度判定
+    confidence_confirmed: bool  # 中置信度是否得到用户确认
+    confidence_confirmation_answer: str  # 用户的确认回答
 
     sql: str  # 当前待审计、验证或执行的SQL
     original_sql: str  # 第一次生成的SQL，用作修复过程的语义基线

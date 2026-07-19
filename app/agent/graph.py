@@ -9,6 +9,8 @@ from app.agent.nodes.add_extra_context import add_extra_context
 from app.agent.nodes.ambiguity_guard import ambiguity_guard
 from app.agent.nodes.context_manager import context_manager
 from app.agent.nodes.clarify_intent import clarify_intent
+from app.agent.nodes.confidence_guard import confidence_guard
+from app.agent.nodes.confirm_confidence import confirm_confidence
 from app.agent.nodes.correct_sql import correct_sql
 from app.agent.nodes.execute_sql import execute_sql
 from app.agent.nodes.extract_keywords import extract_keywords
@@ -87,12 +89,27 @@ def route_after_clarification(state: DataAgentState) -> str:
         return "end"
     return "ambiguity_guard"
 
+
+def route_after_confidence_guard(state: DataAgentState) -> str:
+    action = (state.get("confidence_result") or {}).get("action")
+    if action == "proceed":
+        return "generate_sql"
+    if action == "confirm":
+        return "confirm_confidence"
+    return "end"
+
+
+def route_after_confidence_confirmation(state: DataAgentState) -> str:
+    return "generate_sql" if state.get("confidence_confirmed") else "end"
+
 graph_builder = StateGraph(state_schema=DataAgentState, context_schema=DataAgentContext)
 # 添加节点并统一启用耗时监控
 nodes = {
     "context_manager": context_manager,
     "ambiguity_guard": ambiguity_guard,
     "clarify_intent": clarify_intent,
+    "confidence_guard": confidence_guard,
+    "confirm_confidence": confirm_confidence,
     "extract_keywords": extract_keywords,
     "recall_column": recall_column,
     "recall_value": recall_value,
@@ -142,7 +159,21 @@ graph_builder.add_edge("merge_retrieved_info", "filter_table")
 graph_builder.add_edge("merge_retrieved_info", "filter_metric")
 graph_builder.add_edge("filter_table", "add_extra_context")
 graph_builder.add_edge("filter_metric", "add_extra_context")
-graph_builder.add_edge("add_extra_context", "generate_sql")
+graph_builder.add_edge("add_extra_context", "confidence_guard")
+graph_builder.add_conditional_edges(
+    "confidence_guard",
+    route_after_confidence_guard,
+    {
+        "generate_sql": "generate_sql",
+        "confirm_confidence": "confirm_confidence",
+        "end": END,
+    },
+)
+graph_builder.add_conditional_edges(
+    "confirm_confidence",
+    route_after_confidence_confirmation,
+    {"generate_sql": "generate_sql", "end": END},
+)
 graph_builder.add_edge("generate_sql", "audit_sql")
 graph_builder.add_conditional_edges(
     "audit_sql",

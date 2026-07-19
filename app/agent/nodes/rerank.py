@@ -114,6 +114,13 @@ async def rerank(state: DataAgentState, runtime: Runtime[DataAgentContext]):
         return {
             "retrieved_columns": retrieved_columns,
             "retrieved_metrics": retrieved_metrics,
+            "column_candidate_scores": {
+                item["id"]: item["score"] for item in column_ranked
+            },
+            "metric_candidate_scores": {
+                item["id"]: item["score"] for item in metric_ranked
+            },
+            "schema_linking_degraded": False,
         }
 
     except Exception as e:
@@ -132,4 +139,11 @@ async def rerank(state: DataAgentState, runtime: Runtime[DataAgentContext]):
         return {
             "retrieved_columns": retrieved_columns,
             "retrieved_metrics": retrieved_metrics,
+            "column_candidate_scores": {
+                item.id: None for item in retrieved_columns
+            },
+            "metric_candidate_scores": {
+                item.id: None for item in retrieved_metrics
+            },
+            "schema_linking_degraded": True,
         }

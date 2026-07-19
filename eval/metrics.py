@@ -447,6 +447,39 @@ def aggregate_clarification(results: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def aggregate_confidence(results: list[dict[str, Any]]) -> dict[str, Any]:
+    assessments = [
+        result["confidence_assessment"]
+        for result in results
+        if result.get("confidence_assessment")
+    ]
+    configured = [
+        result for result in results
+        if result.get("confidence_expected_action") is not None
+        or result.get("confidence_expected_code") is not None
+    ]
+    levels = Counter(str(item.get("level") or "unknown") for item in assessments)
+    actions = Counter(str(item.get("action") or "unknown") for item in assessments)
+    rejection_codes = Counter(
+        str(item.get("code") or "UNKNOWN")
+        for item in assessments
+        if item.get("action") == "reject"
+    )
+    scores = [float(item.get("score") or 0.0) for item in assessments]
+    return {
+        "assessed_cases": len(assessments),
+        "configured_cases": len(configured),
+        "accuracy": metric_block(
+            sum(bool(result.get("confidence_ok")) for result in configured),
+            len(configured),
+        ),
+        "levels": dict(sorted(levels.items())),
+        "actions": dict(sorted(actions.items())),
+        "rejection_codes": dict(sorted(rejection_codes.items())),
+        "avg_score": round(sum(scores) / len(scores), 4) if scores else None,
+    }
+
+
 def evaluate_case(
     *,
     case: dict[str, Any],
@@ -469,6 +502,7 @@ def evaluate_case(
     clarification_event: dict[str, Any] | None = None,
     context_resolution_event: dict[str, Any] | None = None,
     conversation_memory_event: dict[str, Any] | None = None,
+    confidence_events: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     expected_tables = {str(t).lower() for t in case.get("expect_tables", [])}
     actual_tables = extract_tables(sql)
@@ -502,6 +536,25 @@ def evaluate_case(
     query_plan_events = list(query_plan_events or [])
     sql_sandbox_events = list(sql_sandbox_events or [])
     clarification_required = clarification_event is not None
+    confidence_events = list(confidence_events or [])
+    confidence_assessment = next(
+        (
+            event for event in reversed(confidence_events)
+            if event.get("type") == "confidence_assessment"
+        ),
+        None,
+    )
+    confidence_expected_action = case.get("expect_confidence_action")
+    confidence_expected_code = case.get("expect_confidence_code")
+    confidence_ok: bool | None = None
+    if confidence_expected_action is not None or confidence_expected_code is not None:
+        confidence_ok = bool(confidence_assessment)
+        if confidence_ok and confidence_expected_action is not None:
+            confidence_ok = (
+                confidence_assessment.get("action") == confidence_expected_action
+            )
+        if confidence_ok and confidence_expected_code is not None:
+            confidence_ok = confidence_assessment.get("code") == confidence_expected_code
     clarification_expected = case.get("expect_clarification")
     expected_clarification_code = case.get("expect_clarification_code")
     actual_clarification_code = (
@@ -606,6 +659,11 @@ def evaluate_case(
         "query_intent_event": query_intent_event,
         "context_resolution_event": context_resolution_event,
         "conversation_memory_event": conversation_memory_event,
+        "confidence_events": confidence_events,
+        "confidence_assessment": confidence_assessment,
+        "confidence_expected_action": confidence_expected_action,
+        "confidence_expected_code": confidence_expected_code,
+        "confidence_ok": confidence_ok,
         "clarification_event": clarification_event,
         "clarification_required": clarification_required,
         "clarification_expected": clarification_expected
@@ -642,6 +700,7 @@ def aggregate_group(results: list[dict[str, Any]]) -> dict[str, Any]:
         "schema_linking": aggregate_schema_linking(results),
         "query_governance": aggregate_query_governance(results),
         "clarification": aggregate_clarification(results),
+        "confidence": aggregate_confidence(results),
     }
 
 

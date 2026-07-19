@@ -194,11 +194,26 @@ class QueryService:
                     ],
                 })
             else:
-                yield self._sse({
-                    "type": "workflow_completed",
-                    "thread_id": workflow_id,
-                    "conversation_turn": snapshot.values.get("conversation_turn", 0),
-                })
+                confidence_result = snapshot.values.get("confidence_result") or {}
+                if confidence_result.get("action") == "reject":
+                    reasons = confidence_result.get("reasons") or []
+                    yield self._sse({
+                        "type": "workflow_rejected",
+                        "thread_id": workflow_id,
+                        "stage": "confidence_guard",
+                        "code": confidence_result.get("code"),
+                        "message": confidence_result.get("message")
+                        or "；".join(reasons)
+                        or "查询证据不足，已停止SQL生成",
+                        "score": confidence_result.get("score"),
+                        "reasons": reasons,
+                    })
+                else:
+                    yield self._sse({
+                        "type": "workflow_completed",
+                        "thread_id": workflow_id,
+                        "conversation_turn": snapshot.values.get("conversation_turn", 0),
+                    })
         except Exception as e:
             yield self._sse({
                 "type": "error",

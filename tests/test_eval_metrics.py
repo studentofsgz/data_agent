@@ -190,6 +190,37 @@ class ResultComparisonTests(unittest.TestCase):
         self.assertEqual(1, summary["true_positive"])
         self.assertEqual(1, summary["true_negative"])
 
+    def test_confidence_action_and_rejection_code_are_aggregated(self):
+        result = evaluate_case(
+            case={
+                "id": "confidence-low",
+                "question": "统计各地区的活跃用户增长率",
+                "expect_confidence_action": "reject",
+                "expect_confidence_code": "UNKNOWN_METRIC",
+            },
+            sql="",
+            rows=[],
+            error="",
+            elapsed_seconds=0.01,
+            correction_attempts=0,
+            event_count=2,
+            result_received=False,
+            confidence_events=[{
+                "type": "confidence_assessment",
+                "level": "low",
+                "action": "reject",
+                "code": "UNKNOWN_METRIC",
+                "score": 0.44,
+            }],
+        )
+
+        summary = aggregate_results([result])["summary"]["confidence"]
+        self.assertTrue(result["confidence_ok"])
+        self.assertEqual(100.0, summary["accuracy"]["rate"])
+        self.assertEqual({"low": 1}, summary["levels"])
+        self.assertEqual({"reject": 1}, summary["actions"])
+        self.assertEqual({"UNKNOWN_METRIC": 1}, summary["rejection_codes"])
+
     def test_schema_linking_metrics_are_derived_from_golden_sql(self):
         gold_sql = (
             "SELECT r.region_name, SUM(f.order_amount) AS gmv "

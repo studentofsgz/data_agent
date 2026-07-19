@@ -77,6 +77,15 @@ conversation:
   max_history_turns: 6
   result_preview_rows: 3
 
+# SQL生成前的可解释置信度门禁，不使用大模型自报分数。
+confidence:
+  enabled: true
+  high_threshold: 0.75
+  low_threshold: 0.45
+  strong_similarity_score: 0.55
+  candidate_margin: 0.05
+  max_confirmation_attempts: 2
+
 sql_cache:
   similarity_threshold: 0.95
   collection_name: data-agent-sql-cache

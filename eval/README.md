@@ -234,6 +234,31 @@ The report records the rewritten query, inherited slots, overridden slots,
 fallback strategy, and context-resolution accuracy. Full graph reports also
 store `context_resolution_event` and `conversation_memory_event`.
 
+## Pre-SQL confidence governance
+
+After Schema Linking and before SQL generation, a deterministic policy scores
+the evidence already produced by the workflow. It combines semantic-metric
+coverage, required metric columns, requested dimensions, exact aliases,
+rerank similarity, candidate conflicts, and retrieval degradation. The score
+is not supplied by the LLM.
+
+High-confidence requests continue to SQL generation. Medium-confidence
+requests pause through LangGraph `interrupt()` and show the inferred metric,
+dimension, time, filters, and tables for user confirmation. Low-confidence
+requests stop before SQL generation with a stable rejection code such as
+`UNKNOWN_METRIC`, `NO_SCHEMA_CONTEXT`, `MISSING_REQUIRED_DIMENSION`, or
+`MISSING_METRIC_EVIDENCE`. The service emits `workflow_rejected` as the final
+event for a rejected request.
+
+Run the fast deterministic high/medium/low policy set without a model or
+database call:
+
+    python -m eval.confidence_eval
+
+Full graph reports store every `confidence_*` event and aggregate score,
+level, action, rejection code, and configured decision accuracy. Cases can
+configure `expect_confidence_action` and `expect_confidence_code`.
+
 ## Metrics
 
 - SQL generated rate
@@ -256,4 +281,5 @@ store `context_resolution_event` and `conversation_memory_event`.
 - Execution-sandbox timeout and result-truncation counts
 - Clarification accuracy, precision, recall, and unnecessary clarification rate
 - Structured follow-up resolution accuracy and inherited/overridden slots
+- Confidence score, level, action, rejection code, and decision accuracy
 - Grouped metrics by difficulty and category

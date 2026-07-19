@@ -72,6 +72,14 @@ VAGUE_TOP_K_PATTERN = re.compile(r"前几|排名靠前|排在前面|头部")
 CONTEXT_REFERENCE_PATTERN = re.compile(r"这个指标|那个指标|这个结果|那个结果|上述|刚才的|它们?")
 METRIC_REQUIRED_PATTERN = re.compile(r"统计|分析|汇总|表现|情况|趋势|排名|最高|最低|最多|最少|是多少|多少")
 
+# These terms look like explicit business KPIs but are not defined by the
+# current semantic catalog. They must reach the confidence policy as unknown
+# metrics instead of being mistaken for an omitted metric.
+UNRESOLVED_METRIC_TERMS = (
+    "活跃用户", "活跃客户", "增长率", "转化率", "留存率", "复购率",
+    "毛利率", "利润率", "利润", "毛利", "成本",
+)
+
 
 def _deduplicate(items: list[str]) -> list[str]:
     return list(dict.fromkeys(items))
@@ -84,6 +92,10 @@ def _extract_metrics(query: str) -> list[str]:
         for metric, aliases in METRIC_ALIASES.items()
         if any(alias.casefold() in query_lower for alias in aliases)
     ]
+
+
+def _extract_unresolved_metric_mentions(query: str) -> list[str]:
+    return [term for term in UNRESOLVED_METRIC_TERMS if term in query]
 
 
 def _extract_dimensions(query: str) -> list[str]:
@@ -164,6 +176,9 @@ def extract_query_intent(query: str) -> dict[str, Any]:
     return {
         "query": normalized_query,
         "metrics": _extract_metrics(normalized_query),
+        "unresolved_metric_mentions": _extract_unresolved_metric_mentions(
+            normalized_query
+        ),
         "dimensions": _extract_dimensions(normalized_query),
         "time": {
             "year": int(year_match.group(1)) if year_match else None,
@@ -221,6 +236,7 @@ def evaluate_ambiguity(
     if (
         policy.clarify_vague_metric
         and not intent.get("metrics")
+        and not intent.get("unresolved_metric_mentions")
         and METRIC_REQUIRED_PATTERN.search(query)
         and not re.search(r"有哪些|明细|名单|列表", query)
     ):

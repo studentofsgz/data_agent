@@ -105,6 +105,16 @@ class ConversationConfig:
 
 
 @dataclass
+class ConfidenceConfig:
+    enabled: bool
+    high_threshold: float
+    low_threshold: float
+    strong_similarity_score: float
+    candidate_margin: float
+    max_confirmation_attempts: int
+
+
+@dataclass
 class SQLCacheConfig:
     similarity_threshold: float
     collection_name: str
@@ -130,6 +140,7 @@ class AppConfig:
     sql_execution: SQLExecutionConfig
     ambiguity: AmbiguityConfig
     conversation: ConversationConfig
+    confidence: ConfidenceConfig
     sql_cache: SQLCacheConfig
     llm: LLMConfig
 
