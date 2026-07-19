@@ -179,7 +179,7 @@ class SQLSafetyRoutingTests(unittest.TestCase):
         self.assertEqual("validate_sql", route_after_audit(passed))
         self.assertEqual("correct_sql", route_after_validation(retryable))
         self.assertEqual("end", route_after_validation(exhausted))
-        self.assertEqual("execute_sql", route_after_validation(passed))
+        self.assertEqual("query_plan_guard", route_after_validation(passed))
 
     def test_execute_node_refuses_state_with_an_error(self):
         class Repository:

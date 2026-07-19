@@ -1,0 +1,54 @@
+[
+  {
+    "id": "a001",
+    "question": "1月份每天的销售额",
+    "expect_clarification": true,
+    "expect_clarification_code": "MISSING_YEAR_FOR_MONTH",
+    "category": "缺失年份"
+  },
+  {
+    "id": "a002",
+    "question": "2025年1月份每天的销售额",
+    "expect_clarification": false,
+    "category": "完整时间"
+  },
+  {
+    "id": "a003",
+    "question": "最近销售情况怎么样",
+    "expect_clarification": true,
+    "expect_clarification_code": "MULTIPLE_AMBIGUITIES",
+    "category": "多重歧义"
+  },
+  {
+    "id": "a004",
+    "question": "最近30天的GMV",
+    "expect_clarification": false,
+    "category": "完整时间"
+  },
+  {
+    "id": "a005",
+    "question": "销量排名靠前的商品",
+    "expect_clarification": true,
+    "expect_clarification_code": "MISSING_TOP_K",
+    "category": "缺失TopK"
+  },
+  {
+    "id": "a006",
+    "question": "GMV最高的5个商品",
+    "expect_clarification": false,
+    "category": "完整排名"
+  },
+  {
+    "id": "a007",
+    "question": "各地区的销售情况如何",
+    "expect_clarification": true,
+    "expect_clarification_code": "MISSING_METRIC",
+    "category": "缺失指标"
+  },
+  {
+    "id": "a008",
+    "question": "今年各地区的GMV",
+    "expect_clarification": false,
+    "category": "完整意图"
+  }
+]

@@ -5,6 +5,7 @@ from langgraph.graph import StateGraph
 
 from app.agent.context import DataAgentContext
 from app.agent.nodes.add_extra_context import add_extra_context
+from app.agent.nodes.ambiguity_guard import ambiguity_guard
 from app.agent.nodes.context_manager import context_manager
 from app.agent.nodes.correct_sql import correct_sql
 from app.agent.nodes.execute_sql import execute_sql
@@ -19,6 +20,7 @@ from app.agent.nodes.recall_value import recall_value
 from app.agent.nodes.repair_guard import repair_guard
 from app.agent.nodes.rerank import rerank
 from app.agent.nodes.audit_sql import audit_sql
+from app.agent.nodes.query_plan_guard import query_plan_guard
 from app.agent.nodes.validate_sql import validate_sql
 from app.agent.observability import instrument_node
 from app.agent.state import DataAgentState
@@ -44,10 +46,17 @@ def route_after_audit(state: DataAgentState) -> str:
 
 def route_after_validation(state: DataAgentState) -> str:
     if state.get("error") is None:
-        return "execute_sql"
+        return "query_plan_guard"
     if state.get("retry_count", 0) >= MAX_SQL_RETRIES:
         return "end"
     return "correct_sql"
+
+
+def route_after_query_plan(state: DataAgentState) -> str:
+    result = state.get("query_plan_result") or {}
+    if state.get("error") is None and result.get("passed"):
+        return "execute_sql"
+    return "end"
 
 
 def route_after_repair_guard(state: DataAgentState) -> str:
@@ -56,10 +65,18 @@ def route_after_repair_guard(state: DataAgentState) -> str:
         return "audit_sql"
     return "end"
 
+
+def route_after_ambiguity_guard(state: DataAgentState) -> str:
+    result = state.get("ambiguity_result") or {}
+    if result.get("action") == "clarify":
+        return "end"
+    return "extract_keywords"
+
 graph_builder = StateGraph(state_schema=DataAgentState, context_schema=DataAgentContext)
 # 添加节点并统一启用耗时监控
 nodes = {
     "context_manager": context_manager,
+    "ambiguity_guard": ambiguity_guard,
     "extract_keywords": extract_keywords,
     "recall_column": recall_column,
     "recall_value": recall_value,
@@ -72,6 +89,7 @@ nodes = {
     "generate_sql": generate_sql,
     "validate_sql": validate_sql,
     "audit_sql": audit_sql,
+    "query_plan_guard": query_plan_guard,
     "correct_sql": correct_sql,
     "repair_guard": repair_guard,
     "execute_sql": execute_sql,
@@ -81,7 +99,12 @@ for node_name, node in nodes.items():
 
 # 添加关系
 graph_builder.add_edge(START, "context_manager")
-graph_builder.add_edge("context_manager", "extract_keywords")
+graph_builder.add_edge("context_manager", "ambiguity_guard")
+graph_builder.add_conditional_edges(
+    "ambiguity_guard",
+    route_after_ambiguity_guard,
+    {"extract_keywords": "extract_keywords", "end": END},
+)
 graph_builder.add_edge("extract_keywords", "recall_column")
 graph_builder.add_edge("extract_keywords", "recall_value")
 graph_builder.add_edge("extract_keywords", "recall_metric")
@@ -104,7 +127,13 @@ graph_builder.add_conditional_edges(
 graph_builder.add_conditional_edges(
     "validate_sql",
     route_after_validation,
-    {"execute_sql": "execute_sql", "correct_sql": "correct_sql", "end": END},
+    {"query_plan_guard": "query_plan_guard", "correct_sql": "correct_sql", "end": END},
+)
+
+graph_builder.add_conditional_edges(
+    "query_plan_guard",
+    route_after_query_plan,
+    {"execute_sql": "execute_sql", "end": END},
 )
 
 graph_builder.add_edge("correct_sql", "repair_guard")

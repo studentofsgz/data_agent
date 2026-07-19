@@ -101,9 +101,55 @@ class SQLRepairGuardResultState(TypedDict):
     details: dict[str, Any]
 
 
+class SQLQueryPlanResultState(TypedDict):
+    passed: bool
+    code: str
+    message: str
+    estimated_rows: int
+    query_cost: float | None
+    join_table_count: int
+    tables: list[dict[str, Any]]
+    full_scan_tables: list[str]
+    warnings: list[str]
+    violations: list[str]
+    details: dict[str, Any]
+
+
+class SQLExecutionStatsState(TypedDict):
+    elapsed_seconds: float
+    returned_rows: int
+    truncated: bool
+    timeout_seconds: float
+    max_result_rows: int
+
+
+class QueryIntentState(TypedDict):
+    query: str
+    metrics: list[str]
+    dimensions: list[str]
+    time: dict[str, Any]
+    filters: list[dict[str, str]]
+    order: str | None
+    top_k: int | None
+
+
+class AmbiguityResultState(TypedDict):
+    needs_clarification: bool
+    action: str
+    code: str
+    codes: list[str]
+    missing_slots: list[str]
+    reasons: list[str]
+    question: str
+
+
 class DataAgentState(TypedDict):
     query: str  # 用户查询（可能已被上下文改写）
     messages: list[dict]  # 历史对话 [{"role":"user","content":"..."},...]
+    query_intent: QueryIntentState  # 结构化查询意图
+    ambiguity_result: AmbiguityResultState  # 问题完整性判定
+    clarification_required: bool  # 是否需要向用户追问
+    clarification_question: str  # 最小必要澄清问题
     keywords: list[str]  # 用户查询的关键字
 
     retrieved_columns: list[ColumnInfo]  # 召回的字段信息
@@ -124,6 +170,9 @@ class DataAgentState(TypedDict):
     original_sql: str  # 第一次生成的SQL，用作修复过程的语义基线
 
     audit_result: SQLAuditResultState  # AST安全审计结果
+    query_plan: dict[str, Any]  # MySQL EXPLAIN FORMAT=JSON原始执行计划
+    query_plan_result: SQLQueryPlanResultState  # 执行前成本策略判定
+    execution_stats: SQLExecutionStatsState  # 执行沙箱耗时和结果截断信息
     repair_history: list[SQLRepairAttemptState]  # 每次修复的输入、输出、错误和判定
     repair_guard_result: SQLRepairGuardResultState  # 最近一次防漂移检查结果
     repair_stop_reason: str | None  # 重复、循环或语义漂移等提前停止原因

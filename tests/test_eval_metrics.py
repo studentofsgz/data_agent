@@ -117,6 +117,79 @@ class ResultComparisonTests(unittest.TestCase):
         self.assertEqual(1, summary["repair_guard_stopped_cases"])
         self.assertEqual({"REPAIR_CYCLE": 1}, summary["repair_stop_reasons"])
 
+    def test_query_cost_and_sandbox_metrics_are_aggregated(self):
+        result = evaluate_case(
+            case={"id": "cost", "question": "成本治理测试"},
+            sql="SELECT order_id FROM fact_order LIMIT 10",
+            rows=[{"order_id": "o1"}],
+            error="",
+            elapsed_seconds=0.02,
+            correction_attempts=0,
+            event_count=2,
+            result_received=True,
+            query_plan_events=[{
+                "status": "passed",
+                "code": "PLAN_OK",
+                "estimated_rows": 100,
+                "warnings": ["USING_FILESORT"],
+            }],
+            sql_sandbox_events=[{
+                "status": "success",
+                "returned_rows": 1,
+                "truncated": False,
+            }],
+        )
+
+        summary = aggregate_results([result])["summary"]["query_governance"]
+        self.assertEqual(1, summary["plan_passed"])
+        self.assertEqual(100.0, summary["avg_estimated_rows"])
+        self.assertEqual({"USING_FILESORT": 1}, summary["warning_codes"])
+        self.assertEqual(1, summary["sandbox_executions"])
+
+    def test_clarification_precision_recall_and_code_are_aggregated(self):
+        cases = [
+            evaluate_case(
+                case={
+                    "id": "ambiguous",
+                    "question": "1月份销售额",
+                    "expect_clarification": True,
+                    "expect_clarification_code": "MISSING_YEAR_FOR_MONTH",
+                },
+                sql="",
+                rows=[],
+                error="",
+                elapsed_seconds=0.01,
+                correction_attempts=0,
+                event_count=2,
+                result_received=False,
+                clarification_event={
+                    "code": "MISSING_YEAR_FOR_MONTH",
+                    "question": "哪一年？",
+                },
+            ),
+            evaluate_case(
+                case={
+                    "id": "clear",
+                    "question": "2025年1月销售额",
+                    "expect_clarification": False,
+                },
+                sql="SELECT 1",
+                rows=[{"1": 1}],
+                error="",
+                elapsed_seconds=0.01,
+                correction_attempts=0,
+                event_count=1,
+                result_received=True,
+            ),
+        ]
+
+        summary = aggregate_results(cases)["summary"]["clarification"]
+        self.assertEqual(100.0, summary["accuracy"]["rate"])
+        self.assertEqual(100.0, summary["precision"])
+        self.assertEqual(100.0, summary["recall"])
+        self.assertEqual(1, summary["true_positive"])
+        self.assertEqual(1, summary["true_negative"])
+
     def test_schema_linking_metrics_are_derived_from_golden_sql(self):
         gold_sql = (
             "SELECT r.region_name, SUM(f.order_amount) AS gmv "

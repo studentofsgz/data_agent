@@ -48,6 +48,26 @@ schema_linking:
   exact_match_enabled: true
   exact_match_boost: 1.0
 
+# SQL成本治理和应用层执行沙箱。阈值应按真实数据规模通过压测校准。
+sql_execution:
+  plan_guard_enabled: true
+  reject_cartesian_joins: true
+  max_estimated_rows: 1000000
+  max_full_scan_rows: 100000
+  max_join_tables: 8
+  timeout_seconds: 30
+  max_result_rows: 10000
+  max_concurrent_queries: 4
+
+# 第二阶段：问题歧义检测。当前先返回结构化澄清事件，后续接入interrupt/resume。
+ambiguity:
+  enabled: true
+  stop_on_ambiguity: true
+  require_year_for_explicit_month: true
+  clarify_vague_metric: true
+  clarify_vague_time: true
+  clarify_vague_top_k: true
+
 sql_cache:
   similarity_threshold: 0.95
   collection_name: data-agent-sql-cache

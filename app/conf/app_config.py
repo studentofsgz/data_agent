@@ -73,6 +73,28 @@ class SchemaLinkingConfig:
 
 
 @dataclass
+class SQLExecutionConfig:
+    plan_guard_enabled: bool
+    reject_cartesian_joins: bool
+    max_estimated_rows: int
+    max_full_scan_rows: int
+    max_join_tables: int
+    timeout_seconds: float
+    max_result_rows: int
+    max_concurrent_queries: int
+
+
+@dataclass
+class AmbiguityConfig:
+    enabled: bool
+    stop_on_ambiguity: bool
+    require_year_for_explicit_month: bool
+    clarify_vague_metric: bool
+    clarify_vague_time: bool
+    clarify_vague_top_k: bool
+
+
+@dataclass
 class SQLCacheConfig:
     similarity_threshold: float
     collection_name: str
@@ -95,6 +117,8 @@ class AppConfig:
     es: ESConfig
     rerank: RerankConfig
     schema_linking: SchemaLinkingConfig
+    sql_execution: SQLExecutionConfig
+    ambiguity: AmbiguityConfig
     sql_cache: SQLCacheConfig
     llm: LLMConfig
 

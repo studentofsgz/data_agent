@@ -139,6 +139,44 @@ targeted retry remains possible.
 Offline reports store every guard decision and aggregate stopped cases by
 `NO_CHANGE`, `REPAIR_CYCLE`, or `SEMANTIC_DRIFT`.
 
+## Query cost governance and execution sandbox
+
+After the AST audit, SQL validation now requests `EXPLAIN FORMAT=JSON` from
+MySQL. A pure policy layer parses table access types, estimated rows, query
+cost, JOIN count, filesort, and temporary-table flags. It rejects cartesian
+joins, excessive JOINs, large full scans, and plans above the configured row
+estimate before the query reaches the execution node. Cost rejection stops the
+graph instead of asking the model to rewrite business semantics blindly.
+
+Approved queries run inside an application-level execution boundary with a
+shared concurrency limit, wall-clock timeout, rollback after timeout or query
+error, and a hard result-row cap. This complements, but does not replace, a
+read-only database account and a read replica in production. Offline reports
+aggregate plan pass/reject counts, stable rejection codes, estimated rows,
+plan warnings, execution timeouts, and truncated results.
+
+## Intent ambiguity and clarification
+
+After conversation rewriting and before retrieval, a deterministic QueryIntent
+layer extracts metrics, dimensions, time fields, filters, ordering, and TopK.
+The ambiguity guard currently stops before any retrieval or database access and
+emits a structured `clarification_required` event when an explicit month lacks
+a year, a recent range has no duration, an analytical question lacks a metric,
+or a ranking lacks TopK. It deliberately treats relative expressions such as
+"last month" as complete.
+
+Run the dedicated ambiguity set with:
+
+    python -m eval.runner --cases eval/data/ambiguity_cases.json \
+      --goldens /tmp/no_goldens.json \
+      --report eval/reports/smoke/ambiguity_report.json
+
+Cases may configure `expect_clarification` and
+`expect_clarification_code`. Reports aggregate accuracy, precision, recall,
+unnecessary clarification rate, and the TP/TN/FP/FN confusion counts. This
+stage returns a question event; LangGraph interrupt/checkpoint resume is the
+next upgrade.
+
 ## Metrics
 
 - SQL generated rate
@@ -157,4 +195,7 @@ Offline reports store every guard decision and aggregate stopped cases by
 - Node latency: average, P50, P95, maximum, and errors
 - LLM latency, call count, token usage, and errors
 - SQL cache hit/miss/bypass count
+- Query-plan pass/reject counts, estimates, warnings, and rejection reasons
+- Execution-sandbox timeout and result-truncation counts
+- Clarification accuracy, precision, recall, and unnecessary clarification rate
 - Grouped metrics by difficulty and category

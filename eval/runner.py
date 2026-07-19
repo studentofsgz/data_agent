@@ -140,6 +140,10 @@ async def run_one_case(
     sql_cache_status: str | None = None
     repair_guard_events: list[dict[str, Any]] = []
     schema_linking_events: list[dict[str, Any]] = []
+    query_plan_events: list[dict[str, Any]] = []
+    sql_sandbox_events: list[dict[str, Any]] = []
+    query_intent_event: dict[str, Any] | None = None
+    clarification_event: dict[str, Any] | None = None
     llm_tracker = LLMCallTracker()
 
     try:
@@ -190,6 +194,30 @@ async def run_one_case(
                     for key, value in chunk.items()
                     if key != "type"
                 })
+            elif event_type == "query_plan_guard":
+                query_plan_events.append({
+                    key: value
+                    for key, value in chunk.items()
+                    if key != "type"
+                })
+            elif event_type == "sql_sandbox":
+                sql_sandbox_events.append({
+                    key: value
+                    for key, value in chunk.items()
+                    if key != "type"
+                })
+            elif event_type == "query_intent":
+                query_intent_event = {
+                    key: value
+                    for key, value in chunk.items()
+                    if key != "type"
+                }
+            elif event_type == "clarification_required":
+                clarification_event = {
+                    key: value
+                    for key, value in chunk.items()
+                    if key != "type"
+                }
 
             step = str(chunk.get("step") or "")
             if step.startswith("校正SQL") and chunk.get("status") == "running":
@@ -212,6 +240,10 @@ async def run_one_case(
         sql_cache_status=sql_cache_status,
         repair_guard_events=repair_guard_events,
         schema_linking_events=schema_linking_events,
+        query_plan_events=query_plan_events,
+        sql_sandbox_events=sql_sandbox_events,
+        query_intent_event=query_intent_event,
+        clarification_event=clarification_event,
     )
 
 
@@ -272,6 +304,7 @@ async def run_eval(args: argparse.Namespace) -> dict[str, Any]:
                     f"tables={result['expected_tables_hit']} non_empty={result['not_empty_ok']} "
                     f"{sql_rule_text}{expected_result_text} "
                     f"repair={result['correction_attempts']} "
+                    f"clarification={result['clarification_required']} "
                     f"llm_calls={result['llm_call_count']} "
                     f"elapsed={result['elapsed_seconds']}s"
                 )
@@ -344,6 +377,44 @@ def print_summary(report: dict[str, Any]) -> None:
         print(f"  Final metric recall: {format_metric(schema_linking['final_metric_recall'])}")
         print(f"  JOIN key coverage: {format_metric(schema_linking['join_key_coverage'])}")
         print(f"  Avg candidates: {schema_linking['avg_candidate_counts']}")
+
+    query_governance = summary.get("query_governance") or {}
+    if query_governance.get("plan_checks"):
+        print("\nQuery cost governance:")
+        print(
+            "  Plan guard: "
+            f"passed={query_governance['plan_passed']} "
+            f"rejected={query_governance['plan_rejected']} "
+            f"reasons={query_governance['rejection_codes']}"
+        )
+        print(
+            "  Estimates: "
+            f"avg_rows={query_governance['avg_estimated_rows']} "
+            f"max_rows={query_governance['max_estimated_rows']}"
+        )
+        print(
+            "  Sandbox: "
+            f"executions={query_governance['sandbox_executions']} "
+            f"timeouts={query_governance['sandbox_timeouts']} "
+            f"truncated={query_governance['sandbox_truncated']}"
+        )
+
+    clarification = summary.get("clarification") or {}
+    if clarification.get("configured_cases"):
+        print("\nIntent clarification:")
+        print(
+            "  Accuracy: "
+            f"{format_metric(clarification['accuracy'])} "
+            f"precision={clarification['precision']}% "
+            f"recall={clarification['recall']}%"
+        )
+        print(
+            "  Confusion: "
+            f"TP={clarification['true_positive']} "
+            f"TN={clarification['true_negative']} "
+            f"FP={clarification['false_positive']} "
+            f"FN={clarification['false_negative']}"
+        )
 
     observability = summary.get("observability") or {}
     llm_summary = observability.get("llm") or {}

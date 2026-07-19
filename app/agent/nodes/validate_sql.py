@@ -14,10 +14,10 @@ async def validate_sql(state: DataAgentState, runtime: Runtime[DataAgentContext]
     sql = state["sql"]
 
     try:
-        await dw_mysql_repository.validate_sql(sql)
+        query_plan = await dw_mysql_repository.explain_sql(sql)
         writer({"type": "progress", "step": "验证SQL", "status": "success"})
         logger.info(f"SQL验证成功 (重试{state.get('retry_count', 0)}次): {sql}")
-        return {"error": None}
+        return {"error": None, "query_plan": query_plan}
     except Exception as e:
         error = str(e)
         writer({"type": "progress", "step": "验证SQL", "status": "error"})

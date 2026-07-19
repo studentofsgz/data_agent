@@ -351,6 +351,102 @@ def aggregate_observability(results: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def aggregate_query_governance(results: list[dict[str, Any]]) -> dict[str, Any]:
+    plan_events = [
+        event
+        for result in results
+        for event in result.get("query_plan_events") or []
+    ]
+    sandbox_events = [
+        event
+        for result in results
+        for event in result.get("sql_sandbox_events") or []
+    ]
+    estimates = [
+        int(event.get("estimated_rows") or 0)
+        for event in plan_events
+    ]
+    rejection_codes = Counter(
+        str(event.get("code") or "UNKNOWN")
+        for event in plan_events
+        if event.get("status") == "rejected"
+    )
+    warning_codes = Counter(
+        str(warning)
+        for event in plan_events
+        for warning in event.get("warnings") or []
+    )
+    successful_sandbox = [
+        event for event in sandbox_events if event.get("status") == "success"
+    ]
+
+    return {
+        "plan_checks": len(plan_events),
+        "plan_passed": sum(event.get("status") == "passed" for event in plan_events),
+        "plan_rejected": sum(event.get("status") == "rejected" for event in plan_events),
+        "rejection_codes": dict(sorted(rejection_codes.items())),
+        "warning_codes": dict(sorted(warning_codes.items())),
+        "avg_estimated_rows": round(sum(estimates) / len(estimates), 1)
+        if estimates
+        else None,
+        "max_estimated_rows": max(estimates) if estimates else None,
+        "sandbox_executions": len(successful_sandbox),
+        "sandbox_timeouts": sum(
+            event.get("status") == "timeout" for event in sandbox_events
+        ),
+        "sandbox_truncated": sum(
+            bool(event.get("truncated")) for event in successful_sandbox
+        ),
+        "sandbox_returned_rows": sum(
+            int(event.get("returned_rows") or 0) for event in successful_sandbox
+        ),
+    }
+
+
+def aggregate_clarification(results: list[dict[str, Any]]) -> dict[str, Any]:
+    configured = [
+        result
+        for result in results
+        if result.get("clarification_expected") is not None
+    ]
+    true_positive = sum(
+        result["clarification_expected"] is True
+        and result["clarification_required"] is True
+        for result in configured
+    )
+    true_negative = sum(
+        result["clarification_expected"] is False
+        and result["clarification_required"] is False
+        for result in configured
+    )
+    false_positive = sum(
+        result["clarification_expected"] is False
+        and result["clarification_required"] is True
+        for result in configured
+    )
+    false_negative = sum(
+        result["clarification_expected"] is True
+        and result["clarification_required"] is False
+        for result in configured
+    )
+    precision_total = true_positive + false_positive
+    recall_total = true_positive + false_negative
+    return {
+        "configured_cases": len(configured),
+        "accuracy": metric_block(
+            sum(bool(result.get("clarification_ok")) for result in configured),
+            len(configured),
+        ),
+        "true_positive": true_positive,
+        "true_negative": true_negative,
+        "false_positive": false_positive,
+        "false_negative": false_negative,
+        "precision": rate(true_positive, precision_total),
+        "recall": rate(true_positive, recall_total),
+        "unnecessary_clarification_rate": rate(false_positive, len(configured)),
+    }
+
+
 def evaluate_case(
     *,
     case: dict[str, Any],
@@ -367,6 +463,10 @@ def evaluate_case(
     sql_cache_status: str | None = None,
     repair_guard_events: list[dict[str, Any]] | None = None,
     schema_linking_events: list[dict[str, Any]] | None = None,
+    query_plan_events: list[dict[str, Any]] | None = None,
+    sql_sandbox_events: list[dict[str, Any]] | None = None,
+    query_intent_event: dict[str, Any] | None = None,
+    clarification_event: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     expected_tables = {str(t).lower() for t in case.get("expect_tables", [])}
     actual_tables = extract_tables(sql)
@@ -397,6 +497,21 @@ def evaluate_case(
     llm_calls = list(llm_calls or [])
     repair_guard_events = list(repair_guard_events or [])
     schema_linking_events = list(schema_linking_events or [])
+    query_plan_events = list(query_plan_events or [])
+    sql_sandbox_events = list(sql_sandbox_events or [])
+    clarification_required = clarification_event is not None
+    clarification_expected = case.get("expect_clarification")
+    expected_clarification_code = case.get("expect_clarification_code")
+    actual_clarification_code = (
+        clarification_event.get("code") if clarification_event else None
+    )
+    clarification_ok: bool | None = None
+    if isinstance(clarification_expected, bool):
+        clarification_ok = clarification_required == clarification_expected
+        if clarification_ok and expected_clarification_code is not None:
+            clarification_ok = (
+                actual_clarification_code == expected_clarification_code
+            )
     slowest_node = (
         max(
             node_timings,
@@ -484,6 +599,16 @@ def evaluate_case(
         ),
         "schema_linking_events": schema_linking_events,
         "schema_linking": evaluate_schema_linking(case, schema_linking_events),
+        "query_plan_events": query_plan_events,
+        "sql_sandbox_events": sql_sandbox_events,
+        "query_intent_event": query_intent_event,
+        "clarification_event": clarification_event,
+        "clarification_required": clarification_required,
+        "clarification_expected": clarification_expected
+        if isinstance(clarification_expected, bool)
+        else None,
+        "clarification_code": actual_clarification_code,
+        "clarification_ok": clarification_ok,
         "error": error,
     }
 
@@ -511,6 +636,8 @@ def aggregate_group(results: list[dict[str, Any]]) -> dict[str, Any]:
         else 0.0,
         "observability": aggregate_observability(results),
         "schema_linking": aggregate_schema_linking(results),
+        "query_governance": aggregate_query_governance(results),
+        "clarification": aggregate_clarification(results),
     }
 
 
