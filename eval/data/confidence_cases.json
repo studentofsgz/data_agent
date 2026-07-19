@@ -1,0 +1,66 @@
+[
+  {
+    "id": "confidence_high_semantic_metric",
+    "question": "统计各地区的GMV",
+    "profile": "known_metric_exact",
+    "expect_level": "high",
+    "expect_action": "proceed",
+    "expect_code": "CONFIDENCE_HIGH"
+  },
+  {
+    "id": "confidence_high_detail_column",
+    "question": "列出地区名称",
+    "profile": "detail_exact",
+    "expect_level": "high",
+    "expect_action": "proceed",
+    "expect_code": "CONFIDENCE_HIGH"
+  },
+  {
+    "id": "confidence_medium_degraded_linking",
+    "question": "统计各地区的GMV",
+    "profile": "degraded_metric",
+    "expect_level": "medium",
+    "expect_action": "confirm",
+    "expect_code": "CONFIRM_INTERPRETATION"
+  },
+  {
+    "id": "confidence_medium_metric_conflict",
+    "question": "统计各地区的销售额",
+    "profile": "metric_conflict",
+    "expect_level": "medium",
+    "expect_action": "confirm",
+    "expect_code": "CONFIRM_INTERPRETATION"
+  },
+  {
+    "id": "confidence_low_unknown_metric",
+    "question": "统计各地区的活跃用户增长率",
+    "profile": "known_metric_exact",
+    "expect_level": "low",
+    "expect_action": "reject",
+    "expect_code": "UNKNOWN_METRIC"
+  },
+  {
+    "id": "confidence_low_unsupported_dimension",
+    "question": "统计各城市的GMV",
+    "profile": "known_metric_exact",
+    "expect_level": "low",
+    "expect_action": "reject",
+    "expect_code": "MISSING_REQUIRED_DIMENSION"
+  },
+  {
+    "id": "confidence_low_no_schema",
+    "question": "统计各地区的GMV",
+    "profile": "no_schema",
+    "expect_level": "low",
+    "expect_action": "reject",
+    "expect_code": "NO_SCHEMA_CONTEXT"
+  },
+  {
+    "id": "confidence_low_missing_metric_column",
+    "question": "统计订单数",
+    "profile": "missing_metric_column",
+    "expect_level": "low",
+    "expect_action": "reject",
+    "expect_code": "MISSING_METRIC_EVIDENCE"
+  }
+]

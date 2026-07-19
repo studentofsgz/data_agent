@@ -1,0 +1,500 @@
+{
+  "summary": {
+    "total": 8,
+    "passed": 8,
+    "accuracy": 100.0,
+    "levels": {
+      "high": 2,
+      "medium": 2,
+      "low": 4
+    },
+    "actions": {
+      "proceed": 2,
+      "confirm": 2,
+      "reject": 4
+    }
+  },
+  "results": [
+    {
+      "id": "confidence_high_semantic_metric",
+      "question": "统计各地区的GMV",
+      "profile": "known_metric_exact",
+      "expected": {
+        "level": "high",
+        "action": "proceed",
+        "code": "CONFIDENCE_HIGH"
+      },
+      "actual": {
+        "score": 1.0,
+        "level": "high",
+        "action": "proceed",
+        "code": "CONFIDENCE_HIGH",
+        "reasons": [
+          "命中确定性指标语义层",
+          "存在精确名称或别名命中"
+        ],
+        "evidence": {
+          "intent_metrics": [
+            "GMV"
+          ],
+          "unknown_metric_mentions": [],
+          "semantic_metrics": [
+            "GMV"
+          ],
+          "final_metrics": [
+            "GMV"
+          ],
+          "final_tables": [
+            "dim_region",
+            "fact_order"
+          ],
+          "final_column_count": 3,
+          "missing_dimensions": [],
+          "required_metric_column_coverage": 1.0,
+          "semantic_metric_coverage": 1.0,
+          "exact_column_count": 2,
+          "exact_metric_count": 1,
+          "max_column_score": 0.82,
+          "max_metric_score": 0.84,
+          "metric_candidate_conflict": false,
+          "schema_linking_degraded": false
+        },
+        "interpretation": {
+          "metrics": [
+            "GMV"
+          ],
+          "dimensions": [
+            "region"
+          ],
+          "time": {},
+          "filters": [],
+          "tables": [
+            "dim_region",
+            "fact_order"
+          ]
+        },
+        "question": ""
+      },
+      "passed": true
+    },
+    {
+      "id": "confidence_high_detail_column",
+      "question": "列出地区名称",
+      "profile": "detail_exact",
+      "expected": {
+        "level": "high",
+        "action": "proceed",
+        "code": "CONFIDENCE_HIGH"
+      },
+      "actual": {
+        "score": 0.87,
+        "level": "high",
+        "action": "proceed",
+        "code": "CONFIDENCE_HIGH",
+        "reasons": [
+          "存在精确名称或别名命中"
+        ],
+        "evidence": {
+          "intent_metrics": [],
+          "unknown_metric_mentions": [],
+          "semantic_metrics": [],
+          "final_metrics": [],
+          "final_tables": [
+            "dim_region"
+          ],
+          "final_column_count": 1,
+          "missing_dimensions": [],
+          "required_metric_column_coverage": 1.0,
+          "semantic_metric_coverage": 1.0,
+          "exact_column_count": 1,
+          "exact_metric_count": 0,
+          "max_column_score": 0.79,
+          "max_metric_score": null,
+          "metric_candidate_conflict": false,
+          "schema_linking_degraded": false
+        },
+        "interpretation": {
+          "metrics": [],
+          "dimensions": [
+            "region"
+          ],
+          "time": {},
+          "filters": [],
+          "tables": [
+            "dim_region"
+          ]
+        },
+        "question": ""
+      },
+      "passed": true
+    },
+    {
+      "id": "confidence_medium_degraded_linking",
+      "question": "统计各地区的GMV",
+      "profile": "degraded_metric",
+      "expected": {
+        "level": "medium",
+        "action": "confirm",
+        "code": "CONFIRM_INTERPRETATION"
+      },
+      "actual": {
+        "score": 0.64,
+        "level": "medium",
+        "action": "confirm",
+        "code": "CONFIRM_INTERPRETATION",
+        "reasons": [
+          "命中确定性指标语义层",
+          "Schema Linking重排发生降级"
+        ],
+        "evidence": {
+          "intent_metrics": [
+            "GMV"
+          ],
+          "unknown_metric_mentions": [],
+          "semantic_metrics": [
+            "GMV"
+          ],
+          "final_metrics": [
+            "GMV"
+          ],
+          "final_tables": [
+            "dim_region",
+            "fact_order"
+          ],
+          "final_column_count": 3,
+          "missing_dimensions": [],
+          "required_metric_column_coverage": 1.0,
+          "semantic_metric_coverage": 1.0,
+          "exact_column_count": 0,
+          "exact_metric_count": 0,
+          "max_column_score": null,
+          "max_metric_score": null,
+          "metric_candidate_conflict": false,
+          "schema_linking_degraded": true
+        },
+        "interpretation": {
+          "metrics": [
+            "GMV"
+          ],
+          "dimensions": [
+            "region"
+          ],
+          "time": {},
+          "filters": [],
+          "tables": [
+            "dim_region",
+            "fact_order"
+          ]
+        },
+        "question": "当前证据不足以直接执行。我理解为查询指标“GMV”，分析维度“region”，使用表“dim_region、fact_order”。是否按这个理解继续？"
+      },
+      "passed": true
+    },
+    {
+      "id": "confidence_medium_metric_conflict",
+      "question": "统计各地区的销售额",
+      "profile": "metric_conflict",
+      "expected": {
+        "level": "medium",
+        "action": "confirm",
+        "code": "CONFIRM_INTERPRETATION"
+      },
+      "actual": {
+        "score": 0.64,
+        "level": "medium",
+        "action": "confirm",
+        "code": "CONFIRM_INTERPRETATION",
+        "reasons": [
+          "命中确定性指标语义层",
+          "存在多个接近的指标候选"
+        ],
+        "evidence": {
+          "intent_metrics": [
+            "GMV"
+          ],
+          "unknown_metric_mentions": [],
+          "semantic_metrics": [
+            "GMV"
+          ],
+          "final_metrics": [
+            "AOV",
+            "GMV"
+          ],
+          "final_tables": [
+            "dim_region",
+            "fact_order"
+          ],
+          "final_column_count": 3,
+          "missing_dimensions": [],
+          "required_metric_column_coverage": 1.0,
+          "semantic_metric_coverage": 1.0,
+          "exact_column_count": 0,
+          "exact_metric_count": 0,
+          "max_column_score": null,
+          "max_metric_score": null,
+          "metric_candidate_conflict": true,
+          "schema_linking_degraded": false
+        },
+        "interpretation": {
+          "metrics": [
+            "GMV"
+          ],
+          "dimensions": [
+            "region"
+          ],
+          "time": {},
+          "filters": [],
+          "tables": [
+            "dim_region",
+            "fact_order"
+          ]
+        },
+        "question": "当前证据不足以直接执行。我理解为查询指标“GMV”，分析维度“region”，使用表“dim_region、fact_order”。是否按这个理解继续？"
+      },
+      "passed": true
+    },
+    {
+      "id": "confidence_low_unknown_metric",
+      "question": "统计各地区的活跃用户增长率",
+      "profile": "known_metric_exact",
+      "expected": {
+        "level": "low",
+        "action": "reject",
+        "code": "UNKNOWN_METRIC"
+      },
+      "actual": {
+        "score": 0.44,
+        "level": "low",
+        "action": "reject",
+        "code": "UNKNOWN_METRIC",
+        "reasons": [
+          "命中确定性指标语义层",
+          "存在精确名称或别名命中",
+          "问题包含语义层未定义的业务指标：活跃用户、增长率"
+        ],
+        "evidence": {
+          "intent_metrics": [],
+          "unknown_metric_mentions": [
+            "活跃用户",
+            "增长率"
+          ],
+          "semantic_metrics": [
+            "GMV"
+          ],
+          "final_metrics": [
+            "GMV"
+          ],
+          "final_tables": [
+            "dim_region",
+            "fact_order"
+          ],
+          "final_column_count": 3,
+          "missing_dimensions": [],
+          "required_metric_column_coverage": 1.0,
+          "semantic_metric_coverage": 1.0,
+          "exact_column_count": 2,
+          "exact_metric_count": 1,
+          "max_column_score": 0.82,
+          "max_metric_score": 0.84,
+          "metric_candidate_conflict": false,
+          "schema_linking_degraded": false
+        },
+        "interpretation": {
+          "metrics": [
+            "GMV"
+          ],
+          "dimensions": [
+            "region",
+            "customer"
+          ],
+          "time": {},
+          "filters": [],
+          "tables": [
+            "dim_region",
+            "fact_order"
+          ]
+        },
+        "question": ""
+      },
+      "passed": true
+    },
+    {
+      "id": "confidence_low_unsupported_dimension",
+      "question": "统计各城市的GMV",
+      "profile": "known_metric_exact",
+      "expected": {
+        "level": "low",
+        "action": "reject",
+        "code": "MISSING_REQUIRED_DIMENSION"
+      },
+      "actual": {
+        "score": 0.44,
+        "level": "low",
+        "action": "reject",
+        "code": "MISSING_REQUIRED_DIMENSION",
+        "reasons": [
+          "命中确定性指标语义层",
+          "存在精确名称或别名命中",
+          "最终Schema缺少查询要求的维度字段：dim_region.city"
+        ],
+        "evidence": {
+          "intent_metrics": [
+            "GMV"
+          ],
+          "unknown_metric_mentions": [],
+          "semantic_metrics": [
+            "GMV"
+          ],
+          "final_metrics": [
+            "GMV"
+          ],
+          "final_tables": [
+            "dim_region",
+            "fact_order"
+          ],
+          "final_column_count": 3,
+          "missing_dimensions": [
+            "dim_region.city"
+          ],
+          "required_metric_column_coverage": 1.0,
+          "semantic_metric_coverage": 1.0,
+          "exact_column_count": 2,
+          "exact_metric_count": 1,
+          "max_column_score": 0.82,
+          "max_metric_score": 0.84,
+          "metric_candidate_conflict": false,
+          "schema_linking_degraded": false
+        },
+        "interpretation": {
+          "metrics": [
+            "GMV"
+          ],
+          "dimensions": [
+            "city"
+          ],
+          "time": {},
+          "filters": [],
+          "tables": [
+            "dim_region",
+            "fact_order"
+          ]
+        },
+        "question": ""
+      },
+      "passed": true
+    },
+    {
+      "id": "confidence_low_no_schema",
+      "question": "统计各地区的GMV",
+      "profile": "no_schema",
+      "expected": {
+        "level": "low",
+        "action": "reject",
+        "code": "NO_SCHEMA_CONTEXT"
+      },
+      "actual": {
+        "score": 0.44,
+        "level": "low",
+        "action": "reject",
+        "code": "NO_SCHEMA_CONTEXT",
+        "reasons": [
+          "命中确定性指标语义层",
+          "存在精确名称或别名命中",
+          "没有形成可用于SQL生成的表字段上下文"
+        ],
+        "evidence": {
+          "intent_metrics": [
+            "GMV"
+          ],
+          "unknown_metric_mentions": [],
+          "semantic_metrics": [
+            "GMV"
+          ],
+          "final_metrics": [
+            "GMV"
+          ],
+          "final_tables": [],
+          "final_column_count": 0,
+          "missing_dimensions": [
+            "dim_region.region_name"
+          ],
+          "required_metric_column_coverage": 0.0,
+          "semantic_metric_coverage": 1.0,
+          "exact_column_count": 0,
+          "exact_metric_count": 1,
+          "max_column_score": null,
+          "max_metric_score": 0.84,
+          "metric_candidate_conflict": false,
+          "schema_linking_degraded": false
+        },
+        "interpretation": {
+          "metrics": [
+            "GMV"
+          ],
+          "dimensions": [
+            "region"
+          ],
+          "time": {},
+          "filters": [],
+          "tables": []
+        },
+        "question": ""
+      },
+      "passed": true
+    },
+    {
+      "id": "confidence_low_missing_metric_column",
+      "question": "统计订单数",
+      "profile": "missing_metric_column",
+      "expected": {
+        "level": "low",
+        "action": "reject",
+        "code": "MISSING_METRIC_EVIDENCE"
+      },
+      "actual": {
+        "score": 0.44,
+        "level": "low",
+        "action": "reject",
+        "code": "MISSING_METRIC_EVIDENCE",
+        "reasons": [
+          "存在精确名称或别名命中",
+          "最终Schema缺少指标计算所需字段"
+        ],
+        "evidence": {
+          "intent_metrics": [
+            "ORDER_COUNT"
+          ],
+          "unknown_metric_mentions": [],
+          "semantic_metrics": [],
+          "final_metrics": [],
+          "final_tables": [
+            "fact_order"
+          ],
+          "final_column_count": 1,
+          "missing_dimensions": [],
+          "required_metric_column_coverage": 0.0,
+          "semantic_metric_coverage": 0.0,
+          "exact_column_count": 1,
+          "exact_metric_count": 0,
+          "max_column_score": 0.82,
+          "max_metric_score": null,
+          "metric_candidate_conflict": false,
+          "schema_linking_degraded": false
+        },
+        "interpretation": {
+          "metrics": [
+            "ORDER_COUNT"
+          ],
+          "dimensions": [],
+          "time": {},
+          "filters": [],
+          "tables": [
+            "fact_order"
+          ]
+        },
+        "question": ""
+      },
+      "passed": true
+    }
+  ]
+}
