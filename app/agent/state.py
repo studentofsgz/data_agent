@@ -81,6 +81,26 @@ class SQLAuditResultState(TypedDict):
     details: dict[str, Any]
 
 
+class SQLRepairAttemptState(TypedDict):
+    attempt: int
+    input_sql: str
+    candidate_sql: str
+    error: str
+    input_fingerprint: str
+    candidate_fingerprint: str
+    guard_code: str
+    guard_message: str
+
+
+class SQLRepairGuardResultState(TypedDict):
+    passed: bool
+    code: str
+    message: str
+    fingerprint: str
+    violations: list[str]
+    details: dict[str, Any]
+
+
 class DataAgentState(TypedDict):
     query: str  # 用户查询（可能已被上下文改写）
     messages: list[dict]  # 历史对话 [{"role":"user","content":"..."},...]
@@ -89,6 +109,8 @@ class DataAgentState(TypedDict):
     retrieved_columns: list[ColumnInfo]  # 召回的字段信息
     retrieved_values: list[ValueInfo]  # 召回的值信息
     retrieved_metrics: list[MetricInfo]  # 召回的指标信息
+    column_recall_sources: dict[str, list[str]]  # 字段候选的向量、精确别名等召回来源
+    metric_recall_sources: dict[str, list[str]]  # 指标候选的召回来源
 
     table_infos: list[TableInfoState]  # 表信息
     metric_infos: list[MetricInfoState]  # 指标信息
@@ -98,9 +120,13 @@ class DataAgentState(TypedDict):
     time_semantics: TimeSemanticState  # 时间语义规则
     metric_semantics: MetricSemanticState  # 指标语义规则
 
-    sql: str  # 生成的SQL
+    sql: str  # 当前待审计、验证或执行的SQL
+    original_sql: str  # 第一次生成的SQL，用作修复过程的语义基线
 
     audit_result: SQLAuditResultState  # AST安全审计结果
+    repair_history: list[SQLRepairAttemptState]  # 每次修复的输入、输出、错误和判定
+    repair_guard_result: SQLRepairGuardResultState  # 最近一次防漂移检查结果
+    repair_stop_reason: str | None  # 重复、循环或语义漂移等提前停止原因
 
     error: str | None  # 安全审计或验证SQL时的结构化错误信息
 

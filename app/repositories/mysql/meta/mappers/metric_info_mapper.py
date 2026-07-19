@@ -11,8 +11,12 @@ class MetricInfoMapper:
             id=model.id,
             name=model.name,
             description=model.description,
-            relevant_columns=model.relevant_columns,
-            alias=model.alias
+            expression=model.expression or "",
+            default_aggregation=model.default_aggregation or "",
+            dimensions=model.dimensions or [],
+            time_granularity=model.time_granularity or "",
+            relevant_columns=model.relevant_columns or [],
+            alias=model.alias or [],
         )
 
     @staticmethod

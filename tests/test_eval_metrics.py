@@ -16,6 +16,7 @@ from app.agent.observability import current_node_name, instrument_node
 from eval.llm_tracking import LLMCallTracker
 from eval.metrics import aggregate_results, compare_result_rows, evaluate_case
 from eval.runner import load_cases, load_goldens, merge_goldens
+from eval.schema_linking import derive_gold_schema
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -91,6 +92,98 @@ class ResultComparisonTests(unittest.TestCase):
 
         self.assertEqual(summary["expected_result_ok"]["total"], 0)
         self.assertIsNone(summary["expected_result_ok"]["rate"])
+
+    def test_repair_guard_stop_reason_is_aggregated(self):
+        result = evaluate_case(
+            case={"id": "repair-loop", "question": "测试修复循环"},
+            sql="SELECT order_id FROM fact_order",
+            rows=[],
+            error="repair stopped",
+            elapsed_seconds=0.01,
+            correction_attempts=2,
+            event_count=2,
+            result_received=False,
+            repair_guard_events=[{
+                "status": "stopped",
+                "code": "REPAIR_CYCLE",
+                "message": "loop",
+                "violations": [],
+                "attempt": 2,
+            }],
+        )
+
+        summary = aggregate_results([result])["summary"]
+        self.assertEqual("REPAIR_CYCLE", result["repair_stop_reason"])
+        self.assertEqual(1, summary["repair_guard_stopped_cases"])
+        self.assertEqual({"REPAIR_CYCLE": 1}, summary["repair_stop_reasons"])
+
+    def test_schema_linking_metrics_are_derived_from_golden_sql(self):
+        gold_sql = (
+            "SELECT r.region_name, SUM(f.order_amount) AS gmv "
+            "FROM fact_order f JOIN dim_region r "
+            "ON f.region_id = r.region_id GROUP BY r.region_name"
+        )
+        derived = derive_gold_schema(gold_sql)
+        self.assertEqual(["dim_region", "fact_order"], derived["tables"])
+        self.assertIn("fact_order.order_amount", derived["columns"])
+        self.assertIn(
+            "dim_region.region_id=fact_order.region_id",
+            derived["join_keys"],
+        )
+        self.assertEqual(["gmv"], derived["metrics"])
+
+        result = evaluate_case(
+            case={
+                "id": "schema",
+                "question": "各地区GMV",
+                "expect_tables": ["fact_order", "dim_region"],
+                "gold_sql": gold_sql,
+            },
+            sql=gold_sql,
+            rows=[],
+            error="",
+            elapsed_seconds=0.01,
+            correction_attempts=0,
+            event_count=5,
+            result_received=True,
+            schema_linking_events=[
+                {
+                    "stage": "column_recall",
+                    "candidates": [
+                        {"id": "fact_order.order_amount", "sources": ["vector"]},
+                        {"id": "dim_region.region_name", "sources": ["exact_alias"]},
+                    ],
+                },
+                {
+                    "stage": "metric_recall",
+                    "candidates": [{"id": "GMV", "sources": ["exact_alias"]}],
+                },
+                {
+                    "stage": "rerank",
+                    "columns": [
+                        {"id": "fact_order.order_amount"},
+                        {"id": "dim_region.region_name"},
+                    ],
+                    "metrics": [{"id": "GMV"}],
+                },
+                {
+                    "stage": "table_filter",
+                    "tables": ["fact_order", "dim_region"],
+                    "columns": derived["columns"],
+                },
+                {"stage": "metric_filter", "metrics": ["GMV"]},
+            ],
+        )
+        summary = aggregate_results([result])["summary"]["schema_linking"]
+
+        self.assertEqual(100.0, result["schema_linking"]["table_recall"]["rate"])
+        self.assertEqual(100.0, result["schema_linking"]["join_key_coverage"]["rate"])
+        self.assertEqual(100.0, summary["final_column_recall"]["rate"])
+        self.assertEqual(100.0, summary["final_metric_recall"]["rate"])
+        self.assertEqual(
+            100.0,
+            summary["metric_recall_by_source"]["exact_alias"]["rate"],
+        )
 
 
 class ObservabilityTests(unittest.TestCase):

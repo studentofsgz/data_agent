@@ -1,3 +1,5 @@
+import json
+
 import yaml
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import PromptTemplate
@@ -25,6 +27,7 @@ async def correct_sql(state: DataAgentState, runtime: Runtime[DataAgentContext])
 
     sql = state["sql"]
     error = state["error"]
+    repair_history = list(state.get("repair_history", []))
 
     query = state["query"]
     table_infos = state["table_infos"]
@@ -33,7 +36,19 @@ async def correct_sql(state: DataAgentState, runtime: Runtime[DataAgentContext])
     db_info = state["db_info"]
 
     try:
-        prompt = PromptTemplate(template=load_prompt("correct_sql"), input_variables=["query", "metric_infos"])
+        prompt = PromptTemplate(
+            template=load_prompt("correct_sql"),
+            input_variables=[
+                "query",
+                "table_infos",
+                "metric_infos",
+                "date_info",
+                "db_info",
+                "sql",
+                "error",
+                "repair_history",
+            ],
+        )
         output_parser = StrOutputParser()
 
         chain = prompt | llm | output_parser
@@ -45,12 +60,40 @@ async def correct_sql(state: DataAgentState, runtime: Runtime[DataAgentContext])
              "date_info": yaml.dump(date_info, allow_unicode=True, sort_keys=False),
              "db_info": yaml.dump(db_info, allow_unicode=True, sort_keys=False),
              "sql": sql,
-             "error": error
+             "error": error,
+             "repair_history": json.dumps(repair_history, ensure_ascii=False),
              })
+        repair_history.append({
+            "attempt": retry_count,
+            "input_sql": sql,
+            "candidate_sql": result,
+            "error": str(error or ""),
+            "input_fingerprint": "",
+            "candidate_fingerprint": "",
+            "guard_code": "PENDING",
+            "guard_message": "等待修复保护检查",
+        })
         writer({"type": "progress", "step": f"校正SQL (第{retry_count}次)", "status": "success"})
         logger.info(f"校正后的SQL (第{retry_count}次): {result}")
-        return {"sql": result, "retry_count": retry_count}
+        return {
+            "sql": result,
+            "retry_count": retry_count,
+            "repair_history": repair_history,
+        }
     except Exception as e:
+        repair_history.append({
+            "attempt": retry_count,
+            "input_sql": sql,
+            "candidate_sql": sql,
+            "error": f"{error or ''}; repair_model_error={e}",
+            "input_fingerprint": "",
+            "candidate_fingerprint": "",
+            "guard_code": "PENDING",
+            "guard_message": "修复模型调用失败，等待保护检查",
+        })
         writer({"type": "progress", "step": f"校正SQL (第{retry_count}次)", "status": "error"})
         logger.error(f"校正SQL失败:{str(e)}")
-        return {"retry_count": retry_count}
+        return {
+            "retry_count": retry_count,
+            "repair_history": repair_history,
+        }

@@ -115,7 +115,12 @@ async def generate_sql(state: DataAgentState, runtime: Runtime[DataAgentContext]
             logger.info(f"SQL 缓存命中 (score={cached['score']:.4f}): 已缓存问题='{cached['cached_query']}'")
             writer({"type": "progress", "step": "生成SQL（缓存命中）", "status": "success"})
             writer({"type": "sql_preview", "sql": cached["sql"]})
-            return {"sql": cached["sql"]}
+            return {
+                "sql": cached["sql"],
+                "original_sql": cached["sql"],
+                "repair_history": [],
+                "repair_stop_reason": None,
+            }
         # ====== 缓存未命中，走 LLM 生成 ======
 
         prompt = PromptTemplate(template=load_prompt("generate_sql"),
@@ -147,7 +152,12 @@ async def generate_sql(state: DataAgentState, runtime: Runtime[DataAgentContext]
         writer({"type": "progress", "step": "生成SQL", "status": "success"})
         writer({"type": "sql_preview", "sql": result})
         logger.info(f"生成的SQL（已缓存）: {result}")
-        return {"sql": result}
+        return {
+            "sql": result,
+            "original_sql": result,
+            "repair_history": [],
+            "repair_stop_reason": None,
+        }
     except Exception as e:
         writer({"type": "progress", "step": "生成SQL", "status": "error"})
         logger.error(f"生成SQL失败: {str(e)}")

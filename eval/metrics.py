@@ -3,9 +3,12 @@
 from __future__ import annotations
 
 import re
+from collections import Counter
 from datetime import date, datetime
 from decimal import Decimal, InvalidOperation
 from typing import Any
+
+from eval.schema_linking import aggregate_schema_linking, evaluate_schema_linking
 
 
 SQL_TABLE_PATTERN = re.compile(
@@ -362,6 +365,8 @@ def evaluate_case(
     llm_calls: list[dict[str, Any]] | None = None,
     sql_cache_hit: bool | None = None,
     sql_cache_status: str | None = None,
+    repair_guard_events: list[dict[str, Any]] | None = None,
+    schema_linking_events: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     expected_tables = {str(t).lower() for t in case.get("expect_tables", [])}
     actual_tables = extract_tables(sql)
@@ -390,6 +395,8 @@ def evaluate_case(
     expected_sql_rule_ok = sql_rule_matches(sql, case)
     node_timings = list(node_timings or [])
     llm_calls = list(llm_calls or [])
+    repair_guard_events = list(repair_guard_events or [])
+    schema_linking_events = list(schema_linking_events or [])
     slowest_node = (
         max(
             node_timings,
@@ -466,12 +473,28 @@ def evaluate_case(
         else False
         if sql_cache_status == "miss"
         else None,
+        "repair_guard_events": repair_guard_events,
+        "repair_stop_reason": next(
+            (
+                str(event.get("code") or "UNKNOWN")
+                for event in reversed(repair_guard_events)
+                if event.get("status") == "stopped"
+            ),
+            None,
+        ),
+        "schema_linking_events": schema_linking_events,
+        "schema_linking": evaluate_schema_linking(case, schema_linking_events),
         "error": error,
     }
 
 
 def aggregate_group(results: list[dict[str, Any]]) -> dict[str, Any]:
     total = len(results)
+    repair_stop_reasons = Counter(
+        str(result["repair_stop_reason"])
+        for result in results
+        if result.get("repair_stop_reason")
+    )
     return {
         "total": total,
         "sql_generated": metric_block(sum(r["sql_generated"] for r in results), total),
@@ -481,10 +504,13 @@ def aggregate_group(results: list[dict[str, Any]]) -> dict[str, Any]:
         "expected_result_ok": optional_metric_block(results, "expected_result_ok"),
         "expected_sql_rule_ok": optional_metric_block(results, "expected_sql_rule_ok"),
         "self_repair_cases": sum(1 for r in results if r["correction_attempts"] > 0),
+        "repair_guard_stopped_cases": sum(repair_stop_reasons.values()),
+        "repair_stop_reasons": dict(sorted(repair_stop_reasons.items())),
         "avg_seconds": round(sum(r["elapsed_seconds"] for r in results) / total, 3)
         if total
         else 0.0,
         "observability": aggregate_observability(results),
+        "schema_linking": aggregate_schema_linking(results),
     }
 
 

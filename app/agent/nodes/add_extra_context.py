@@ -175,6 +175,19 @@ def _ensure_column(table_info: TableInfoState, column: ColumnInfoState):
         table_info["columns"].append(column.copy())
 
 
+def _ensure_fact_order_table(table_infos: list[TableInfoState]) -> TableInfoState:
+    fact_order = next((table for table in table_infos if table["name"] == "fact_order"), None)
+    if fact_order is None:
+        fact_order = TableInfoState(
+            name="fact_order",
+            role="fact",
+            description="订单事实表，记录订单数量和金额等核心指标。",
+            columns=[],
+        )
+        table_infos.append(fact_order)
+    return fact_order
+
+
 def _ensure_time_tables(table_infos: list[TableInfoState]):
     dim_date = next((table for table in table_infos if table["name"] == "dim_date"), None)
     if dim_date is None:
@@ -188,22 +201,8 @@ def _ensure_time_tables(table_infos: list[TableInfoState]):
         for column in DIM_DATE_COLUMNS:
             _ensure_column(dim_date, column)
 
-    fact_order = next((table for table in table_infos if table["name"] == "fact_order"), None)
-    if fact_order is not None:
-        _ensure_column(fact_order, FACT_ORDER_DATE_COLUMN)
-
-
-def _ensure_fact_order_table(table_infos: list[TableInfoState]) -> TableInfoState:
-    fact_order = next((table for table in table_infos if table["name"] == "fact_order"), None)
-    if fact_order is None:
-        fact_order = TableInfoState(
-            name="fact_order",
-            role="fact",
-            description="订单事实表，记录订单数量和金额等核心指标。",
-            columns=[],
-        )
-        table_infos.append(fact_order)
-    return fact_order
+    fact_order = _ensure_fact_order_table(table_infos)
+    _ensure_column(fact_order, FACT_ORDER_DATE_COLUMN)
 
 
 def _ensure_metric_columns(table_infos: list[TableInfoState], metric_semantics: MetricSemanticState):

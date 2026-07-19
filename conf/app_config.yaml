@@ -44,6 +44,10 @@ rerank:
   metric_top_k: 5
   similarity_threshold: 0.3
 
+schema_linking:
+  exact_match_enabled: true
+  exact_match_boost: 1.0
+
 sql_cache:
   similarity_threshold: 0.95
   collection_name: data-agent-sql-cache

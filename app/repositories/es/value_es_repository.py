@@ -32,7 +32,12 @@ class ValueESRepository:
                 operations.append(asdict(value_info))
             await self.client.bulk(operations=operations)
 
-    async def search(self, keyword: str, score_threshold: float = 0.6, limit: int = 5) -> list[ValueInfo]:
+    async def search_with_scores(
+        self,
+        keyword: str,
+        score_threshold: float = 0.6,
+        limit: int = 5,
+    ) -> list[tuple[ValueInfo, float]]:
         result = await self.client.search(index=self.index_name,
                                           query={
                                               "match": {
@@ -41,4 +46,17 @@ class ValueESRepository:
                                           },
                                           min_score=score_threshold,
                                           size=limit)
-        return [ValueInfo(**hit['_source']) for hit in result['hits']['hits']]
+        return [
+            (ValueInfo(**hit["_source"]), float(hit.get("_score") or 0))
+            for hit in result["hits"]["hits"]
+        ]
+
+    async def search(self, keyword: str, score_threshold: float = 0.6, limit: int = 5) -> list[ValueInfo]:
+        return [
+            item
+            for item, _ in await self.search_with_scores(
+                keyword,
+                score_threshold=score_threshold,
+                limit=limit,
+            )
+        ]

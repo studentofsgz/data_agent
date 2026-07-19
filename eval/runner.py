@@ -138,6 +138,8 @@ async def run_one_case(
     result_received = False
     node_timings: list[dict[str, Any]] = []
     sql_cache_status: str | None = None
+    repair_guard_events: list[dict[str, Any]] = []
+    schema_linking_events: list[dict[str, Any]] = []
     llm_tracker = LLMCallTracker()
 
     try:
@@ -174,6 +176,20 @@ async def run_one_case(
                 )
             elif event_type == "sql_cache":
                 sql_cache_status = str(chunk.get("status") or "") or None
+            elif event_type == "sql_repair_guard":
+                repair_guard_events.append({
+                    "status": chunk.get("status"),
+                    "code": chunk.get("code"),
+                    "message": chunk.get("message"),
+                    "violations": chunk.get("violations") or [],
+                    "attempt": chunk.get("attempt"),
+                })
+            elif event_type == "schema_linking":
+                schema_linking_events.append({
+                    key: value
+                    for key, value in chunk.items()
+                    if key != "type"
+                })
 
             step = str(chunk.get("step") or "")
             if step.startswith("校正SQL") and chunk.get("status") == "running":
@@ -194,6 +210,8 @@ async def run_one_case(
         node_timings=node_timings,
         llm_calls=llm_tracker.snapshot(),
         sql_cache_status=sql_cache_status,
+        repair_guard_events=repair_guard_events,
+        schema_linking_events=schema_linking_events,
     )
 
 
@@ -308,7 +326,24 @@ def print_summary(report: dict[str, Any]) -> None:
     print(f"SQL rule check: {format_metric(summary['expected_sql_rule_ok'])}")
     print(f"Expected result check: {format_metric(summary['expected_result_ok'])}")
     print(f"Self-repair cases: {summary['self_repair_cases']}")
+    if summary.get("repair_guard_stopped_cases"):
+        print(
+            "Repair guard stopped cases: "
+            f"{summary['repair_guard_stopped_cases']} "
+            f"reasons={summary['repair_stop_reasons']}"
+        )
     print(f"Average latency: {summary['avg_seconds']}s")
+
+    schema_linking = summary.get("schema_linking") or {}
+    if schema_linking.get("observed_cases"):
+        print("\nSchema Linking:")
+        print(f"  Table recall: {format_metric(schema_linking['table_recall'])}")
+        print(f"  Column Recall@K: {format_metric(schema_linking['column_recall_at_k'])}")
+        print(f"  Final column recall: {format_metric(schema_linking['final_column_recall'])}")
+        print(f"  Metric Recall@K: {format_metric(schema_linking['metric_recall_at_k'])}")
+        print(f"  Final metric recall: {format_metric(schema_linking['final_metric_recall'])}")
+        print(f"  JOIN key coverage: {format_metric(schema_linking['join_key_coverage'])}")
+        print(f"  Avg candidates: {schema_linking['avg_candidate_counts']}")
 
     observability = summary.get("observability") or {}
     llm_summary = observability.get("llm") or {}

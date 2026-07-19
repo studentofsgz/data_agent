@@ -99,6 +99,21 @@ some retrieval nodes run in parallel, summed node or LLM time may be greater
 than end-to-end wall-clock time. Current nodes use non-streaming model calls,
 so full-response latency is recorded and first-token latency remains null.
 
+## Schema Linking evaluation
+
+Column, metric, and value recall now emit structured candidate events. Column
+and metric candidates record whether they came from vector retrieval, exact
+name/alias matching, or both, together with retrieval and rerank scores. Value
+events only record the matched column and score; field values are not copied
+into evaluation reports.
+
+For the reviewed cases, expected tables, columns, metrics, and JOIN keys are
+derived from `gold_sql` with sqlglot. Reports include table recall, raw and
+reranked Column Recall@K, final column recall, Metric Recall@K, final metric
+recall, JOIN-key coverage, source-level recall, missing items, and candidate
+counts. Cases without a reviewed SQL still contribute to table recall through
+their configured `expect_tables`.
+
 ## SQL safety boundary
 
 Before database validation or execution, generated SQL is parsed into a
@@ -110,6 +125,20 @@ error codes and can be sent to the SQL correction node for a targeted retry.
 After the retry budget is exhausted the graph terminates without invoking the
 database execution node.
 
+## SQL repair convergence guard
+
+Every corrected SQL is checked before it returns to the AST audit. The guard
+normalizes SQL into a formatting-insensitive fingerprint, records every repair
+attempt, stops identical or cyclic candidates, and compares AST-level business
+structure with both the previous SQL and the original generated SQL. Changes to
+aggregations, JOIN count, filters and their literals, GROUP BY, DISTINCT, set
+operations, ordering, or an existing literal LIMIT are treated as semantic
+drift. Parse failures are deliberately delegated to the AST audit so that a
+targeted retry remains possible.
+
+Offline reports store every guard decision and aggregate stopped cases by
+`NO_CHANGE`, `REPAIR_CYCLE`, or `SEMANTIC_DRIFT`.
+
 ## Metrics
 
 - SQL generated rate
@@ -119,6 +148,11 @@ database execution node.
 - Expected result match rate
 - Expected/actual result diff for failed golden cases
 - Self-repair case count
+- Schema Linking table, column, metric, and JOIN-key recall
+- Vector and exact-alias source-level column recall
+- Vector and exact-alias source-level metric recall
+- Raw, reranked, and final candidate counts
+- Repair-guard stopped case count and stop reasons
 - Average latency
 - Node latency: average, P50, P95, maximum, and errors
 - LLM latency, call count, token usage, and errors

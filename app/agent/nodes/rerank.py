@@ -29,6 +29,8 @@ async def rerank(state: DataAgentState, runtime: Runtime[DataAgentContext]):
     query = state["query"]
     retrieved_columns = state["retrieved_columns"]
     retrieved_metrics = state["retrieved_metrics"]
+    column_sources = state.get("column_recall_sources", {})
+    metric_sources = state.get("metric_recall_sources", {})
 
     embedding_client = runtime.context["embedding_client"]
     cfg = app_config.rerank
@@ -38,32 +40,72 @@ async def rerank(state: DataAgentState, runtime: Runtime[DataAgentContext]):
         query_emb = np.array(await embedding_client.aembed_query(query))
 
         # 2. 字段重排序
+        column_ranked = []
         if retrieved_columns:
             col_texts = [_build_text(col) for col in retrieved_columns]
             col_embs = np.array(await embedding_client.aembed_documents(col_texts))
-            col_scores = [
-                (float(_cosine_similarity(query_emb, col_embs[i])), retrieved_columns[i])
-                for i in range(len(retrieved_columns))
-            ]
-            col_scores.sort(key=lambda x: x[0], reverse=True)
-            retrieved_columns = [
-                item for score, item in col_scores
-                if score >= cfg.similarity_threshold
+            col_scores = []
+            for index, item in enumerate(retrieved_columns):
+                base_score = float(_cosine_similarity(query_emb, col_embs[index]))
+                is_exact = "exact_alias" in column_sources.get(item.id, [])
+                ranking_score = max(base_score, app_config.schema_linking.exact_match_boost) if is_exact else base_score
+                col_scores.append((ranking_score, base_score, item))
+            col_scores.sort(key=lambda item: item[0], reverse=True)
+            selected_column_scores = [
+                (ranking_score, base_score, item)
+                for ranking_score, base_score, item in col_scores
+                if base_score >= cfg.similarity_threshold
+                or "exact_alias" in column_sources.get(item.id, [])
             ][:cfg.column_top_k]
+            retrieved_columns = [item for _, _, item in selected_column_scores]
+            column_ranked = [
+                {
+                    "id": item.id,
+                    "table": item.table_id,
+                    "score": round(ranking_score, 6),
+                    "base_score": round(base_score, 6),
+                    "sources": column_sources.get(item.id, []),
+                }
+                for ranking_score, base_score, item in selected_column_scores
+            ]
 
         # 3. 指标重排序
+        metric_ranked = []
         if retrieved_metrics:
             met_texts = [_build_text(met) for met in retrieved_metrics]
             met_embs = np.array(await embedding_client.aembed_documents(met_texts))
-            met_scores = [
-                (float(_cosine_similarity(query_emb, met_embs[i])), retrieved_metrics[i])
-                for i in range(len(retrieved_metrics))
-            ]
-            met_scores.sort(key=lambda x: x[0], reverse=True)
-            retrieved_metrics = [
-                item for score, item in met_scores
-                if score >= cfg.similarity_threshold
+            met_scores = []
+            for index, item in enumerate(retrieved_metrics):
+                base_score = float(_cosine_similarity(query_emb, met_embs[index]))
+                is_exact = "exact_alias" in metric_sources.get(item.id, [])
+                ranking_score = max(base_score, app_config.schema_linking.exact_match_boost) if is_exact else base_score
+                met_scores.append((ranking_score, base_score, item))
+            met_scores.sort(key=lambda item: item[0], reverse=True)
+            selected_metric_scores = [
+                (ranking_score, base_score, item)
+                for ranking_score, base_score, item in met_scores
+                if base_score >= cfg.similarity_threshold
+                or "exact_alias" in metric_sources.get(item.id, [])
             ][:cfg.metric_top_k]
+            retrieved_metrics = [item for _, _, item in selected_metric_scores]
+            metric_ranked = [
+                {
+                    "id": item.id,
+                    "score": round(ranking_score, 6),
+                    "base_score": round(base_score, 6),
+                    "sources": metric_sources.get(item.id, []),
+                }
+                for ranking_score, base_score, item in selected_metric_scores
+            ]
+
+        writer({
+            "type": "schema_linking",
+            "stage": "rerank",
+            "column_top_k": cfg.column_top_k,
+            "metric_top_k": cfg.metric_top_k,
+            "columns": column_ranked,
+            "metrics": metric_ranked,
+        })
 
         writer({"type": "progress", "step": "重排序召回结果", "status": "success"})
         logger.info(f"Rerank 后字段: {[c.id for c in retrieved_columns]}")
@@ -77,6 +119,14 @@ async def rerank(state: DataAgentState, runtime: Runtime[DataAgentContext]):
     except Exception as e:
         writer({"type": "progress", "step": "重排序召回结果", "status": "error"})
         logger.error(f"Rerank 失败，降级使用原始召回结果: {str(e)}")
+
+        writer({
+            "type": "schema_linking",
+            "stage": "rerank",
+            "status": "degraded",
+            "columns": [{"id": item.id, "table": item.table_id, "score": None} for item in retrieved_columns],
+            "metrics": [{"id": item.id, "score": None} for item in retrieved_metrics],
+        })
 
         # 降级：失败时原样透传，不阻塞流水线
         return {

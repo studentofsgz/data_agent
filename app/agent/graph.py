@@ -16,6 +16,7 @@ from app.agent.nodes.merge_retrieved_info import merge_retrieved_info
 from app.agent.nodes.recall_column import recall_column
 from app.agent.nodes.recall_metric import recall_metric
 from app.agent.nodes.recall_value import recall_value
+from app.agent.nodes.repair_guard import repair_guard
 from app.agent.nodes.rerank import rerank
 from app.agent.nodes.audit_sql import audit_sql
 from app.agent.nodes.validate_sql import validate_sql
@@ -48,6 +49,13 @@ def route_after_validation(state: DataAgentState) -> str:
         return "end"
     return "correct_sql"
 
+
+def route_after_repair_guard(state: DataAgentState) -> str:
+    result = state.get("repair_guard_result") or {}
+    if result.get("passed"):
+        return "audit_sql"
+    return "end"
+
 graph_builder = StateGraph(state_schema=DataAgentState, context_schema=DataAgentContext)
 # 添加节点并统一启用耗时监控
 nodes = {
@@ -65,6 +73,7 @@ nodes = {
     "validate_sql": validate_sql,
     "audit_sql": audit_sql,
     "correct_sql": correct_sql,
+    "repair_guard": repair_guard,
     "execute_sql": execute_sql,
 }
 for node_name, node in nodes.items():
@@ -98,7 +107,12 @@ graph_builder.add_conditional_edges(
     {"execute_sql": "execute_sql", "correct_sql": "correct_sql", "end": END},
 )
 
-graph_builder.add_edge("correct_sql", "audit_sql")
+graph_builder.add_edge("correct_sql", "repair_guard")
+graph_builder.add_conditional_edges(
+    "repair_guard",
+    route_after_repair_guard,
+    {"audit_sql": "audit_sql", "end": END},
+)
 graph_builder.add_edge("execute_sql", END)
 
 graph = graph_builder.compile()

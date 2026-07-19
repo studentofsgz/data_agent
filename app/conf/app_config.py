@@ -67,6 +67,12 @@ class RerankConfig:
 
 
 @dataclass
+class SchemaLinkingConfig:
+    exact_match_enabled: bool
+    exact_match_boost: float
+
+
+@dataclass
 class SQLCacheConfig:
     similarity_threshold: float
     collection_name: str
@@ -88,6 +94,7 @@ class AppConfig:
     embedding: EmbeddingConfig
     es: ESConfig
     rerank: RerankConfig
+    schema_linking: SchemaLinkingConfig
     sql_cache: SQLCacheConfig
     llm: LLMConfig
 

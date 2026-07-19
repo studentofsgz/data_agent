@@ -41,6 +41,17 @@ async def filter_table(state: DataAgentState, runtime: Runtime[DataAgentContext]
                     if column_info["name"] not in selected_columns:
                         table_info["columns"].remove(column_info)
 
+        writer({
+            "type": "schema_linking",
+            "stage": "table_filter",
+            "tables": sorted(table_info["name"] for table_info in table_infos),
+            "columns": sorted(
+                f"{table_info['name']}.{column_info['name']}"
+                for table_info in table_infos
+                for column_info in table_info["columns"]
+            ),
+        })
+
         writer({"type": "progress", "step": "过滤表格", "status": "success"})
         logger.info(f"过滤后的表信息: {[table_info['name'] for table_info in table_infos]}")
         return {"table_infos": table_infos}

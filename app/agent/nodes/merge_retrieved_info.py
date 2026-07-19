@@ -88,6 +88,18 @@ async def merge_retrieved_info(state: DataAgentState, runtime: Runtime[DataAgent
                             relevant_columns=metric_info.relevant_columns, alias=metric_info.alias)
             for metric_info in retrieved_metrics]
 
+        writer({
+            "type": "schema_linking",
+            "stage": "merge",
+            "tables": sorted(table_info["name"] for table_info in table_infos),
+            "columns": sorted(
+                f"{table_info['name']}.{column['name']}"
+                for table_info in table_infos
+                for column in table_info["columns"]
+            ),
+            "metrics": sorted(metric_info["name"] for metric_info in metric_infos),
+        })
+
         writer({"type": "progress", "step": "合并召回信息", "status": "success"})
         logger.info(
             f"合并召回信息: 表信息-{[table_info['name'] for table_info in table_infos]},指标信息-{[metric_info['name'] for metric_info in metric_infos]}")

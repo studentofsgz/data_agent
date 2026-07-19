@@ -31,6 +31,12 @@ async def filter_metric(state: DataAgentState, runtime: Runtime[DataAgentContext
             if metric_info["name"] not in result:
                 metric_infos.remove(metric_info)
 
+        writer({
+            "type": "schema_linking",
+            "stage": "metric_filter",
+            "metrics": sorted(metric_info["name"] for metric_info in metric_infos),
+        })
+
         writer({"type": "progress", "step": "过滤指标", "status": "success"})
         logger.info(f"过滤后的指标: {[metric_info['name'] for metric_info in metric_infos]}")
         return {"metric_infos": metric_infos}
