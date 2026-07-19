@@ -115,6 +115,18 @@ class ConfidenceConfig:
 
 
 @dataclass
+class AnswerGenerationConfig:
+    enabled: bool
+    timeout_seconds: float
+    max_rows: int
+    max_cell_chars: int
+    max_answer_chars: int
+    max_highlights: int
+    fallback_max_rows: int
+    numeric_tolerance: float
+
+
+@dataclass
 class SQLCacheConfig:
     similarity_threshold: float
     collection_name: str
@@ -141,6 +153,7 @@ class AppConfig:
     ambiguity: AmbiguityConfig
     conversation: ConversationConfig
     confidence: ConfidenceConfig
+    answer_generation: AnswerGenerationConfig
     sql_cache: SQLCacheConfig
     llm: LLMConfig
 

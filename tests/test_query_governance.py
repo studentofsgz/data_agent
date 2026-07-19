@@ -131,7 +131,7 @@ class QueryPlanPolicyTests(unittest.TestCase):
 
 class QueryGovernanceNodeTests(unittest.TestCase):
     def test_only_successful_execution_is_saved_to_conversation_memory(self):
-        self.assertEqual("remember_turn", route_after_execution({"error": None}))
+        self.assertEqual("generate_answer", route_after_execution({"error": None}))
         self.assertEqual("end", route_after_execution({"error": "timeout"}))
 
     def test_validation_returns_explain_plan(self):
@@ -225,6 +225,7 @@ class QueryGovernanceNodeTests(unittest.TestCase):
         )
 
         self.assertEqual(1, update["execution_stats"]["returned_rows"])
+        self.assertEqual([{"order_id": "o1"}], update["answer_rows"])
         self.assertTrue(any(e["type"] == "sql_sandbox" for e in runtime.events))
         self.assertTrue(any(e["type"] == "result" for e in runtime.events))
 

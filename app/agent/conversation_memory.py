@@ -360,6 +360,8 @@ def build_turn_input(
         "query_plan_result": {},
         "execution_stats": {},
         "result_summary": {},
+        "answer_rows": [],
+        "answer_result": {},
         "repair_history": [],
         "repair_guard_result": {},
         "repair_stop_reason": None,

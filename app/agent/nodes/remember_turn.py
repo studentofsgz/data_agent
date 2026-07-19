@@ -27,6 +27,7 @@ def remember_turn(state: DataAgentState, runtime: Runtime[DataAgentContext]):
         "intent": state.get("query_intent") or {},
         "sql": state.get("sql", ""),
         "result_summary": result_summary,
+        "answer": (state.get("answer_result") or {}).get("answer", ""),
         "completed_at": completed_at,
     }
     max_turns = max(1, app_config.conversation.max_history_turns)
@@ -38,6 +39,7 @@ def remember_turn(state: DataAgentState, runtime: Runtime[DataAgentContext]):
         "history_size": len(history),
         "row_count": result_summary.get("row_count", 0),
         "columns": result_summary.get("columns", []),
+        "answer_status": (state.get("answer_result") or {}).get("status"),
     })
     return {
         "conversation_turn": turn,
@@ -46,5 +48,6 @@ def remember_turn(state: DataAgentState, runtime: Runtime[DataAgentContext]):
         "last_query_intent": state.get("query_intent") or {},
         "last_sql": state.get("sql", ""),
         "last_result_summary": result_summary,
+        "last_answer": (state.get("answer_result") or {}).get("answer", ""),
         "last_completed_at": completed_at,
     }

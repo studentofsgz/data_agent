@@ -221,6 +221,57 @@ class ResultComparisonTests(unittest.TestCase):
         self.assertEqual({"reject": 1}, summary["actions"])
         self.assertEqual({"UNKNOWN_METRIC": 1}, summary["rejection_codes"])
 
+    def test_grounded_answer_verification_and_fallback_are_aggregated(self):
+        events = [
+            {
+                "type": "grounded_answer",
+                "status": "generated",
+                "fallback_reason": "",
+                "verification": {
+                    "passed": True,
+                    "model_output_passed": True,
+                    "invalid_numbers": [],
+                },
+            },
+            {
+                "type": "grounded_answer",
+                "status": "fallback",
+                "fallback_reason": "ungrounded_numeric_claim",
+                "verification": {
+                    "passed": True,
+                    "model_output_passed": False,
+                    "invalid_numbers": ["999999"],
+                },
+            },
+        ]
+        results = [
+            evaluate_case(
+                case={
+                    "id": f"answer-{index}",
+                    "question": "各地区GMV",
+                    "expect_answer_status": event["status"],
+                    "expect_answer_grounded": True,
+                },
+                sql="SELECT 1",
+                rows=[{"gmv": 1}],
+                error="",
+                elapsed_seconds=0.01,
+                correction_attempts=0,
+                event_count=2,
+                result_received=True,
+                grounded_answer_event=event,
+            )
+            for index, event in enumerate(events)
+        ]
+
+        summary = aggregate_results(results)["summary"]["grounded_answer"]
+        self.assertTrue(all(result["answer_ok"] for result in results))
+        self.assertEqual(100.0, summary["accuracy"]["rate"])
+        self.assertEqual(100.0, summary["final_grounded"]["rate"])
+        self.assertEqual(50.0, summary["model_output_grounded"]["rate"])
+        self.assertEqual(1, summary["caught_ungrounded_cases"])
+        self.assertEqual({"fallback": 1, "generated": 1}, summary["statuses"])
+
     def test_schema_linking_metrics_are_derived_from_golden_sql(self):
         gold_sql = (
             "SELECT r.region_name, SUM(f.order_amount) AS gmv "

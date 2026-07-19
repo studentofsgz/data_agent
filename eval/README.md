@@ -17,7 +17,9 @@ where we need to prove that the Text2SQL chain did not regress.
     ├── llm_tracking.py          # LLM latency and token tracking
     ├── validate_goldens.py      # Verifies the reviewed answers
     ├── replay_report.py         # Re-executes saved SQL without calling the LLM
-    └── conversation_eval.py     # Fast structured multi-turn regression set
+    ├── conversation_eval.py     # Fast structured multi-turn regression set
+    ├── confidence_eval.py       # Fast high/medium/low confidence policy set
+    └── answer_grounding_eval.py # Fast numeric grounding regression set
 
 ## Run
 
@@ -259,6 +261,37 @@ Full graph reports store every `confidence_*` event and aggregate score,
 level, action, rejection code, and configured decision accuracy. Cases can
 configure `expect_confidence_action` and `expect_confidence_code`.
 
+## Grounded and traceable answers
+
+After a successful sandbox execution, `generate_answer` receives a bounded,
+JSON-safe subset of the SQL rows. Cells and row count are capped before the
+model call so database output cannot create an unbounded prompt. Result text
+is treated as untrusted data; instructions embedded in a database cell are not
+allowed to override the answer prompt.
+
+The model returns a JSON answer with highlights and caveats. A deterministic
+validator extracts every numeric claim and checks it against values in the SQL
+rows or explicit numbers in the user query. Unit conversion, invented values,
+and unsupported calculations fail verification. Failed parsing, model errors,
+overlong responses, or ungrounded numbers do not fail the completed query;
+the node discards the model response and emits a deterministic fallback that
+only copies returned values.
+
+The `grounded_answer` event includes the final answer, verification result,
+fallback reason, and provenance: resolved query, approved SQL, tables, columns,
+metric definitions, filters, time scope, returned-row count, rows used, and
+truncation state. Conversation memory stores only the final answer, not the
+bounded answer-row context.
+
+Run the deterministic numeric-grounding set without a model or database call:
+
+    python -m eval.answer_grounding_eval
+
+Full graph cases may configure `expect_answer_status` and
+`expect_answer_grounded`. Reports aggregate generated, empty, disabled, and
+fallback statuses together with final grounding rate, model-output grounding
+rate, caught ungrounded claims, and fallback reasons.
+
 ## Metrics
 
 - SQL generated rate
@@ -282,4 +315,5 @@ configure `expect_confidence_action` and `expect_confidence_code`.
 - Clarification accuracy, precision, recall, and unnecessary clarification rate
 - Structured follow-up resolution accuracy and inherited/overridden slots
 - Confidence score, level, action, rejection code, and decision accuracy
+- Grounded-answer status, fallback reason, and numeric verification rate
 - Grouped metrics by difficulty and category

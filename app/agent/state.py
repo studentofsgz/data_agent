@@ -172,6 +172,24 @@ class ResultSummaryState(TypedDict):
     truncated: bool
 
 
+class AnswerVerificationState(TypedDict):
+    passed: bool
+    model_output_passed: bool | None
+    answer_numbers: list[str]
+    allowed_numbers: list[str]
+    invalid_numbers: list[str]
+
+
+class AnswerResultState(TypedDict):
+    status: str
+    answer: str
+    highlights: list[str]
+    caveats: list[str]
+    fallback_reason: str
+    verification: AnswerVerificationState
+    provenance: dict[str, Any]
+
+
 class ContextResolutionState(TypedDict):
     applied: bool
     strategy: str
@@ -188,6 +206,7 @@ class ConversationTurnState(TypedDict):
     intent: QueryIntentState
     sql: str
     result_summary: ResultSummaryState
+    answer: str
     completed_at: str
 
 
@@ -204,6 +223,7 @@ class DataAgentState(TypedDict):
     last_query_intent: QueryIntentState  # 最近一次成功查询意图
     last_sql: str  # 最近一次成功SQL
     last_result_summary: ResultSummaryState  # 最近一次结果摘要
+    last_answer: str  # 最近一次有依据的自然语言回答
     last_completed_at: str  # 最近一次成功完成时间
     query_intent: QueryIntentState  # 结构化查询意图
     ambiguity_result: AmbiguityResultState  # 问题完整性判定
@@ -243,6 +263,8 @@ class DataAgentState(TypedDict):
     query_plan_result: SQLQueryPlanResultState  # 执行前成本策略判定
     execution_stats: SQLExecutionStatsState  # 执行沙箱耗时和结果截断信息
     result_summary: ResultSummaryState  # 当前轮结果摘要，只保存少量预览
+    answer_rows: list[dict[str, Any]]  # 当前轮回答生成使用的有界结果，不进入长期记忆
+    answer_result: AnswerResultState  # 有依据回答、数字校验与数据溯源
     repair_history: list[SQLRepairAttemptState]  # 每次修复的输入、输出、错误和判定
     repair_guard_result: SQLRepairGuardResultState  # 最近一次防漂移检查结果
     repair_stop_reason: str | None  # 重复、循环或语义漂移等提前停止原因

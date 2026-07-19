@@ -17,6 +17,7 @@ from app.agent.nodes.extract_keywords import extract_keywords
 from app.agent.nodes.filter_metric import filter_metric
 from app.agent.nodes.filter_table import filter_table
 from app.agent.nodes.generate_sql import generate_sql
+from app.agent.nodes.generate_answer import generate_answer
 from app.agent.nodes.merge_retrieved_info import merge_retrieved_info
 from app.agent.nodes.recall_column import recall_column
 from app.agent.nodes.recall_metric import recall_metric
@@ -65,7 +66,7 @@ def route_after_query_plan(state: DataAgentState) -> str:
 
 
 def route_after_execution(state: DataAgentState) -> str:
-    return "remember_turn" if state.get("error") is None else "end"
+    return "generate_answer" if state.get("error") is None else "end"
 
 
 def route_after_repair_guard(state: DataAgentState) -> str:
@@ -126,6 +127,7 @@ nodes = {
     "correct_sql": correct_sql,
     "repair_guard": repair_guard,
     "execute_sql": execute_sql,
+    "generate_answer": generate_answer,
     "remember_turn": remember_turn,
 }
 for node_name, node in nodes.items():
@@ -202,8 +204,9 @@ graph_builder.add_conditional_edges(
 graph_builder.add_conditional_edges(
     "execute_sql",
     route_after_execution,
-    {"remember_turn": "remember_turn", "end": END},
+    {"generate_answer": "generate_answer", "end": END},
 )
+graph_builder.add_edge("generate_answer", "remember_turn")
 graph_builder.add_edge("remember_turn", END)
 
 

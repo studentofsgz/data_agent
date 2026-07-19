@@ -480,6 +480,55 @@ def aggregate_confidence(results: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def aggregate_grounded_answers(results: list[dict[str, Any]]) -> dict[str, Any]:
+    answers = [
+        result["grounded_answer_event"]
+        for result in results
+        if result.get("grounded_answer_event")
+    ]
+    configured = [
+        result for result in results
+        if result.get("answer_expected_status") is not None
+        or result.get("answer_expected_grounded") is not None
+    ]
+    statuses = Counter(str(item.get("status") or "unknown") for item in answers)
+    fallback_reasons = Counter(
+        str(item.get("fallback_reason"))
+        for item in answers
+        if item.get("status") == "fallback" and item.get("fallback_reason")
+    )
+    final_verified = [
+        bool((item.get("verification") or {}).get("passed"))
+        for item in answers
+    ]
+    model_verified = [
+        bool((item.get("verification") or {}).get("model_output_passed"))
+        for item in answers
+        if (item.get("verification") or {}).get("model_output_passed") is not None
+    ]
+    caught_ungrounded = sum(
+        1
+        for item in answers
+        if (item.get("verification") or {}).get("model_output_passed") is False
+        and (item.get("verification") or {}).get("invalid_numbers")
+    )
+    return {
+        "answered_cases": len(answers),
+        "statuses": dict(sorted(statuses.items())),
+        "fallback_reasons": dict(sorted(fallback_reasons.items())),
+        "final_grounded": metric_block(sum(final_verified), len(final_verified)),
+        "model_output_grounded": metric_block(
+            sum(model_verified), len(model_verified)
+        ),
+        "caught_ungrounded_cases": caught_ungrounded,
+        "configured_cases": len(configured),
+        "accuracy": metric_block(
+            sum(bool(result.get("answer_ok")) for result in configured),
+            len(configured),
+        ),
+    }
+
+
 def evaluate_case(
     *,
     case: dict[str, Any],
@@ -503,6 +552,7 @@ def evaluate_case(
     context_resolution_event: dict[str, Any] | None = None,
     conversation_memory_event: dict[str, Any] | None = None,
     confidence_events: list[dict[str, Any]] | None = None,
+    grounded_answer_event: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     expected_tables = {str(t).lower() for t in case.get("expect_tables", [])}
     actual_tables = extract_tables(sql)
@@ -555,6 +605,17 @@ def evaluate_case(
             )
         if confidence_ok and confidence_expected_code is not None:
             confidence_ok = confidence_assessment.get("code") == confidence_expected_code
+    answer_expected_status = case.get("expect_answer_status")
+    answer_expected_grounded = case.get("expect_answer_grounded")
+    answer_ok: bool | None = None
+    if answer_expected_status is not None or isinstance(answer_expected_grounded, bool):
+        answer_ok = bool(grounded_answer_event)
+        if answer_ok and answer_expected_status is not None:
+            answer_ok = grounded_answer_event.get("status") == answer_expected_status
+        if answer_ok and isinstance(answer_expected_grounded, bool):
+            answer_ok = bool(
+                (grounded_answer_event.get("verification") or {}).get("passed")
+            ) == answer_expected_grounded
     clarification_expected = case.get("expect_clarification")
     expected_clarification_code = case.get("expect_clarification_code")
     actual_clarification_code = (
@@ -664,6 +725,12 @@ def evaluate_case(
         "confidence_expected_action": confidence_expected_action,
         "confidence_expected_code": confidence_expected_code,
         "confidence_ok": confidence_ok,
+        "grounded_answer_event": grounded_answer_event,
+        "answer_expected_status": answer_expected_status,
+        "answer_expected_grounded": answer_expected_grounded
+        if isinstance(answer_expected_grounded, bool)
+        else None,
+        "answer_ok": answer_ok,
         "clarification_event": clarification_event,
         "clarification_required": clarification_required,
         "clarification_expected": clarification_expected
@@ -701,6 +768,7 @@ def aggregate_group(results: list[dict[str, Any]]) -> dict[str, Any]:
         "query_governance": aggregate_query_governance(results),
         "clarification": aggregate_clarification(results),
         "confidence": aggregate_confidence(results),
+        "grounded_answer": aggregate_grounded_answers(results),
     }
 
 

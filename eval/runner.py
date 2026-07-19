@@ -148,6 +148,7 @@ async def run_one_case(
     context_resolution_event: dict[str, Any] | None = None
     conversation_memory_event: dict[str, Any] | None = None
     confidence_events: list[dict[str, Any]] = []
+    grounded_answer_event: dict[str, Any] | None = None
     llm_tracker = LLMCallTracker()
 
     try:
@@ -241,6 +242,8 @@ async def run_one_case(
                 }
             elif str(event_type).startswith("confidence_"):
                 confidence_events.append(dict(chunk))
+            elif event_type == "grounded_answer":
+                grounded_answer_event = dict(chunk)
 
             step = str(chunk.get("step") or "")
             if step.startswith("校正SQL") and chunk.get("status") == "running":
@@ -270,6 +273,7 @@ async def run_one_case(
         context_resolution_event=context_resolution_event,
         conversation_memory_event=conversation_memory_event,
         confidence_events=confidence_events,
+        grounded_answer_event=grounded_answer_event,
     )
 
 
@@ -460,6 +464,27 @@ def print_summary(report: dict[str, Any]) -> None:
             print(
                 "  Expected action accuracy: "
                 f"{format_metric(confidence['accuracy'])}"
+            )
+
+    grounded_answer = summary.get("grounded_answer") or {}
+    if grounded_answer.get("answered_cases"):
+        print("\nGrounded answer:")
+        print(
+            "  Answers: "
+            f"total={grounded_answer['answered_cases']} "
+            f"statuses={grounded_answer['statuses']} "
+            f"fallbacks={grounded_answer['fallback_reasons']}"
+        )
+        print(
+            "  Verification: "
+            f"final_grounded={format_metric(grounded_answer['final_grounded'])} "
+            f"model_output_grounded={format_metric(grounded_answer['model_output_grounded'])} "
+            f"caught_ungrounded={grounded_answer['caught_ungrounded_cases']}"
+        )
+        if grounded_answer.get("configured_cases"):
+            print(
+                "  Expected answer accuracy: "
+                f"{format_metric(grounded_answer['accuracy'])}"
             )
 
     observability = summary.get("observability") or {}

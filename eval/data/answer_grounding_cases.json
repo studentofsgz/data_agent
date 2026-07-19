@@ -1,0 +1,52 @@
+[
+  {
+    "id": "answer_exact_values",
+    "query": "统计各地区的GMV",
+    "rows": [{"region_name": "华东", "gmv": 107373}],
+    "row_count": 1,
+    "answer": "华东GMV为107373。",
+    "expect_passed": true
+  },
+  {
+    "id": "answer_thousands_separator",
+    "query": "统计各地区的GMV",
+    "rows": [{"region_name": "华东", "gmv": 107373}],
+    "row_count": 1,
+    "answer": "华东GMV为107,373。",
+    "expect_passed": true
+  },
+  {
+    "id": "answer_query_time_allowed",
+    "query": "统计2025年各地区的GMV",
+    "rows": [{"region_name": "华东", "gmv": 107373}],
+    "row_count": 1,
+    "answer": "2025年华东GMV为107373。",
+    "expect_passed": true
+  },
+  {
+    "id": "answer_invented_value",
+    "query": "统计各地区的GMV",
+    "rows": [{"region_name": "华东", "gmv": 107373}],
+    "row_count": 1,
+    "answer": "华东GMV为999999。",
+    "expect_passed": false,
+    "expect_invalid_numbers": ["999999"]
+  },
+  {
+    "id": "answer_unapproved_unit_conversion",
+    "query": "统计各地区的GMV",
+    "rows": [{"region_name": "华东", "gmv": 107373}],
+    "row_count": 1,
+    "answer": "华东GMV约为10.7万。",
+    "expect_passed": false,
+    "expect_invalid_numbers": ["10.7"]
+  },
+  {
+    "id": "answer_numeric_tolerance",
+    "query": "统计平均值",
+    "rows": [{"avg_value": 100.005}],
+    "row_count": 1,
+    "answer": "平均值为100.00。",
+    "expect_passed": true
+  }
+]

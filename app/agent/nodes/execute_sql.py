@@ -3,6 +3,7 @@ import json
 
 from langgraph.runtime import Runtime
 
+from app.agent.answer_grounding import sanitize_answer_rows
 from app.agent.context import DataAgentContext
 from app.agent.state import DataAgentState
 from app.conf.app_config import app_config
@@ -81,20 +82,27 @@ async def execute_sql(state: DataAgentState, runtime: Runtime[DataAgentContext])
         writer({"type": "chart_suggestion", "chart": chart})
         writer({"type": "result", "data": result})
         logger.info(f"执行SQL结果: {result}")
+        answer_cfg = app_config.answer_generation
         result_summary = {
             "row_count": len(result),
             "columns": list(result[0].keys()) if result else [],
-            "preview": json.loads(json.dumps(
-                result[: max(0, app_config.conversation.result_preview_rows)],
-                ensure_ascii=False,
-                default=str,
-            )),
+            "preview": sanitize_answer_rows(
+                result,
+                max_rows=max(0, app_config.conversation.result_preview_rows),
+                max_cell_chars=answer_cfg.max_cell_chars,
+            ),
             "truncated": outcome.truncated,
         }
+        answer_rows = sanitize_answer_rows(
+            result,
+            max_rows=max(1, answer_cfg.max_rows),
+            max_cell_chars=answer_cfg.max_cell_chars,
+        )
         return {
             "error": None,
             "execution_stats": execution_stats,
             "result_summary": result_summary,
+            "answer_rows": answer_rows,
         }
 
     except SQLExecutionTimeoutError as e:
