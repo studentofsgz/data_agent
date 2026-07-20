@@ -29,9 +29,16 @@ async def execute_sql(state: DataAgentState, runtime: Runtime[DataAgentContext])
         return {"error": state["error"]}
 
     audit_result = state.get("audit_result") or {}
+    access_policy_result = state.get("access_policy_result") or {}
+    authorization_result = state.get("authorization_result") or {}
     query_plan_result = state.get("query_plan_result") or {}
-    if not audit_result.get("passed") or not query_plan_result.get("passed"):
-        message = "SQL未同时通过AST审计和查询成本检查，拒绝执行"
+    if (
+        not access_policy_result.get("passed")
+        or not authorization_result.get("passed")
+        or not audit_result.get("passed")
+        or not query_plan_result.get("passed")
+    ):
+        message = "SQL未同时通过访问策略、权限审计、AST审计和查询成本检查，拒绝执行"
         writer({"type": "progress", "step": "执行SQL", "status": "error"})
         writer({"type": "error", "code": "SQL_NOT_APPROVED", "message": message})
         logger.error(message)

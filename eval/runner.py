@@ -128,7 +128,14 @@ async def run_one_case(
     graph: Any,
     state_cls: Any,
 ) -> dict[str, Any]:
-    state = state_cls(query=case["question"], messages=case.get("messages", []))
+    state = state_cls(
+        query=case["question"],
+        messages=case.get("messages", []),
+        access_context=case.get("access_context") or {},
+        access_policy_result={},
+        authorization_result={},
+        schema_catalog=[],
+    )
     start = time.perf_counter()
 
     events: list[dict[str, Any]] = []
@@ -149,6 +156,8 @@ async def run_one_case(
     conversation_memory_event: dict[str, Any] | None = None
     confidence_events: list[dict[str, Any]] = []
     grounded_answer_event: dict[str, Any] | None = None
+    access_policy_events: list[dict[str, Any]] = []
+    sql_authorization_events: list[dict[str, Any]] = []
     llm_tracker = LLMCallTracker()
 
     try:
@@ -244,6 +253,20 @@ async def run_one_case(
                 confidence_events.append(dict(chunk))
             elif event_type == "grounded_answer":
                 grounded_answer_event = dict(chunk)
+            elif event_type == "access_policy":
+                access_policy_events.append({
+                    key: value
+                    for key, value in chunk.items()
+                    if key != "type"
+                })
+            elif event_type == "sql_authorization":
+                sql_authorization_events.append({
+                    key: value
+                    for key, value in chunk.items()
+                    if key != "type"
+                })
+                if chunk.get("status") == "passed" and chunk.get("sql"):
+                    sql = str(chunk["sql"])
 
             step = str(chunk.get("step") or "")
             if step.startswith("校正SQL") and chunk.get("status") == "running":
@@ -274,6 +297,8 @@ async def run_one_case(
         conversation_memory_event=conversation_memory_event,
         confidence_events=confidence_events,
         grounded_answer_event=grounded_answer_event,
+        access_policy_events=access_policy_events,
+        sql_authorization_events=sql_authorization_events,
     )
 
 
@@ -287,6 +312,23 @@ async def run_eval(args: argparse.Namespace) -> dict[str, Any]:
         cases = cases[: args.limit]
     if not cases:
         raise ValueError("no evaluation cases selected")
+    default_access_context = {
+        "principal_id": args.principal_id,
+        "role": args.access_role,
+        "region_scope": args.region_scope,
+        "source": "offline_eval",
+    }
+    cases = [
+        {
+            **case,
+            "access_context": {
+                **default_access_context,
+                **(case.get("access_context") or {}),
+                "source": "offline_eval",
+            },
+        }
+        for case in cases
+    ]
 
     deps = load_runtime_deps()
     init_clients(deps)
@@ -362,6 +404,7 @@ async def run_eval(args: argparse.Namespace) -> dict[str, Any]:
                 result["expected_result_ok"] is not None
                 for result in results
             ),
+            "default_access_context": default_access_context,
         }
         report["details"] = results
         return report
@@ -487,6 +530,28 @@ def print_summary(report: dict[str, Any]) -> None:
                 f"{format_metric(grounded_answer['accuracy'])}"
             )
 
+    access_governance = summary.get("access_governance") or {}
+    if access_governance.get("policy_checks"):
+        print("\nData access governance:")
+        print(
+            "  Checks: "
+            f"policy={access_governance['policy_checks']} "
+            f"sql_authorization={access_governance['authorization_checks']} "
+            f"rejected={access_governance['rejected_checks']}"
+        )
+        print(
+            "  Enforcement: "
+            f"row_policy_queries={access_governance['row_policy_queries']} "
+            f"row_policy_scopes={access_governance['row_policy_scopes']} "
+            f"reasons={access_governance['rejection_codes']}"
+        )
+        print(f"  Roles: {access_governance['roles']}")
+        if access_governance.get("configured_cases"):
+            print(
+                "  Expected access accuracy: "
+                f"{format_metric(access_governance['accuracy'])}"
+            )
+
     observability = summary.get("observability") or {}
     llm_summary = observability.get("llm") or {}
     if llm_summary.get("count"):
@@ -607,6 +672,22 @@ def parse_args() -> argparse.Namespace:
         type=int,
         default=0,
         help="Only run the first N cases. Useful for smoke tests.",
+    )
+    parser.add_argument(
+        "--principal-id",
+        default="eval-runner",
+        help="Access principal used by cases without an access_context.",
+    )
+    parser.add_argument(
+        "--access-role",
+        choices=("admin", "analyst", "region_manager"),
+        default="admin",
+        help="Access role used by cases without an access_context.",
+    )
+    parser.add_argument(
+        "--region-scope",
+        default="",
+        help="Region scope for region_manager evaluation cases.",
     )
     return parser.parse_args()
 

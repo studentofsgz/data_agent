@@ -19,6 +19,9 @@ async def query(
             messages=query.messages,
             thread_id=query.thread_id,
             resume=query.resume,
+            principal_id=query.principal_id,
+            access_role=query.access_role,
+            region_scope=query.region_scope,
         ),
         media_type="text/event-stream",
     )

@@ -1,0 +1,385 @@
+{
+  "summary": {
+    "total": 10,
+    "passed": 10,
+    "accuracy": 100.0,
+    "roles": {
+      "admin": 1,
+      "analyst": 6,
+      "region_manager": 3
+    },
+    "codes": {
+      "SQL_AUTHORIZED": 2,
+      "SENSITIVE_DATA_DENIED": 1,
+      "ACCESS_POLICY_APPLIED": 1,
+      "COLUMN_ACCESS_DENIED": 1,
+      "AGGREGATION_REQUIRED": 1,
+      "ROW_SCOPE_REQUIRED": 1,
+      "ROW_POLICY_APPLIED": 2,
+      "TABLE_ACCESS_DENIED": 1
+    },
+    "row_policy_scopes": 3
+  },
+  "results": [
+    {
+      "id": "access_admin_detail",
+      "question": "列出客户姓名",
+      "role": "admin",
+      "expected": {
+        "stage": "sql_authorization",
+        "passed": true,
+        "code": "SQL_AUTHORIZED",
+        "row_policy_scopes": 0
+      },
+      "actual": {
+        "passed": true,
+        "code": "SQL_AUTHORIZED",
+        "message": "SQL权限审计通过",
+        "sql": "SELECT customer_name FROM dim_customer",
+        "role": "admin",
+        "referenced_tables": [
+          "dim_customer"
+        ],
+        "denied_columns": [],
+        "aggregation_violations": [],
+        "row_policy_applied": false,
+        "row_policy_scopes": 0,
+        "details": {
+          "region_scope": ""
+        }
+      },
+      "checks": {
+        "stage": true,
+        "passed": true,
+        "code": true,
+        "row_policy_scopes": true
+      },
+      "passed": true
+    },
+    {
+      "id": "access_analyst_sensitive_intent",
+      "question": "列出客户姓名",
+      "role": "analyst",
+      "expected": {
+        "stage": "schema_policy",
+        "passed": false,
+        "code": "SENSITIVE_DATA_DENIED"
+      },
+      "actual": {
+        "passed": false,
+        "code": "SENSITIVE_DATA_DENIED",
+        "message": "当前角色不能查询请求中的敏感数据",
+        "role": "analyst",
+        "allowed_tables": [
+          "fact_order",
+          "dim_region",
+          "dim_product",
+          "dim_customer",
+          "dim_date"
+        ],
+        "removed_tables": [],
+        "removed_columns": [],
+        "aggregation_only_columns": [
+          "fact_order.customer_id",
+          "dim_customer.customer_id"
+        ],
+        "row_policy": {
+          "matched_terms": [
+            "客户姓名",
+            "姓名"
+          ]
+        }
+      },
+      "checks": {
+        "stage": true,
+        "passed": true,
+        "code": true
+      },
+      "passed": true
+    },
+    {
+      "id": "access_analyst_schema_filter",
+      "question": "统计客户数量",
+      "role": "analyst",
+      "expected": {
+        "stage": "schema_policy",
+        "passed": true,
+        "code": "ACCESS_POLICY_APPLIED",
+        "removed_columns": [
+          "dim_customer.customer_name"
+        ],
+        "visible_columns": [
+          "dim_customer.customer_id"
+        ]
+      },
+      "actual": {
+        "passed": true,
+        "code": "ACCESS_POLICY_APPLIED",
+        "message": "Schema访问策略已应用",
+        "role": "analyst",
+        "allowed_tables": [
+          "fact_order",
+          "dim_region",
+          "dim_product",
+          "dim_customer",
+          "dim_date"
+        ],
+        "removed_tables": [],
+        "removed_columns": [
+          "dim_customer.customer_name"
+        ],
+        "aggregation_only_columns": [
+          "dim_customer.customer_id",
+          "fact_order.customer_id"
+        ],
+        "row_policy": {}
+      },
+      "checks": {
+        "stage": true,
+        "passed": true,
+        "code": true,
+        "removed_columns": true,
+        "visible_columns": true
+      },
+      "passed": true
+    },
+    {
+      "id": "access_analyst_cte_leak",
+      "question": "统计客户数据",
+      "role": "analyst",
+      "expected": {
+        "stage": "sql_authorization",
+        "passed": false,
+        "code": "COLUMN_ACCESS_DENIED"
+      },
+      "actual": {
+        "passed": false,
+        "code": "COLUMN_ACCESS_DENIED",
+        "message": "SQL引用了当前角色无权访问的字段",
+        "sql": "WITH c AS (SELECT customer_name FROM dim_customer) SELECT customer_name FROM c",
+        "role": "analyst",
+        "referenced_tables": [
+          "dim_customer"
+        ],
+        "denied_columns": [
+          "dim_customer.customer_name"
+        ],
+        "aggregation_violations": [],
+        "row_policy_applied": false,
+        "row_policy_scopes": 0,
+        "details": {}
+      },
+      "checks": {
+        "stage": true,
+        "passed": true,
+        "code": true
+      },
+      "passed": true
+    },
+    {
+      "id": "access_analyst_detail_id",
+      "question": "查询客户标识",
+      "role": "analyst",
+      "expected": {
+        "stage": "sql_authorization",
+        "passed": false,
+        "code": "AGGREGATION_REQUIRED"
+      },
+      "actual": {
+        "passed": false,
+        "code": "AGGREGATION_REQUIRED",
+        "message": "敏感标识字段只允许COUNT聚合，不允许明细返回",
+        "sql": "SELECT customer_id FROM fact_order",
+        "role": "analyst",
+        "referenced_tables": [
+          "fact_order"
+        ],
+        "denied_columns": [],
+        "aggregation_violations": [
+          "fact_order.customer_id"
+        ],
+        "row_policy_applied": false,
+        "row_policy_scopes": 0,
+        "details": {}
+      },
+      "checks": {
+        "stage": true,
+        "passed": true,
+        "code": true
+      },
+      "passed": true
+    },
+    {
+      "id": "access_analyst_count_id",
+      "question": "统计客户数量",
+      "role": "analyst",
+      "expected": {
+        "stage": "sql_authorization",
+        "passed": true,
+        "code": "SQL_AUTHORIZED",
+        "row_policy_scopes": 0
+      },
+      "actual": {
+        "passed": true,
+        "code": "SQL_AUTHORIZED",
+        "message": "SQL权限审计通过",
+        "sql": "SELECT COUNT(DISTINCT customer_id) AS customer_count FROM fact_order",
+        "role": "analyst",
+        "referenced_tables": [
+          "fact_order"
+        ],
+        "denied_columns": [],
+        "aggregation_violations": [],
+        "row_policy_applied": false,
+        "row_policy_scopes": 0,
+        "details": {
+          "region_scope": ""
+        }
+      },
+      "checks": {
+        "stage": true,
+        "passed": true,
+        "code": true,
+        "row_policy_scopes": true
+      },
+      "passed": true
+    },
+    {
+      "id": "access_manager_missing_scope",
+      "question": "统计销售额",
+      "role": "region_manager",
+      "expected": {
+        "stage": "schema_policy",
+        "passed": false,
+        "code": "ROW_SCOPE_REQUIRED"
+      },
+      "actual": {
+        "passed": false,
+        "code": "ROW_SCOPE_REQUIRED",
+        "message": "角色region_manager必须配置region_scope",
+        "role": "region_manager",
+        "allowed_tables": [],
+        "removed_tables": [],
+        "removed_columns": [],
+        "aggregation_only_columns": [],
+        "row_policy": {}
+      },
+      "checks": {
+        "stage": true,
+        "passed": true,
+        "code": true
+      },
+      "passed": true
+    },
+    {
+      "id": "access_manager_fact_scope",
+      "question": "统计销售额",
+      "role": "region_manager",
+      "expected": {
+        "stage": "sql_authorization",
+        "passed": true,
+        "code": "ROW_POLICY_APPLIED",
+        "row_policy_scopes": 1,
+        "sql_contains": [
+          "EXISTS",
+          "region_name = '华东'"
+        ]
+      },
+      "actual": {
+        "passed": true,
+        "code": "ROW_POLICY_APPLIED",
+        "message": "SQL权限审计通过",
+        "sql": "SELECT SUM(sales_amount) AS gmv FROM fact_order WHERE EXISTS(SELECT 1 FROM dim_region AS __acl_region WHERE __acl_region.region_id = fact_order.region_id AND __acl_region.region_name = '华东')",
+        "role": "region_manager",
+        "referenced_tables": [
+          "fact_order"
+        ],
+        "denied_columns": [],
+        "aggregation_violations": [],
+        "row_policy_applied": true,
+        "row_policy_scopes": 1,
+        "details": {
+          "region_scope": "华东"
+        }
+      },
+      "checks": {
+        "stage": true,
+        "passed": true,
+        "code": true,
+        "row_policy_scopes": true,
+        "sql_contains": true
+      },
+      "passed": true
+    },
+    {
+      "id": "access_manager_union_scope",
+      "question": "对比两组销售额",
+      "role": "region_manager",
+      "expected": {
+        "stage": "sql_authorization",
+        "passed": true,
+        "code": "ROW_POLICY_APPLIED",
+        "row_policy_scopes": 2
+      },
+      "actual": {
+        "passed": true,
+        "code": "ROW_POLICY_APPLIED",
+        "message": "SQL权限审计通过",
+        "sql": "SELECT SUM(sales_amount) FROM fact_order WHERE EXISTS(SELECT 1 FROM dim_region AS __acl_region WHERE __acl_region.region_id = fact_order.region_id AND __acl_region.region_name = '华东') UNION ALL SELECT SUM(sales_amount) FROM fact_order WHERE EXISTS(SELECT 1 FROM dim_region AS __acl_region WHERE __acl_region.region_id = fact_order.region_id AND __acl_region.region_name = '华东')",
+        "role": "region_manager",
+        "referenced_tables": [
+          "fact_order"
+        ],
+        "denied_columns": [],
+        "aggregation_violations": [],
+        "row_policy_applied": true,
+        "row_policy_scopes": 2,
+        "details": {
+          "region_scope": "华东"
+        }
+      },
+      "checks": {
+        "stage": true,
+        "passed": true,
+        "code": true,
+        "row_policy_scopes": true
+      },
+      "passed": true
+    },
+    {
+      "id": "access_analyst_unknown_table",
+      "question": "查看工资",
+      "role": "analyst",
+      "expected": {
+        "stage": "sql_authorization",
+        "passed": false,
+        "code": "TABLE_ACCESS_DENIED"
+      },
+      "actual": {
+        "passed": false,
+        "code": "TABLE_ACCESS_DENIED",
+        "message": "SQL引用了当前角色无权访问的表",
+        "sql": "SELECT salary FROM internal_salary",
+        "role": "analyst",
+        "referenced_tables": [
+          "internal_salary"
+        ],
+        "denied_columns": [],
+        "aggregation_violations": [],
+        "row_policy_applied": false,
+        "row_policy_scopes": 0,
+        "details": {
+          "tables": [
+            "internal_salary"
+          ]
+        }
+      },
+      "checks": {
+        "stage": true,
+        "passed": true,
+        "code": true
+      },
+      "passed": true
+    }
+  ]
+}

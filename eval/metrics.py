@@ -529,6 +529,60 @@ def aggregate_grounded_answers(results: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def aggregate_access_governance(results: list[dict[str, Any]]) -> dict[str, Any]:
+    policy_events = [
+        event
+        for result in results
+        for event in result.get("access_policy_events") or []
+    ]
+    authorization_events = [
+        event
+        for result in results
+        for event in result.get("sql_authorization_events") or []
+    ]
+    events = policy_events + authorization_events
+    configured = [
+        result
+        for result in results
+        if result.get("access_expected_status") is not None
+        or result.get("access_expected_code") is not None
+        or result.get("access_expected_row_policy") is not None
+    ]
+    rejection_codes = Counter(
+        str(event.get("code") or "UNKNOWN")
+        for event in events
+        if event.get("status") == "rejected"
+    )
+    roles = Counter(
+        str(event.get("role") or "unknown")
+        for event in policy_events
+    )
+    row_policy_events = [
+        event
+        for event in authorization_events
+        if event.get("row_policy_applied")
+    ]
+    return {
+        "policy_checks": len(policy_events),
+        "authorization_checks": len(authorization_events),
+        "rejected_checks": sum(
+            event.get("status") == "rejected" for event in events
+        ),
+        "rejection_codes": dict(sorted(rejection_codes.items())),
+        "roles": dict(sorted(roles.items())),
+        "row_policy_queries": len(row_policy_events),
+        "row_policy_scopes": sum(
+            int(event.get("row_policy_scopes") or 0)
+            for event in row_policy_events
+        ),
+        "configured_cases": len(configured),
+        "accuracy": metric_block(
+            sum(bool(result.get("access_ok")) for result in configured),
+            len(configured),
+        ),
+    }
+
+
 def evaluate_case(
     *,
     case: dict[str, Any],
@@ -553,6 +607,8 @@ def evaluate_case(
     conversation_memory_event: dict[str, Any] | None = None,
     confidence_events: list[dict[str, Any]] | None = None,
     grounded_answer_event: dict[str, Any] | None = None,
+    access_policy_events: list[dict[str, Any]] | None = None,
+    sql_authorization_events: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     expected_tables = {str(t).lower() for t in case.get("expect_tables", [])}
     actual_tables = extract_tables(sql)
@@ -587,6 +643,8 @@ def evaluate_case(
     sql_sandbox_events = list(sql_sandbox_events or [])
     clarification_required = clarification_event is not None
     confidence_events = list(confidence_events or [])
+    access_policy_events = list(access_policy_events or [])
+    sql_authorization_events = list(sql_authorization_events or [])
     confidence_assessment = next(
         (
             event for event in reversed(confidence_events)
@@ -616,6 +674,29 @@ def evaluate_case(
             answer_ok = bool(
                 (grounded_answer_event.get("verification") or {}).get("passed")
             ) == answer_expected_grounded
+    access_expected_status = case.get("expect_access_status")
+    access_expected_code = case.get("expect_access_code")
+    access_expected_row_policy = case.get("expect_row_policy_applied")
+    final_access_event = (
+        sql_authorization_events[-1]
+        if sql_authorization_events
+        else access_policy_events[-1]
+        if access_policy_events
+        else None
+    )
+    access_ok: bool | None = None
+    if (
+        access_expected_status is not None
+        or access_expected_code is not None
+        or isinstance(access_expected_row_policy, bool)
+    ):
+        access_ok = bool(final_access_event)
+        if access_ok and access_expected_status is not None:
+            access_ok = final_access_event.get("status") == access_expected_status
+        if access_ok and access_expected_code is not None:
+            access_ok = final_access_event.get("code") == access_expected_code
+        if access_ok and isinstance(access_expected_row_policy, bool):
+            access_ok = bool(final_access_event.get("row_policy_applied")) == access_expected_row_policy
     clarification_expected = case.get("expect_clarification")
     expected_clarification_code = case.get("expect_clarification_code")
     actual_clarification_code = (
@@ -726,6 +807,14 @@ def evaluate_case(
         "confidence_expected_code": confidence_expected_code,
         "confidence_ok": confidence_ok,
         "grounded_answer_event": grounded_answer_event,
+        "access_policy_events": access_policy_events,
+        "sql_authorization_events": sql_authorization_events,
+        "access_expected_status": access_expected_status,
+        "access_expected_code": access_expected_code,
+        "access_expected_row_policy": access_expected_row_policy
+        if isinstance(access_expected_row_policy, bool)
+        else None,
+        "access_ok": access_ok,
         "answer_expected_status": answer_expected_status,
         "answer_expected_grounded": answer_expected_grounded
         if isinstance(answer_expected_grounded, bool)
@@ -769,6 +858,7 @@ def aggregate_group(results: list[dict[str, Any]]) -> dict[str, Any]:
         "clarification": aggregate_clarification(results),
         "confidence": aggregate_confidence(results),
         "grounded_answer": aggregate_grounded_answers(results),
+        "access_governance": aggregate_access_governance(results),
     }
 
 

@@ -97,6 +97,48 @@ answer_generation:
   fallback_max_rows: 5
   numeric_tolerance: 0.01
 
+# 演示版身份上下文。生产环境必须由JWT/SSO服务端解析，不可信任请求体中的角色。
+access_control:
+  enabled: true
+  default_role: analyst
+  roles:
+    admin:
+      allowed_tables: ["*"]
+      denied_columns: []
+      aggregation_only_columns: []
+      denied_query_terms: []
+      row_policy_table: ""
+      row_policy_column: ""
+      row_policy_fact_table: ""
+      row_policy_fact_key: ""
+      row_policy_dimension_key: ""
+    analyst:
+      allowed_tables: [fact_order, dim_region, dim_product, dim_customer, dim_date]
+      denied_columns:
+        - dim_customer.customer_name
+      aggregation_only_columns:
+        - fact_order.customer_id
+        - dim_customer.customer_id
+      denied_query_terms: [客户姓名, 用户姓名, 姓名, 手机号, 手机号码, 身份证, 邮箱]
+      row_policy_table: ""
+      row_policy_column: ""
+      row_policy_fact_table: ""
+      row_policy_fact_key: ""
+      row_policy_dimension_key: ""
+    region_manager:
+      allowed_tables: [fact_order, dim_region, dim_product, dim_customer, dim_date]
+      denied_columns:
+        - dim_customer.customer_name
+      aggregation_only_columns:
+        - fact_order.customer_id
+        - dim_customer.customer_id
+      denied_query_terms: [客户姓名, 用户姓名, 姓名, 手机号, 手机号码, 身份证, 邮箱]
+      row_policy_table: dim_region
+      row_policy_column: region_name
+      row_policy_fact_table: fact_order
+      row_policy_fact_key: region_id
+      row_policy_dimension_key: region_id
+
 sql_cache:
   similarity_threshold: 0.95
   collection_name: data-agent-sql-cache

@@ -4,9 +4,14 @@ from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.constants import START, END
 from langgraph.graph import StateGraph
 
+from app.agent.access_control import resolve_access_context
 from app.agent.context import DataAgentContext
 from app.agent.nodes.add_extra_context import add_extra_context
+from app.agent.nodes.access_request_guard import access_request_guard
+from app.agent.nodes.apply_access_policy import apply_access_policy
 from app.agent.nodes.ambiguity_guard import ambiguity_guard
+from app.agent.nodes.audit_authorized_sql import audit_authorized_sql
+from app.agent.nodes.authorize_sql import authorize_sql
 from app.agent.nodes.context_manager import context_manager
 from app.agent.nodes.clarify_intent import clarify_intent
 from app.agent.nodes.confidence_guard import confidence_guard
@@ -44,10 +49,35 @@ from app.repositories.qdrant.metric_qdrant_repository import MetricQdrantReposit
 
 def route_after_audit(state: DataAgentState) -> str:
     if state.get("error") is None:
-        return "validate_sql"
+        return "authorize_sql"
     if state.get("retry_count", 0) >= MAX_SQL_RETRIES:
         return "end"
     return "correct_sql"
+
+
+def route_after_access_policy(state: DataAgentState) -> str:
+    result = state.get("access_policy_result") or {}
+    if state.get("error") is None and result.get("passed"):
+        return "confidence_guard"
+    return "end"
+
+
+def route_after_access_request(state: DataAgentState) -> str:
+    result = state.get("access_policy_result") or {}
+    if state.get("error") is None and result.get("passed"):
+        return "extract_keywords"
+    return "end"
+
+
+def route_after_authorization(state: DataAgentState) -> str:
+    result = state.get("authorization_result") or {}
+    if state.get("error") is None and result.get("passed"):
+        return "audit_authorized_sql"
+    return "end"
+
+
+def route_after_authorized_audit(state: DataAgentState) -> str:
+    return "validate_sql" if state.get("error") is None else "end"
 
 
 def route_after_validation(state: DataAgentState) -> str:
@@ -107,6 +137,7 @@ graph_builder = StateGraph(state_schema=DataAgentState, context_schema=DataAgent
 # 添加节点并统一启用耗时监控
 nodes = {
     "context_manager": context_manager,
+    "access_request_guard": access_request_guard,
     "ambiguity_guard": ambiguity_guard,
     "clarify_intent": clarify_intent,
     "confidence_guard": confidence_guard,
@@ -120,9 +151,12 @@ nodes = {
     "filter_metric": filter_metric,
     "filter_table": filter_table,
     "add_extra_context": add_extra_context,
+    "apply_access_policy": apply_access_policy,
     "generate_sql": generate_sql,
     "validate_sql": validate_sql,
     "audit_sql": audit_sql,
+    "authorize_sql": authorize_sql,
+    "audit_authorized_sql": audit_authorized_sql,
     "query_plan_guard": query_plan_guard,
     "correct_sql": correct_sql,
     "repair_guard": repair_guard,
@@ -141,9 +175,14 @@ graph_builder.add_conditional_edges(
     route_after_ambiguity_guard,
     {
         "clarify_intent": "clarify_intent",
-        "extract_keywords": "extract_keywords",
+        "extract_keywords": "access_request_guard",
         "end": END,
     },
+)
+graph_builder.add_conditional_edges(
+    "access_request_guard",
+    route_after_access_request,
+    {"extract_keywords": "extract_keywords", "end": END},
 )
 graph_builder.add_conditional_edges(
     "clarify_intent",
@@ -161,7 +200,12 @@ graph_builder.add_edge("merge_retrieved_info", "filter_table")
 graph_builder.add_edge("merge_retrieved_info", "filter_metric")
 graph_builder.add_edge("filter_table", "add_extra_context")
 graph_builder.add_edge("filter_metric", "add_extra_context")
-graph_builder.add_edge("add_extra_context", "confidence_guard")
+graph_builder.add_edge("add_extra_context", "apply_access_policy")
+graph_builder.add_conditional_edges(
+    "apply_access_policy",
+    route_after_access_policy,
+    {"confidence_guard": "confidence_guard", "end": END},
+)
 graph_builder.add_conditional_edges(
     "confidence_guard",
     route_after_confidence_guard,
@@ -180,7 +224,17 @@ graph_builder.add_edge("generate_sql", "audit_sql")
 graph_builder.add_conditional_edges(
     "audit_sql",
     route_after_audit,
-    {"validate_sql": "validate_sql", "correct_sql": "correct_sql", "end": END},
+    {"authorize_sql": "authorize_sql", "correct_sql": "correct_sql", "end": END},
+)
+graph_builder.add_conditional_edges(
+    "authorize_sql",
+    route_after_authorization,
+    {"audit_authorized_sql": "audit_authorized_sql", "end": END},
+)
+graph_builder.add_conditional_edges(
+    "audit_authorized_sql",
+    route_after_authorized_audit,
+    {"validate_sql": "validate_sql", "end": END},
 )
 
 graph_builder.add_conditional_edges(
@@ -243,7 +297,14 @@ if __name__ == '__main__':
                 meta_mysql_repository=meta_mysql_repository,
                 dw_mysql_repository=dw_mysql_repository
             )
-            state = DataAgentState(query="统计去年各地区的销售总额")
+            state = DataAgentState(
+                query="统计去年各地区的销售总额",
+                access_context=resolve_access_context(
+                    principal_id="graph-main-test",
+                    role="admin",
+                    source="local_test",
+                ),
+            )
             async for chunk in graph.astream(
                 input=state,
                 context=context,

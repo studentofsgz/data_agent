@@ -1,8 +1,11 @@
+import json
+
 import yaml
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.prompts import PromptTemplate
 from langgraph.runtime import Runtime
 
+from app.agent.access_control import apply_schema_access_policy
 from app.agent.context import DataAgentContext
 from app.agent.llm import llm
 from app.agent.state import DataAgentState
@@ -15,7 +18,33 @@ async def filter_table(state: DataAgentState, runtime: Runtime[DataAgentContext]
     writer({"type": "progress", "step": "过滤表格", "status": "running"})
 
     query = state["query"]
-    table_infos = state["table_infos"]
+    catalog, table_infos, access_result = apply_schema_access_policy(
+        table_infos=state["table_infos"],
+        query=query,
+        access_context=state.get("access_context") or {},
+    )
+    writer({
+        "type": "access_policy",
+        "stage": "schema_linking",
+        "status": "passed" if access_result["passed"] else "rejected",
+        **access_result,
+    })
+    if not access_result["passed"]:
+        error = json.dumps(
+            {
+                "source": "access_control",
+                "code": access_result["code"],
+                "message": access_result["message"],
+            },
+            ensure_ascii=False,
+        )
+        writer({"type": "progress", "step": "过滤表格", "status": "error"})
+        return {
+            "schema_catalog": state.get("schema_catalog") or catalog,
+            "table_infos": [],
+            "access_policy_result": access_result,
+            "error": error,
+        }
 
     try:
         # 用LLM过滤表信息
@@ -54,7 +83,11 @@ async def filter_table(state: DataAgentState, runtime: Runtime[DataAgentContext]
 
         writer({"type": "progress", "step": "过滤表格", "status": "success"})
         logger.info(f"过滤后的表信息: {[table_info['name'] for table_info in table_infos]}")
-        return {"table_infos": table_infos}
+        return {
+            "schema_catalog": state.get("schema_catalog") or catalog,
+            "table_infos": table_infos,
+            "access_policy_result": access_result,
+        }
     except Exception as e:
         writer({"type": "progress", "step": "过滤表格", "status": "error"})
         logger.error(f"过滤表失败:{str(e)}")

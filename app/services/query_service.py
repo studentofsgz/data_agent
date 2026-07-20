@@ -6,6 +6,11 @@ from datetime import datetime, timezone
 from langchain_huggingface import HuggingFaceEndpointEmbeddings
 from langgraph.types import Command
 
+from app.agent.access_control import (
+    resolve_access_context,
+    same_access_context,
+    validate_access_context,
+)
 from app.agent.context import DataAgentContext
 from app.agent.conversation_memory import build_turn_input
 from app.agent.graph_runtime import graph_runtime
@@ -85,6 +90,9 @@ class QueryService:
         messages: list[dict] | None = None,
         thread_id: str | None = None,
         resume: str | None = None,
+        principal_id: str | None = None,
+        access_role: str | None = None,
+        region_scope: str | None = None,
     ):
         workflow_id = str(thread_id or uuid.uuid4().hex)
         if not self.THREAD_ID_PATTERN.fullmatch(workflow_id):
@@ -120,6 +128,70 @@ class QueryService:
                 })
                 return
             snapshot = await workflow_graph.aget_state(config)
+
+        provided_access = any(
+            value is not None
+            for value in (principal_id, access_role, region_scope)
+        )
+        existing_access = dict(snapshot.values.get("access_context") or {})
+        if existing_access:
+            candidate_access = resolve_access_context(
+                principal_id=(
+                    principal_id
+                    if principal_id is not None
+                    else existing_access.get("principal_id")
+                ),
+                role=(
+                    access_role
+                    if access_role is not None
+                    else existing_access.get("role")
+                ),
+                region_scope=(
+                    region_scope
+                    if region_scope is not None
+                    else existing_access.get("region_scope")
+                ),
+                source="request_demo" if provided_access else "checkpoint",
+            )
+            validation_error = validate_access_context(candidate_access)
+            if validation_error:
+                code, message = validation_error
+                yield self._sse({
+                    "type": "error",
+                    "code": code,
+                    "message": message,
+                    "thread_id": workflow_id,
+                })
+                return
+            if provided_access and not same_access_context(
+                existing_access,
+                candidate_access,
+            ):
+                yield self._sse({
+                    "type": "error",
+                    "code": "ACCESS_CONTEXT_MISMATCH",
+                    "message": "同一thread_id不能切换访问主体、角色或数据范围",
+                    "thread_id": workflow_id,
+                })
+                return
+            access_context = existing_access
+        else:
+            access_context = resolve_access_context(
+                principal_id=principal_id,
+                role=access_role,
+                region_scope=region_scope,
+                source="request_demo" if provided_access else "default",
+            )
+            validation_error = validate_access_context(access_context)
+            if validation_error:
+                code, message = validation_error
+                yield self._sse({
+                    "type": "error",
+                    "code": code,
+                    "message": message,
+                    "thread_id": workflow_id,
+                })
+                return
 
         if resume is not None:
             if thread_id is None:
@@ -166,11 +238,17 @@ class QueryService:
                 if snapshot.values.get("last_query_intent")
                 else "new"
             )
-            graph_input = DataAgentState(**build_turn_input(query, messages))
+            graph_input = DataAgentState(**build_turn_input(
+                query,
+                messages,
+                access_context,
+            ))
             yield self._sse({
                 "type": "workflow_started",
                 "thread_id": workflow_id,
                 "mode": mode,
+                "principal_id": access_context["principal_id"],
+                "access_role": access_context["role"],
             })
 
         try:
@@ -194,8 +272,31 @@ class QueryService:
                     ],
                 })
             else:
+                access_policy_result = (
+                    snapshot.values.get("access_policy_result") or {}
+                )
+                authorization_result = (
+                    snapshot.values.get("authorization_result") or {}
+                )
                 confidence_result = snapshot.values.get("confidence_result") or {}
-                if confidence_result.get("action") == "reject":
+                access_rejection = next(
+                    (
+                        result
+                        for result in (access_policy_result, authorization_result)
+                        if result and not result.get("passed")
+                    ),
+                    None,
+                )
+                if access_rejection:
+                    yield self._sse({
+                        "type": "workflow_rejected",
+                        "thread_id": workflow_id,
+                        "stage": "access_control",
+                        "code": access_rejection.get("code"),
+                        "message": access_rejection.get("message")
+                        or "数据访问权限不足",
+                    })
+                elif confidence_result.get("action") == "reject":
                     reasons = confidence_result.get("reasons") or []
                     yield self._sse({
                         "type": "workflow_rejected",

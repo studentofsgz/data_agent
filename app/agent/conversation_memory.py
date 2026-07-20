@@ -317,6 +317,7 @@ def resolve_structured_followup(
 def build_turn_input(
     query: str,
     messages: list[dict] | None = None,
+    access_context: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Create a clean per-turn input while leaving persisted conversation memory intact."""
     normalized = str(query or "").strip()
@@ -324,6 +325,10 @@ def build_turn_input(
         "query": normalized,
         "raw_query": normalized,
         "messages": messages or [],
+        "access_context": access_context or {},
+        "access_policy_result": {},
+        "authorization_result": {},
+        "schema_catalog": [],
         "turn_id": uuid4().hex,
         "turn_started_at": datetime.now(timezone.utc).isoformat(),
         "context_resolution": {},

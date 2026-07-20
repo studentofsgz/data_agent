@@ -127,6 +127,26 @@ class AnswerGenerationConfig:
 
 
 @dataclass
+class RoleAccessConfig:
+    allowed_tables: list[str]
+    denied_columns: list[str]
+    aggregation_only_columns: list[str]
+    denied_query_terms: list[str]
+    row_policy_table: str
+    row_policy_column: str
+    row_policy_fact_table: str
+    row_policy_fact_key: str
+    row_policy_dimension_key: str
+
+
+@dataclass
+class AccessControlConfig:
+    enabled: bool
+    default_role: str
+    roles: dict[str, RoleAccessConfig]
+
+
+@dataclass
 class SQLCacheConfig:
     similarity_threshold: float
     collection_name: str
@@ -154,6 +174,7 @@ class AppConfig:
     conversation: ConversationConfig
     confidence: ConfidenceConfig
     answer_generation: AnswerGenerationConfig
+    access_control: AccessControlConfig
     sql_cache: SQLCacheConfig
     llm: LLMConfig
 

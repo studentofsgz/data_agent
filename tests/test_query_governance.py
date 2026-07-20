@@ -217,6 +217,8 @@ class QueryGovernanceNodeTests(unittest.TestCase):
                 {
                     "sql": "SELECT order_id FROM fact_order LIMIT 1",
                     "error": None,
+                    "access_policy_result": {"passed": True},
+                    "authorization_result": {"passed": True},
                     "audit_result": {"passed": True},
                     "query_plan_result": {"passed": True},
                 },
@@ -240,6 +242,8 @@ class QueryGovernanceNodeTests(unittest.TestCase):
                 {
                     "sql": "SELECT order_id FROM fact_order",
                     "error": None,
+                    "access_policy_result": {"passed": True},
+                    "authorization_result": {"passed": True},
                     "audit_result": {"passed": True},
                     "query_plan_result": {"passed": True},
                 },

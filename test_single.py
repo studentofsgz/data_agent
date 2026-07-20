@@ -2,6 +2,7 @@ import asyncio
 
 from app.agent.context import DataAgentContext
 from app.agent.graph import graph
+from app.agent.access_control import resolve_access_context
 from app.agent.state import DataAgentState
 from app.clients.embedding_client_manager import embedding_client_manager
 from app.clients.es_client_manager import es_client_manager
@@ -37,7 +38,14 @@ async def main():
             dw_mysql_repository=DWMySQLRepository(dw_session),
         )
 
-        state = DataAgentState(query=QUESTION)
+        state = DataAgentState(
+            query=QUESTION,
+            access_context=resolve_access_context(
+                principal_id="single-test",
+                role="admin",
+                source="local_test",
+            ),
+        )
 
         async for chunk in graph.astream(
             input=state,

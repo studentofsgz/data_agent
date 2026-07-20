@@ -19,6 +19,7 @@ where we need to prove that the Text2SQL chain did not regress.
     ├── replay_report.py         # Re-executes saved SQL without calling the LLM
     ├── conversation_eval.py     # Fast structured multi-turn regression set
     ├── confidence_eval.py       # Fast high/medium/low confidence policy set
+    ├── access_control_eval.py   # Fast role/column/row access policy set
     └── answer_grounding_eval.py # Fast numeric grounding regression set
 
 ## Run
@@ -127,6 +128,37 @@ or caps the outer LIMIT at 10000 rows. Audit failures are emitted with stable
 error codes and can be sent to the SQL correction node for a targeted retry.
 After the retry budget is exhausted the graph terminates without invoking the
 database execution node.
+
+## Data access governance
+
+The workflow now carries an access context containing a principal, role, and
+optional region scope. Before SQL generation, the access policy removes tables
+and columns the role must not see, annotates aggregation-only identifiers, and
+rejects explicit sensitive-data requests. After SQL generation, sqlglot scope
+analysis checks every physical table and column, including CTE and UNION
+branches. Region managers receive a server-generated row predicate in every
+scope that reads the order fact table. The rewritten SQL is then parsed and
+audited again before validation and execution.
+
+The sample API fields are only a local demonstration. A production service
+must derive principal, role, and row scope from a verified JWT/SSO session and
+must not trust role fields supplied by the request body. A thread is bound to
+its first access context so later requests cannot switch principal, role, or
+region scope.
+
+Run the deterministic policy and bypass set without a model or database call:
+
+    python -m eval.access_control_eval
+
+The full runner defaults to `admin` so the historical 50-case baseline remains
+comparable. To exercise a scoped end-to-end query, pass for example:
+
+    python -m eval.runner --limit 1 --access-role region_manager \
+      --principal-id manager-1 --region-scope 华东
+
+Full reports aggregate schema-policy checks, SQL authorization checks,
+rejection codes, roles, row-policy query count, and the number of SQL scopes
+protected.
 
 ## SQL repair convergence guard
 

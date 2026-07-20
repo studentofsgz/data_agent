@@ -190,6 +190,39 @@ class AnswerResultState(TypedDict):
     provenance: dict[str, Any]
 
 
+class AccessContextState(TypedDict):
+    principal_id: str
+    role: str
+    region_scope: str
+    source: str
+
+
+class AccessPolicyResultState(TypedDict):
+    passed: bool
+    code: str
+    message: str
+    role: str
+    allowed_tables: list[str]
+    removed_tables: list[str]
+    removed_columns: list[str]
+    aggregation_only_columns: list[str]
+    row_policy: dict[str, Any]
+
+
+class SQLAuthorizationResultState(TypedDict):
+    passed: bool
+    code: str
+    message: str
+    sql: str
+    role: str
+    referenced_tables: list[str]
+    denied_columns: list[str]
+    aggregation_violations: list[str]
+    row_policy_applied: bool
+    row_policy_scopes: int
+    details: dict[str, Any]
+
+
 class ContextResolutionState(TypedDict):
     applied: bool
     strategy: str
@@ -214,6 +247,10 @@ class DataAgentState(TypedDict):
     query: str  # 用户查询（可能已被上下文改写）
     raw_query: str  # 当前轮用户原始输入
     messages: list[dict]  # 历史对话 [{"role":"user","content":"..."},...]
+    access_context: AccessContextState  # 由服务端身份认证映射出的当前访问主体
+    access_policy_result: AccessPolicyResultState  # Schema可见性过滤结果
+    authorization_result: SQLAuthorizationResultState  # SQL生成后的最终权限判定
+    schema_catalog: list[TableInfoState]  # 权限过滤前的当前查询Schema，用于初次AST校验
     turn_id: str  # 当前轮唯一标识
     turn_started_at: str  # 当前轮开始时间，用于会话过期判断
     context_resolution: ContextResolutionState  # 本轮上下文继承决策

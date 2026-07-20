@@ -272,6 +272,46 @@ class ResultComparisonTests(unittest.TestCase):
         self.assertEqual(1, summary["caught_ungrounded_cases"])
         self.assertEqual({"fallback": 1, "generated": 1}, summary["statuses"])
 
+    def test_access_policy_and_row_scope_metrics_are_aggregated(self):
+        result = evaluate_case(
+            case={
+                "id": "access-manager",
+                "question": "统计销售额",
+                "expect_access_status": "passed",
+                "expect_access_code": "ROW_POLICY_APPLIED",
+                "expect_row_policy_applied": True,
+            },
+            sql="SELECT SUM(sales_amount) FROM fact_order",
+            rows=[{"gmv": 1}],
+            error="",
+            elapsed_seconds=0.01,
+            correction_attempts=0,
+            event_count=3,
+            result_received=True,
+            access_policy_events=[{
+                "stage": "schema_final",
+                "status": "passed",
+                "code": "ACCESS_POLICY_APPLIED",
+                "role": "region_manager",
+            }],
+            sql_authorization_events=[{
+                "status": "passed",
+                "code": "ROW_POLICY_APPLIED",
+                "role": "region_manager",
+                "row_policy_applied": True,
+                "row_policy_scopes": 2,
+            }],
+        )
+
+        summary = aggregate_results([result])["summary"]["access_governance"]
+        self.assertTrue(result["access_ok"])
+        self.assertEqual(100.0, summary["accuracy"]["rate"])
+        self.assertEqual(1, summary["policy_checks"])
+        self.assertEqual(1, summary["authorization_checks"])
+        self.assertEqual(1, summary["row_policy_queries"])
+        self.assertEqual(2, summary["row_policy_scopes"])
+        self.assertEqual({"region_manager": 1}, summary["roles"])
+
     def test_schema_linking_metrics_are_derived_from_golden_sql(self):
         gold_sql = (
             "SELECT r.region_name, SUM(f.order_amount) AS gmv "

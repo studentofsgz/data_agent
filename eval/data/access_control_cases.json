@@ -1,0 +1,69 @@
+[
+  {
+    "id": "access_admin_detail",
+    "question": "列出客户姓名",
+    "access_context": {"principal_id": "admin-1", "role": "admin"},
+    "sql": "SELECT customer_name FROM dim_customer",
+    "expected": {"stage": "sql_authorization", "passed": true, "code": "SQL_AUTHORIZED", "row_policy_scopes": 0}
+  },
+  {
+    "id": "access_analyst_sensitive_intent",
+    "question": "列出客户姓名",
+    "access_context": {"principal_id": "analyst-1", "role": "analyst"},
+    "expected": {"stage": "schema_policy", "passed": false, "code": "SENSITIVE_DATA_DENIED"}
+  },
+  {
+    "id": "access_analyst_schema_filter",
+    "question": "统计客户数量",
+    "access_context": {"principal_id": "analyst-1", "role": "analyst"},
+    "expected": {"stage": "schema_policy", "passed": true, "code": "ACCESS_POLICY_APPLIED", "removed_columns": ["dim_customer.customer_name"], "visible_columns": ["dim_customer.customer_id"]}
+  },
+  {
+    "id": "access_analyst_cte_leak",
+    "question": "统计客户数据",
+    "access_context": {"principal_id": "analyst-1", "role": "analyst"},
+    "sql": "WITH c AS (SELECT customer_name FROM dim_customer) SELECT customer_name FROM c",
+    "expected": {"stage": "sql_authorization", "passed": false, "code": "COLUMN_ACCESS_DENIED"}
+  },
+  {
+    "id": "access_analyst_detail_id",
+    "question": "查询客户标识",
+    "access_context": {"principal_id": "analyst-1", "role": "analyst"},
+    "sql": "SELECT customer_id FROM fact_order",
+    "expected": {"stage": "sql_authorization", "passed": false, "code": "AGGREGATION_REQUIRED"}
+  },
+  {
+    "id": "access_analyst_count_id",
+    "question": "统计客户数量",
+    "access_context": {"principal_id": "analyst-1", "role": "analyst"},
+    "sql": "SELECT COUNT(DISTINCT customer_id) AS customer_count FROM fact_order",
+    "expected": {"stage": "sql_authorization", "passed": true, "code": "SQL_AUTHORIZED", "row_policy_scopes": 0}
+  },
+  {
+    "id": "access_manager_missing_scope",
+    "question": "统计销售额",
+    "access_context": {"principal_id": "manager-1", "role": "region_manager"},
+    "expected": {"stage": "schema_policy", "passed": false, "code": "ROW_SCOPE_REQUIRED"}
+  },
+  {
+    "id": "access_manager_fact_scope",
+    "question": "统计销售额",
+    "access_context": {"principal_id": "manager-1", "role": "region_manager", "region_scope": "华东"},
+    "sql": "SELECT SUM(sales_amount) AS gmv FROM fact_order",
+    "expected": {"stage": "sql_authorization", "passed": true, "code": "ROW_POLICY_APPLIED", "row_policy_scopes": 1, "sql_contains": ["EXISTS", "region_name = '华东'"]}
+  },
+  {
+    "id": "access_manager_union_scope",
+    "question": "对比两组销售额",
+    "access_context": {"principal_id": "manager-1", "role": "region_manager", "region_scope": "华东"},
+    "sql": "SELECT SUM(sales_amount) FROM fact_order UNION ALL SELECT SUM(sales_amount) FROM fact_order",
+    "expected": {"stage": "sql_authorization", "passed": true, "code": "ROW_POLICY_APPLIED", "row_policy_scopes": 2}
+  },
+  {
+    "id": "access_analyst_unknown_table",
+    "question": "查看工资",
+    "access_context": {"principal_id": "analyst-1", "role": "analyst"},
+    "sql": "SELECT salary FROM internal_salary",
+    "expected": {"stage": "sql_authorization", "passed": false, "code": "TABLE_ACCESS_DENIED"}
+  }
+]

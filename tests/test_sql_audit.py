@@ -176,7 +176,7 @@ class SQLSafetyRoutingTests(unittest.TestCase):
 
         self.assertEqual("correct_sql", route_after_audit(retryable))
         self.assertEqual("end", route_after_audit(exhausted))
-        self.assertEqual("validate_sql", route_after_audit(passed))
+        self.assertEqual("authorize_sql", route_after_audit(passed))
         self.assertEqual("correct_sql", route_after_validation(retryable))
         self.assertEqual("end", route_after_validation(exhausted))
         self.assertEqual("query_plan_guard", route_after_validation(passed))

@@ -382,7 +382,7 @@ def audit_sql(state: DataAgentState, runtime: Runtime[DataAgentContext]):
     dialect = str(db_info.get("dialect") or "mysql").casefold()
     result = audit_sql_text(
         state.get("sql", ""),
-        state.get("table_infos", []),
+        state.get("schema_catalog") or state.get("table_infos", []),
         dialect=dialect,
     )
 
